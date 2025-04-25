@@ -304,4 +304,5 @@ rules:
   - RULE-SET,twitter_ip,Twitter,no-resolve
   - RULE-SET,telegram_ip,Telegram,no-resolve
   - RULE-SET,cn_ip,国内网站,no-resolve
+  - IP-CIDR,87.194.0.0/16,苹果服务,no-resolve
   - MATCH,漏网之鱼
