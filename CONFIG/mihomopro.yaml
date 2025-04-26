@@ -35,11 +35,11 @@ LoadBalanceCH: &LoadBalanceCH {type: load-balance, interval: 60, lazy: true, url
 LoadBalanceCR: &LoadBalanceCR {type: load-balance, interval: 60, lazy: true, url: 'https://www.gstatic.com/generate_204', disable-udp: false, strategy: round-robin, timeout: 2000, max-failed-times: 3, hidden: true, include-all: true}
 
 # 锚点 - 选择组 
-SelectFB: &SelectFB {type: select, proxies: [故障转移, 香港策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, 链式代理, DIRECT]}
-SelectHK: &SelectHK {type: select, proxies: [香港策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, 链式代理, DIRECT]}
-SelectSG: &SelectSG {type: select, proxies: [新加坡策略, 故障转移, 香港策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, 链式代理, DIRECT]}
-SelectUS: &SelectUS {type: select, proxies: [美国策略, 故障转移, 香港策略, 新加坡策略, 日本策略, 韩国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, 链式代理, DIRECT]}
-SelectProxy: &SelectProxy {type: select, proxies: [默认代理, 故障转移, 香港策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, 链式代理, DIRECT]}
+SelectFB: &SelectFB {type: select, proxies: [故障转移, 香港策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, DIRECT]}
+SelectHK: &SelectHK {type: select, proxies: [香港策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, DIRECT]}
+SelectSG: &SelectSG {type: select, proxies: [新加坡策略, 故障转移, 香港策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, DIRECT]}
+SelectUS: &SelectUS {type: select, proxies: [美国策略, 故障转移, 香港策略, 新加坡策略, 日本策略, 韩国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, DIRECT]}
+SelectProxy: &SelectProxy {type: select, proxies: [默认代理, 故障转移, 香港策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, DIRECT]}
 # 锚点 - 规则集 
 DomainMrs: &DomainMrs {type: http, interval: 86400, behavior: domain, format: mrs}
 DomainText: &DomainText {type: http, interval: 86400, behavior: domain, format: text}
@@ -162,9 +162,6 @@ proxy-groups:
   - {name: 欧盟策略,  type: select, proxies: [欧洲智能], include-all: true, filter: *FilterEU, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
    # 其他策略
   - {name: 故障转移,  <<: *FallBack, proxies: [香港策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 全球手动, 冷门自选, DIRECT], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/ULB.png}
-  - {name: 链式代理,  type: relay, proxies: [中转机, 落地机], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/TIDAL_1.png}
-  - {name: 中转机,    type: select, proxies: [香港策略, 台湾策略, 日本策略, 新加坡策略, 韩国策略, 美国策略, 欧盟策略, 冷门自选, 全球手动], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Rocket.png}
-  - {name: 落地机,    type: select, include-all: true, filter: *FilterAll, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Domestic.png}
   - {name: 国内网站,  type: select, proxies: [DIRECT, 默认代理], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png}
   - {name: 国外网站,   <<: *SelectProxy, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png}
   - {name: 全球手动,   type: select, include-all: true, filter: *FilterAll, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Clubhouse.png}
