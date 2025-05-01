@@ -224,6 +224,7 @@ rule-providers:
   telegram_ip:               {<<: *IPcidrMrs, url: https://git.imee.me/https://github.com/666OS/YYDS/raw/main/mihomo/rules/telegram_ip.mrs}
   private_ip:                {<<: *IPcidrMrs, url: https://git.imee.me/https://github.com/666OS/YYDS/raw/main/mihomo/rules/private_ip.mrs}
   cn_ip:                     {<<: *IPcidrMrs, url: https://git.imee.me/https://github.com/666OS/YYDS/raw/main/mihomo/rules/cn_ip.mrs}
+  秋风广告规则:                 {<<: *domainYaml, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
 
 # 路由
 rules:
