@@ -232,6 +232,7 @@ rules:
   - DOMAIN-SUFFIX,imee.me,DIRECT
   - DOMAIN,epdg.epc.mnc010.mcc234.pub.3gppnetwork.org,苹果服务
   # 防御
+  - RULE-SET,秋风广告规则,REJECT
   - RULE-SET,category-public-tracker,REJECT-DROP
   # 域名路由
   - RULE-SET,fix-direct,DIRECT
