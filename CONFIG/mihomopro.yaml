@@ -230,6 +230,7 @@ rules:
   # 常用必备
   - DST-PORT,123,DIRECT
   - DOMAIN-SUFFIX,imee.me,DIRECT
+  - DOMAIN,epdg.epc.mnc010.mcc234.pub.3gppnetwork.org,苹果服务
   # 防御
   - RULE-SET,category-public-tracker,REJECT-DROP
   # 域名路由
