@@ -166,7 +166,7 @@ proxy-groups:
   - {name: 国外网站,   <<: *SelectProxy, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png}
   - {name: 全球手动,   type: select, include-all: true, filter: *FilterAll, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Clubhouse.png}
   - {name: 冷门自选,   type: select, include-all: true, filter: *FilterOther, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Europe_Map.png}
-  - {name: 抖快书定位, type: select, proxies: [DIRECT, 香港策略, 台湾策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 欧盟策略], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png}
+  - {name: 抖快书定位, type: select, proxies: [DIRECT, 冷门自选, 香港策略, 台湾策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 欧盟策略], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png}
   - {name: 漏网之鱼,   type: select, proxies: [默认代理, DIRECT], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png}
   # 智能策略组
   - {name: 香港智能,   <<: *Smart, filter: *FilterHK, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
