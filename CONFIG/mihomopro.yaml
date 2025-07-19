@@ -56,7 +56,22 @@ proxy-providers:
   机场A: {<<: *PProviders, url: '机场订阅地址', override: {additional-prefix: '[A] '}}
   机场B: {<<: *PProviders, url: '机场订阅地址', override: {additional-prefix: '[B] '}}
 
-# 全局配置
+# ==================== 监听器 ====================
+listeners:
+  # Shadowsocks监听器 - 代理节点 玩法：远程连接家庭网络，端口和密码，使用时请修改
+  - {name: SS-IN,  type: shadowsocks, listen: '::', port: 10000, udp: true, password: Xf3#Lp9WqZ, cipher: aes-256-gcm}
+  # Mixed监听器 - 分地区专用端口 玩法：本地浏览器插件或手机APP配置代理，实现分地区访问
+  - {name: MIXED-SG, type: mixed, port: 50000, proxy: 美国智能}
+  - {name: MIXED-US, type: mixed, port: 50001, proxy: 狮城智能}
+  - {name: MIXED-TW, type: mixed, port: 50002, proxy: 台湾智能}
+  - {name: MIXED-HK, type: mixed, port: 50003, proxy: 香港智能}
+  - {name: MIXED-JP, type: mixed, port: 50004, proxy: 日本智能}
+  - {name: MIXED-KR, type: mixed, port: 50005, proxy: 韩国智能}
+  - {name: MIXED-EU, type: mixed, port: 50006, proxy: 欧洲智能}
+  - {name: MIXED-AL, type: mixed, port: 50007, proxy: 一键智能}
+
+# ==================== 核心配置 ====================
+# 基础配置
 mode: rule
 port: 7890
 socks-port: 7891
@@ -68,11 +83,13 @@ allow-lan: true
 unified-delay: true
 tcp-concurrent: true
 log-level: warning
-bind-address: "*"
+bind-address: '*'
 find-process-mode: 'off'
 global-client-fingerprint: chrome
 keep-alive-interval: 15
 keep-alive-idle: 600
+
+# 认证配置
 authentication:
   - mihomo:yyds666
 skip-auth-prefixes:
@@ -80,23 +97,31 @@ skip-auth-prefixes:
   - 192.168.31.0/24
   - 192.168.100.0/24
   - 127.0.0.1/8
-  
+
+# 实验性功能
+experimental:
+  quic-go-disable-gso: true  
+     
+# 管理面板配置
 external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip
 external-ui-name: zashboard
 external-ui: ui
 external-controller: 0.0.0.0:9090
 secret: yyds666
 
+# 配置存储
 profile:
   store-selected: true
   store-fake-ip: true
-  
+
+# 流量嗅探
 sniffer:
-  enable: true
+  enable: false
   override-destination: false
   force-dns-mapping: true
   parse-pure-ip: true
 
+# TUN模式配置
 tun:
   enable: true
   stack: mixed
@@ -107,14 +132,16 @@ tun:
   auto-redirect: true
   auto-detect-interface: true
     
+# DNS配置
 dns:
   enable: true
   ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   default-nameserver:
-    - tls://223.5.5.5
-    - tls://223.6.6.6
+    - 119.29.29.29
+    - 180.184.1.1
+    - 223.5.5.5
   nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
@@ -126,7 +153,6 @@ dns:
     - +.docker.io
     - +.market.xiaomi.com
     - +.push.apple.com
-    - beiyong.dynuddns.net
 
 hosts:
   miwifi.com: 192.168.31.2
