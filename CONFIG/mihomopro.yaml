@@ -195,6 +195,7 @@ proxy-groups:
   - {name: 抖快书定位, type: select, proxies: [DIRECT, 冷门自选, 香港策略, 台湾策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 欧盟策略], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png}
   - {name: 漏网之鱼,   type: select, proxies: [默认代理, DIRECT], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png}
   # 智能策略组
+  # 地理策略层 - Smart智能选择，政策权重数值越大优先级越高，修改为关键词节点，比如 优:2;中:1;备:0.5，默认为1，优>中>备，使用时请修改
   - {name: 香港智能,   <<: *Smart, filter: *FilterHK, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
   - {name: 台湾智能,   <<: *Smart, filter: *FilterTW, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png}
   - {name: 新加坡智能, <<: *Smart, filter: *FilterSG, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
