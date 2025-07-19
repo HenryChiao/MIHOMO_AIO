@@ -195,13 +195,13 @@ proxy-groups:
   - {name: 抖快书定位, type: select, proxies: [DIRECT, 冷门自选, 香港策略, 台湾策略, 新加坡策略, 日本策略, 韩国策略, 美国策略, 欧盟策略], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png}
   - {name: 漏网之鱼,   type: select, proxies: [默认代理, DIRECT], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png}
   # 智能策略组
-  - {name: 香港智能,   <<: *Smart, filter: *FilterHK, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
-  - {name: 台湾智能,   <<: *Smart, filter: *FilterTW, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png}
-  - {name: 新加坡智能, <<: *Smart, filter: *FilterSG, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
-  - {name: 日本智能,   <<: *Smart, filter: *FilterJP, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
-  - {name: 韩国智能,   <<: *Smart, filter: *FilterKR, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Korea.png}
-  - {name: 美国智能,   <<: *Smart, filter: *FilterUS, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
-  - {name: 欧洲智能,   <<: *Smart, filter: *FilterEU, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
+  - {name: 香港智能,   <<: *Smart, filter: *FilterHK, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
+  - {name: 台湾智能,   <<: *Smart, filter: *FilterTW, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png}
+  - {name: 新加坡智能, <<: *Smart, filter: *FilterSG, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
+  - {name: 日本智能,   <<: *Smart, filter: *FilterJP, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
+  - {name: 韩国智能,   <<: *Smart, filter: *FilterKR, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Korea.png}
+  - {name: 美国智能,   <<: *Smart, filter: *FilterUS, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
+  - {name: 欧洲智能,   <<: *Smart, filter: *FilterEU, policy-priority: '优:2;中:1;备:0.5', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
 
 # 远程规则集
 rule-providers: 
