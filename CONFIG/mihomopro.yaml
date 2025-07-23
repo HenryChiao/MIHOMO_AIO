@@ -170,6 +170,7 @@ proxy-groups:
   - {name: Telegram, <<: *SelectProxy, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Telegram_X.png}
   - {name: Twitter,  <<: *SelectProxy, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/X.png}
   - {name: 社交平台,  <<: *SelectProxy, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/PBS.png}
+  - {name: Github, <<: *SelectProxy, icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/github(1).png}
   - {name: 货币平台,  <<: *SelectSG, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png}
   - {name: 游戏平台,  <<: *SelectProxy, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Game.png}
   - {name: 网速测试,  <<: *SelectProxy, include-all: true, filter: *FilterAll, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Speedtest.png}
@@ -278,7 +279,7 @@ rules:
   - RULE-SET,disney,国际媒体
   - RULE-SET,hbo,国际媒体
   - RULE-SET,tiktok,国际媒体
-  - RULE-SET,github,微软服务
+  - RULE-SET,github,Github
   - RULE-SET,onedrive,微软服务
   - RULE-SET,microsoft,微软服务
   - RULE-SET,instagram,脸书服务
