@@ -70,6 +70,7 @@ listeners:
   - {name: MIXED-EU, type: mixed, port: 50006, proxy: 欧洲智能}
   - {name: MIXED-AL, type: mixed, port: 50007, proxy: 默认代理}
 
+
 # ==================== 核心配置 ====================
 # 基础配置
 mode: rule
@@ -146,13 +147,14 @@ dns:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   fake-ip-filter:
-    - rule-set:connectivity-check
-    - rule-set:private_domain
-    - rule-set:cn_domain
+    - rule-set:ConnCheck
+    - rule-set:Private
+    - rule-set:China
     - +.miwifi.com
     - +.docker.io
     - +.market.xiaomi.com
     - +.push.apple.com
+    - '+.pub.3gppnetwork.org'
 
 hosts:
   miwifi.com: 192.168.31.2
