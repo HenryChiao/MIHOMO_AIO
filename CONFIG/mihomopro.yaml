@@ -147,9 +147,9 @@ dns:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   fake-ip-filter:
-    - rule-set:ConnCheck
-    - rule-set:Private
-    - rule-set:China
+    - rule-set:connectivity-check
+    - rule-set:private_domain
+    - rule-set:cn_domain
     - +.miwifi.com
     - +.docker.io
     - +.market.xiaomi.com
