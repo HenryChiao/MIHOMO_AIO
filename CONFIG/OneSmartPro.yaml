@@ -255,7 +255,7 @@ BehaviorIP: &BehaviorIP {type: http, behavior: ipcidr, format: mrs, interval: 86
 # 规则提供者
 rule-providers: 
   # 其他规则
-  秋风广告规则:     {<<: *domainYaml, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
+  秋风广告规则:     {<<: *BehaviorDN, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
 
   # 域名规则
   Tracking:       {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Tracking.mrs}
