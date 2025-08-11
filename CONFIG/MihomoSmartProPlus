@@ -167,7 +167,7 @@ lgbm-auto-update: true
 # model auto update interval, the default is 72 (hours)
 lgbm-update-interval: 72
 # model update url
-lgbm-url: "https://github.com/vernesong/mihomo/releases/download/LightGBM-Model/Model.bin"
+lgbm-url: "https://github.com/vernesong/mihomo/releases/download/LightGBM-Model/Model-large.bin"
 # 配置文件相关
 profile:
   #smart-collector-size: data collection file size, the default is 100 (MB)
