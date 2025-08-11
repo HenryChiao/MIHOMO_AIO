@@ -8,8 +8,8 @@
 # ||      ╚═════╝  ╚═════╝  ╚═════╝      ||
 # ||                                     ||
 # >>=====================================<<
-# 名称: MihomoSmartProPlus V5.2.0
-# 日期: 2025 年 8 月 1 日
+# 名称: MihomoSmartProPlus V5.2.1
+# 日期: 2025 年 8 月 11 日
 # 原地址: https://github.com/666OS
 # 原频道: https://t.me/Pinched666
 # 注意：在proxy-providers加入您的机场订阅链接（锚点区结束后面）
@@ -160,6 +160,18 @@ hosts:
   miwifi.com: 192.168.31.2
   services.googleapis.cn: services.googleapis.com
   cn.bing.com: www.bing.com
+
+# LightGBM相关
+# enable model auto update, the default is false
+lgbm-auto-update: true
+# model auto update interval, the default is 72 (hours)
+lgbm-update-interval: 72
+# model update url
+lgbm-url: "https://github.com/vernesong/mihomo/releases/download/LightGBM-Model/Model.bin"
+# 配置文件相关
+profile:
+  #smart-collector-size: data collection file size, the default is 100 (MB)
+  smart-collector-size: 100
 
 # 策略组 
 proxy-groups:
