@@ -147,6 +147,7 @@ dns:
     - rule-set:ConnCheck
     - rule-set:Private
     - rule-set:China
+    - '+.pub.3gppnetwork.org'
     - +.miwifi.com
     - +.docker.io
     - +.market.xiaomi.com
