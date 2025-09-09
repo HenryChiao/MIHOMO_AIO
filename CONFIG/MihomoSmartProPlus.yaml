@@ -268,6 +268,7 @@ rules:
 BehaviorDN: &BehaviorDN {type: http, behavior: domain, format: mrs, interval: 86400}
 BehaviorDY: &BehaviorDY {type: http, behavior: domain, format: yaml, interval: 86400}
 BehaviorIP: &BehaviorIP {type: http, behavior: ipcidr, format: mrs, interval: 86400}
+ClassicalText: &ClassicalText {type: http, interval: 86400, behavior: classical, format: text}
 
 # 规则提供者
 rule-providers:  
@@ -316,7 +317,7 @@ rule-providers:
   ChinaIP:        {<<: *BehaviorIP, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/ip/China.mrs}
   
   # 漫游规则
-  ukwifi:          {<<: *BehaviorDN, url: https://github.com/HenryChiao/wificalling/blob/main/qiao/wificalling.list}
+  ukwifi:          {<<: *ClassicalText, url: https://github.com/HenryChiao/wificalling/blob/main/qiao/wificalling.list}
   # 广告规则
   AWAvenueAds:    {<<: *BehaviorDY, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
 
