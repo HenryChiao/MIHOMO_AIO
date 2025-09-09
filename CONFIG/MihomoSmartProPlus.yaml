@@ -215,6 +215,7 @@ proxy-groups:
 rules: 
   # 拦截规则
   - RULE-SET,Tracking,REJECT
+  - RULE-SET,AWAvenueAds,REJECT
   - RULE-SET,Advertising,REJECT
 
   # 域名规则
