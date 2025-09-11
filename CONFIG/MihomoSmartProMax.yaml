@@ -146,13 +146,17 @@ dns:
   enable: true
   ipv6: true
   use-hosts: true
+  listen: 0.0.0.0:1053
+  fake-ip-range: 28.0.0.1/8
   enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  default-nameserver:
-    - 119.29.29.29
-    - 180.184.1.1
-    - 223.5.5.5
+  respect-rules: true
   nameserver:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  direct-nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   fake-ip-filter:
