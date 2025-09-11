@@ -147,7 +147,6 @@ dns:
   ipv6: true
   use-hosts: true
   enhanced-mode: fake-ip
-  respect-rules: true
   fake-ip-range: 198.18.0.1/16
   default-nameserver:
     - 119.29.29.29
