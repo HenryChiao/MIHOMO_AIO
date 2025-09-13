@@ -250,6 +250,7 @@ rules:
   - RULE-SET,Telegram,电报消息
   - RULE-SET,SocialMedia,社交平台
   - RULE-SET,NewsMedia,新闻媒体
+  - DOMAIN-SUFFIX,steamserver.net,DIRECT
   - RULE-SET,Games,游戏平台
   - RULE-SET,Crypto,货币平台
   - RULE-SET,Emby,Emby服
