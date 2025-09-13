@@ -192,6 +192,7 @@ proxy-groups:
   - {name: 人工智能,     <<: *SelectUS, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png}
   - {name: 货币平台,     <<: *SelectSG, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png}
   - {name: 游戏平台,     <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Game.png}
+  - {name: Github,       <<: *SelectPY, icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/github(1).png}
   - {name: 微软服务,     <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Microsoft.png}
   - {name: 谷歌服务,     <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png}
   - {name: 苹果服务,     <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png}
@@ -244,6 +245,7 @@ rules:
   - RULE-SET,Telegram,电报消息
   - RULE-SET,SocialMedia,社交平台
   - RULE-SET,NewsMedia,新闻媒体
+  - DOMAIN-SUFFIX,steamserver.net,DIRECT
   - RULE-SET,Games,游戏平台
   - RULE-SET,Crypto,货币平台
   - RULE-SET,Emby,Emby服
@@ -252,6 +254,7 @@ rules:
   - RULE-SET,Streaming,国际媒体
   - RULE-SET,Apple,苹果服务 
   - RULE-SET,Google,谷歌服务
+  - RULE-SET,github,Github
   - RULE-SET,Microsoft,微软服务
   - RULE-SET,Proxy,国外流量
   - RULE-SET,China,国内流量
@@ -279,6 +282,7 @@ BehaviorDN: &BehaviorDN {type: http, behavior: domain, format: mrs, interval: 86
 BehaviorDY: &BehaviorDY {type: http, behavior: domain, format: yaml, interval: 86400}
 BehaviorIP: &BehaviorIP {type: http, behavior: ipcidr, format: mrs, interval: 86400}
 ClassicalText: &ClassicalText {type: http, interval: 86400, behavior: classical, format: text}
+ClassicalYaml: &ClassicalYaml {type: http, behavior: classical, interval: 3600, format: yaml, proxy: DIRECT}
 
 # 规则提供者
 rule-providers:  
@@ -330,5 +334,7 @@ rule-providers:
   ukwifi:          {<<: *ClassicalText, url: https://raw.githubusercontent.com/HenryChiao/wificalling/refs/heads/main/qiao/wificalling.list}
   # 广告规则
   AWAvenueAds:    {<<: *BehaviorDY, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
+  # 新增规则
+  github:          {<<: *ClassicalYaml, url: https://rule.kelee.one/Clash/GitHub.yaml}
 
 # ==================== EOF ====================
