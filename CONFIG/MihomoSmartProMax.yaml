@@ -10,9 +10,9 @@
 # >>=====================================<<
 # 名称: MihomoSmartProMax
 # 地址: https://github.com/666OS/YYDS
-# 版本: v6.0.0
+# 版本: v6.0.1
 # 作者: YYDS666
-# 更新: 2025 年 9 月 11 日
+# 更新: 2025 年 9 月 15 日
 # 频道: https://t.me/Pinched666
 # 描述: 在proxy-providers加入您的机场订阅链接（代理提供者）
 
@@ -241,7 +241,7 @@ rules:
 
   # 域名规则
   - RULE-SET,ukwifi,UKwifi
-  - RULE-SET,locationDKS,抖快书定位
+  - RULE-SET,LocationDKS,抖快书定位
   - RULE-SET,ConnCheck,直接连接
   - RULE-SET,Private,直接连接
   - RULE-SET,Direct,直接连接
@@ -299,7 +299,7 @@ rule-providers:
   Tracking:       {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Tracking.mrs}
   Advertising:    {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Advertising.mrs} 
   Direct:         {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Direct.mrs}
-  locationDKS:    {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/LocationDKS.mrs}
+  LocationDKS:    {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/LocationDKS.mrs}
   Private:        {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Private.mrs}
   Download:       {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Download.mrs}
   ConnCheck:      {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/ConnCheck.mrs}
