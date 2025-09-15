@@ -1,5 +1,4 @@
-# YYDS-Mihomo 简化配置
-
+# MIHOMOALLINONE
 本项目基于 [YYDS](https://github.com/666OS/YYDS) 仓库中 `MihomoPro.yaml` 部分派生。
 
 ## 📁 项目结构
