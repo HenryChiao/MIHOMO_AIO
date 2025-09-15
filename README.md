@@ -1,24 +1,15 @@
-# YYDS-Mihomo 简化配置
-
-本项目基于 [YYDS](https://github.com/HenryChiao/YYDS) 仓库中 `mihomo` 部分派生，提取并整理出一套简洁、清晰的 Clash.Meta (Mihomo) 配置模板，适用于日常使用或旁路网关部署。
+# MIHOMO ALL IN ONE
+本项目基于 [YYDS](https://github.com/666OS/YYDS) 仓库中 `MihomoPro.yaml` 部分派生。
 
 ## 📁 项目结构
 
 ```
 .
-├── config/     # 主配置文件与规则集
+├── CONFIG/     # 主配置文件与规则集
+├── BACKUP/     # 归档
 └── README.md   # 项目说明
 ```
 
-## ✨ 特性
-
-- 轻量、易读的配置结构
-- 多策略组支持：分流 / 广告拦截 / 直连 / 节点选择
-- 适配 Clash.Meta 最新版本
-
-## 🚀 使用方法
-
-将 `config` 文件夹中的配置导入 Clash.Meta 或对应支持的客户端即可使用。你也可以按需修改代理节点部分或规则路径。
 
 ## 📄 声明
 
