@@ -1,4 +1,4 @@
-# MIHOMOALLINONE
+# MIHOMO ALL IN ONE
 本项目基于 [YYDS](https://github.com/666OS/YYDS) 仓库中 `MihomoPro.yaml` 部分派生。
 
 ## 📁 项目结构
