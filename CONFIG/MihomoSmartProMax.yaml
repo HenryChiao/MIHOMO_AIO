@@ -133,7 +133,6 @@ tun:
 
 hosts:
   miwifi.com: 192.168.31.2
-  "epdg.epc.mnc010.mcc234.pub.3gppnetwork.org": [87.194.8.8, 87.194.88.8, 87.194.89.8, 87.194.9.8]
   services.googleapis.cn: services.googleapis.com
   cn.bing.com: www4.bing.com
   dns.alidns.com: [223.5.5.5, 223.6.6.6, 2400:3200::1, 2400:3200:baba::1]
