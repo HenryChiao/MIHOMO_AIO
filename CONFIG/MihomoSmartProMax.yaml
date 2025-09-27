@@ -134,7 +134,7 @@ tun:
 hosts:
   miwifi.com: 192.168.31.2
   services.googleapis.cn: services.googleapis.com
-  cn.bing.com: www4.bing.com
+  cn.bing.com: global.bing.com
   dns.alidns.com: [223.5.5.5, 223.6.6.6, 2400:3200::1, 2400:3200:baba::1]
   doh.pub: [1.12.12.12, 1.12.12.21, 120.53.53.53]
   dns.google: [8.8.8.8, 8.8.4.4, 2001:4860:4860::8888, 2001:4860:4860::8844]
@@ -244,6 +244,8 @@ rules:
   - RULE-SET,Private,直接连接
   - RULE-SET,Direct,直接连接
   - RULE-SET,XPTV,直接连接
+  - DOMAIN-SUFFIX,3gppnetwork.org,UKwifi
+  - RULE-SET,ukwifi,UKwifi
   - RULE-SET,AppleCN,直接连接
   - RULE-SET,AI,人工智能
   - DOMAIN-KEYWORD,speedtest,网络测试
@@ -259,8 +261,6 @@ rules:
   - RULE-SET,Netflix,奈飞视频
   - RULE-SET,YouTube,油管视频
   - RULE-SET,Streaming,国际媒体
-  - DOMAIN-SUFFIX,3gppnetwork.org,UKwifi
-  - RULE-SET,ukwifi,UKwifi
   - RULE-SET,Apple,苹果服务 
   - RULE-SET,Google,谷歌服务
   - RULE-SET,github,Github
