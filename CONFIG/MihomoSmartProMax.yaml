@@ -163,7 +163,7 @@ dns:
     - rule-set:ConnCheck
     - rule-set:Private
     - rule-set:China
-    - '+.pub.3gppnetwork.org'
+    - +.pub.3gppnetwork.org
     - +.miwifi.com
     - +.docker.io
     - +.market.xiaomi.com
@@ -239,7 +239,6 @@ rules:
   - RULE-SET,Advertising,REJECT
 
   # 域名规则
-  - RULE-SET,ukwifi,UKwifi
   - RULE-SET,LocationDKS,抖快书定位
   - RULE-SET,ConnCheck,直接连接
   - RULE-SET,Private,直接连接
@@ -260,6 +259,8 @@ rules:
   - RULE-SET,Netflix,奈飞视频
   - RULE-SET,YouTube,油管视频
   - RULE-SET,Streaming,国际媒体
+  - DOMAIN-SUFFIX,3gppnetwork.org,UKwifi
+  - RULE-SET,ukwifi,UKwifi
   - RULE-SET,Apple,苹果服务 
   - RULE-SET,Google,谷歌服务
   - RULE-SET,github,Github
