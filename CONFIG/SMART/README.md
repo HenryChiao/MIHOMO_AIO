@@ -1,11 +1,14 @@
 # 简要说明：
 基于 github.com/666OS/YYDS 中 MihomoPro.yaml 派生，符合创建者的使用习惯如有不合理的部分请指正。 
 
-1. General
-- 分组说明：包含各种配置适用于绝大部分的mihomo的配置
+1. MihomoSmartAIO.yaml： 分组在市面上比较完全。
+- 分组说明：
 
-2. SMART
-- 分组说明：适用于vernesong/mihomo smart分支
+2. MihomoSmartProMax.yaml： 基于MihomoPro.yaml修改为极度标准的Smart策略，同时侧重优化dns方面，分组较多，易于使用。
+- 分组说明：
+
+3. MihomoSmartProPlus.yaml： 基于MihomoPro.yaml修改为极度标准的Smart策略，分组较多，易于使用。
+- 分组说明：
 
 
 ## 免责申明
@@ -18,4 +21,3 @@
 - 如果任何单位或个人认为该项目的脚本可能涉嫌侵犯其权利，则应及时通知并提供身份证明，所有权证明，我们将在收到认证文件后删除相关脚本。
 - 对任何脚本问题概不负责，包括但不限于由任何脚本错误导致的任何损失或损害。
 - 您必须在下载后的24小时内从计算机或手机中完全删除以上内容。
-
