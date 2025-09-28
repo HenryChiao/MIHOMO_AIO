@@ -1,11 +1,11 @@
 # 简要说明：
 基于 github.com/666OS/YYDS 中 MihomoPro.yaml 派生，符合创建者的使用习惯如有不合理的部分请指正。 
 
-1. General： 分组在市面上比较完全。
-- 分组说明：
+1. General
+- 分组说明：包含各种配置适用于绝大部分的mihomo的配置
 
 2. SMART
-- 分组说明：
+- 分组说明：适用于vernesong/mihomo smart分支
 
 
 ## 免责申明
