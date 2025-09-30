@@ -5,9 +5,10 @@
 
 ```
 .
-├── CONFIG/     # 主配置文件与规则集
-├── BACKUP/     # 归档
-└── README.md   # 项目说明
+├── CONFIG/                   # 主配置文件与规则集
+├── OPENCLASH_OVERWRITE/      # openclash 覆写模块脚本
+├── BACKUP/                   # 归档
+└── README.md                 # 项目说明
 ```
 
 
