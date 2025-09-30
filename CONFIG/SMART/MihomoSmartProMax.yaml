@@ -159,10 +159,10 @@ dns:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
   fake-ip-filter:
-    - rule-set:fakeip-filter
     - rule-set:ConnCheck
     - rule-set:Private
     - rule-set:China
+    - rule-set:fakeip-filter
     - +.pub.3gppnetwork.org
     - +.miwifi.com
     - +.docker.io
