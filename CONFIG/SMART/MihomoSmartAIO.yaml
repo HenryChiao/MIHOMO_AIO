@@ -190,10 +190,10 @@ proxy-groups:
   - {name: Max,           <<: *SelectPY, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/max.png"}
   - {name: Prime Video,   <<: *SelectPY, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/primevideo.png"}
   - {name: Apple TV+,     <<: *SelectPY, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/appletv.png"}
-  - {name: TikTok,        <<: *SelectPY icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/tiktok.png"}
-  - {name: 哔哩哔哩,      <<: *SelectPY icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/bilibili.png"}
-  - {name: Spotify,       <<: *SelectPY icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/spotify.png"}
-  - {name: 国外媒体,      <<: *SelectPY icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/media.png"}
+  - {name: TikTok,        <<: *SelectPY, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/tiktok.png"}
+  - {name: 哔哩哔哩,      <<: *SelectPY, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/bilibili.png"}
+  - {name: Spotify,       <<: *SelectPY, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/spotify.png"}
+  - {name: 国外媒体,      <<: *SelectPY, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/media.png"}
 # - {name: 国际媒体,      <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png}
   - {name: 新闻媒体,      <<: *SelectUS, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple_News.png}
 
