@@ -10,3 +10,10 @@ EN_KEY1=订阅源地址1;EN_KEY2=订阅源地址2;EN_KEY3=订阅源地址3
 7.  返回主界面，启动 OpenClash。程序将自动下载配置文件，并将您提供的多个订阅链接整合其中。
 
 常用覆写配置：
+
+```
+.
+├── general/                   # 用于mihomo内核的openclash的复写脚本
+├── smart/                    # 用于vernesong/mihomo smart内核的openclash的复写脚本
+└── README.md                 # 项目说明
+```
