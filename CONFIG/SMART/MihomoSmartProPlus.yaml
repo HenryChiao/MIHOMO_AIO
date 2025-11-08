@@ -136,21 +136,26 @@ hosts:
   "epdg.epc.mnc010.mcc234.pub.3gppnetwork.org": [87.194.8.8, 87.194.88.8, 87.194.89.8, 87.194.9.8]
   services.googleapis.cn: services.googleapis.com
   cn.bing.com: www4.bing.com
-    
+
 # DNS配置
 dns:
   enable: true
   ipv6: true
-  use-hosts: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   default-nameserver:
-    - 119.29.29.29
-    - 180.184.1.1
-    - 223.5.5.5
+    - tls://223.5.5.5
+    - tls://223.6.6.6
   nameserver:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+  proxy-server-nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  respect-rules: true
   fake-ip-filter:
     - rule-set:ConnCheck
     - rule-set:Private
