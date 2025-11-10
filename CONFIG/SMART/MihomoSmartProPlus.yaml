@@ -135,7 +135,7 @@ hosts:
   miwifi.com: 192.168.31.2
   "epdg.epc.mnc010.mcc234.pub.3gppnetwork.org": [87.194.8.8, 87.194.88.8, 87.194.89.8, 87.194.9.8]
   services.googleapis.cn: services.googleapis.com
-  cn.bing.com: www4.bing.com
+  bing.com: www4.bing.com
 
 dns:
   enable: true
@@ -143,28 +143,44 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
-    - "*"
     - "+.lan"
     - "+.local"
+    - "time.*.com"
+    - "ntp.*.com"
     - "+.market.xiaomi.com"
     - "+.pub.3gppnetwork.org"
     - "+.push.apple.com"
-    - "+.aaplimg.com"
     - rule-set:ConnCheck
     - rule-set:Private
     - rule-set:China
+  use-hosts: true
+  respect-rules: true
+  # 引导：解析上游 DoH/DoT 的起始 DNS
   default-nameserver:
     - tls://223.5.5.5
     - tls://223.6.6.6
+  # 代理路径用的国外上游（仅对需代理的非直连规则集域名）
   nameserver:
-    - https://doh.pub/dns-query
-    - https://dns.alidns.com/dns-query
-  nameserver-policy:  #需要国外DNS解析的规则集
-    rule-set:Advertising,AWAvenueAds: rcode://success
-    rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Proxy:
+    - "https://cloudflare-dns.com/dns-query"
+    - "https://dns.google/dns-query"
+  # 直连路径专用上游（国内 DoH）
+  direct-nameserver:
+    - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  # 解析代理服务器的域名，防循环用国内
+  proxy-server-nameserver:
+    - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  # 配置查询访问域名使用的服务器
+  nameserver-policy:
+    "rule-set:Advertising,AWAvenueAds": rcode://success
+    # 直连类规则集匹配的域名绑定国内上游，首跳即国内，不触发国外→国内回切
+    "rule-set:ConnCheck,Private,China":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Proxy":
       - https://dns.google/dns-query
       - https://cloudflare-dns.com/dns-query
-
 # ==================== 代理策略组 ====================
 proxy-groups:
   # ==================== 主要策略组 ====================
