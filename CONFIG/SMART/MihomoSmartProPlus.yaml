@@ -135,7 +135,7 @@ hosts:
   miwifi.com: 192.168.31.2
   "epdg.epc.mnc010.mcc234.pub.3gppnetwork.org": [87.194.8.8, 87.194.88.8, 87.194.89.8, 87.194.9.8]
   services.googleapis.cn: services.googleapis.com
-  bing.com: www4.bing.com
+  *.bing.com: www4.bing.com
 
 dns:
   enable: true
@@ -181,6 +181,7 @@ dns:
     "rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Proxy":
       - https://dns.google/dns-query
       - https://cloudflare-dns.com/dns-query
+
 # ==================== 代理策略组 ====================
 proxy-groups:
   # ==================== 主要策略组 ====================
