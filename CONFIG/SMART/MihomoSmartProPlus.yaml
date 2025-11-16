@@ -12,7 +12,7 @@
 # 地址: https://github.com/666OS/YYDS
 # 版本: v6.1
 # 作者: YYDS666
-# 更新: 2025 年 11 月 10 日
+# 更新: 2025 年 11 月 16 日
 # 频道: https://t.me/Pinched666
 # 描述: 在proxy-providers加入您的机场订阅链接（代理提供者）
 
@@ -150,7 +150,7 @@ dns:
     - "+.market.xiaomi.com"
     - "+.pub.3gppnetwork.org"
     - "+.push.apple.com"
-    - rule-set:ConnCheck
+    - rule-set:Direct
     - rule-set:Private
     - rule-set:China
   use-hosts: true
@@ -254,7 +254,6 @@ rules:
   # 域名规则
   - RULE-SET,ukwifi,UKwifi
   - RULE-SET,LocationDKS,抖快书定位
-  - RULE-SET,ConnCheck,直接连接
   - RULE-SET,Private,直接连接
   - RULE-SET,Direct,直接连接
   - RULE-SET,XPTV,直接连接
@@ -314,7 +313,6 @@ rule-providers:
   LocationDKS:    {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/LocationDKS.mrs}
   Private:        {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Private.mrs}
   Download:       {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Download.mrs}
-  ConnCheck:      {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/ConnCheck.mrs}
   Speedtest:      {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Speedtest.mrs}
   AI:             {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/AI.mrs}  
   Telegram:       {<<: *BehaviorDN, url: https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Telegram.mrs}
