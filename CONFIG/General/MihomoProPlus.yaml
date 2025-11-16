@@ -176,7 +176,7 @@ hosts:
   nameserver-policy:
     "rule-set:Advertising,AWAvenueAds": rcode://success
     # 直连类规则集匹配的域名绑定国内上游，首跳即国内，不触发国外→国内回切
-    "rule-set:ConnCheck,Private,China":
+    "rule-set:Direct,Private,China":
       - "https://dns.alidns.com/dns-query"
       - "https://doh.pub/dns-query"
     "rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Proxy":
