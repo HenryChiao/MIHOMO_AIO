@@ -8,8 +8,9 @@
 # ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓██████▓▒░  #
 #####################################
 # Name: MihomoSmartAllInOne_Full  
-# Designer: HenryChiao  
-# Date: 2025-11-16 
+# Designer: HenryChiao
+# version: v1-251128
+# Date: 2025-11-28 
 
 # Please add your subscription link in the proxy-providers section.
 
@@ -102,8 +103,8 @@ experimental:
 external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip
 external-ui-name: zashboard
 external-ui: ui
-external-controller: 0.0.0.0:9090
-secret: yyds666
+external-controller: 127.0.0.1:9090
+secret: password
 
 # 配置存储
 profile:
@@ -112,14 +113,22 @@ profile:
 
 # 流量嗅探
 sniffer:
-  enable: false
-  override-destination: false
-  force-dns-mapping: true
-  parse-pure-ip: true
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
 
 # TUN模式配置
 tun:
-  enable: true
+  enable: false
   stack: mixed
   dns-hijack:
     - "any:53"
@@ -162,6 +171,7 @@ dns:
     - rule-set:Private
     - rule-set:China
     - '+.pub.3gppnetwork.org'
+    - "+.bing.com"
     - +.miwifi.com
     - +.docker.io
     - +.market.xiaomi.com
