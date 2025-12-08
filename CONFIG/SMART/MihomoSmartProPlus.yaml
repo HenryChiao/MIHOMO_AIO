@@ -10,10 +10,10 @@
 # >>=====================================<<
 # 名称: MihomoSmartProPlus
 # 地址: https://github.com/666OS/YYDS
-# 版本: v6-251204
+# 版本: v6-251208
 # 原作: YYDS666
 # 修改: HenryChiao
-# 更新: 2025 年 12 月 04 日
+# 更新: 2025 年 12 月 08 日
 # 频道: https://t.me/Pinched666
 # 描述: 在proxy-providers加入您的机场订阅链接（代理提供者）
 
@@ -257,6 +257,7 @@ rules:
   - RULE-SET,Tracking,REJECT
   - RULE-SET,AWAvenueAds,REJECT
   - RULE-SET,Advertising,REJECT
+  - AND,((DST-PORT,443),(NETWORK,UDP)),REJECT  # 阻止 QUIC
 
   # 域名规则
   - RULE-SET,ukwifi,UKwifi
@@ -264,6 +265,7 @@ rules:
   - RULE-SET,Private,直接连接
   - RULE-SET,Direct,直接连接
   - RULE-SET,XPTV,直接连接
+  - RULE-SET,Download,直接连接
   - RULE-SET,AppleCN,直接连接
   - RULE-SET,AI,人工智能
   - DOMAIN-KEYWORD,speedtest,网络测试
