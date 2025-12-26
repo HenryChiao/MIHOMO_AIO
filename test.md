@@ -62,8 +62,17 @@
       <ul>
         <li>🏠 <b>适合</b>: OpenClash、软路由、SmartDNS</li>
         <li>🛠️ <b>特点</b>: 侧重 DNS 优化与底层网络接管。</li>
-        <li>🧠 <b>用途</b>: 适合家庭网络网关设备。</li>
+        <li>🧠 <b>机制</b>: <i>类 Surge 策略，自动择优。</i></li>
       </ul>
+      <details>
+        <summary><b>ℹ️ 关于 Smart 策略 (点击展开)</b></summary>
+        <p style="font-size: 12px; color: gray;">
+          基于 V 佬 (Vernesong) 的描述：<br>
+          1. <b>机制</b>: 针对每个顶级域名或 IP 计算最高权重节点（类似 Surge）。<br>
+          2. <b>学习期</b>: 前期会因收集样本数据存在 IP 乱跳，样本足够后会固定。<br>
+          3. <b>局限</b>: 只能改善连接质量（延迟/速度），<b>无法解决 403/风控</b>等问题。
+        </p>
+      </details>
     </td>
     <td width="50%" valign="top">
       <h3>4️⃣ <a href="./Mobile_Modules">安卓手机模块</a></h3>
@@ -86,7 +95,7 @@
 | 平台 | 客户端名称 | 推荐度 | 核心特点/优势 | 说明/缺点 | 链接 |
 |---|---|---|---|---|---|
 | **核心** | **Mihomo Core** | 🟢 | 官方核心，无界面。支持 Rule-set, GeoX 等所有新特性。 | 所有 GUI 的基础。适合开发者、Linux 服务器或手搓配置党。 | [Github](https://github.com/MetaCubeX/mihomo/releases) |
-| **核心** | **Mihomo (Smart)** | 🟢 | 路由/DNS 专用。指使用 Core 配合 TProxy/Tun 做透明网关。 | 这里的 "Smart" 通常指直接运行 Core 进行底层网络接管。 | [Guide](https://wiki.metacubex.one/) |
+| **核心** | **Mihomo (Smart)** | 🟢 | **Vernesong 修改版**。支持 Smart 策略组逻辑。 | 具备类 Surge 的自动择优策略，需配合特定配置使用。 | [Github](https://github.com/vernesong/mihomo/releases) |
 |  |  |  |  |  |  |
 | **MacOS** | **FlClash** | 🟢 | 状态栏切换节点，多端同步，对 Meta 配置可视化极佳。 | 窗口管理比 Verge 更适合 Mac，Flutter 开发。 | [Github](https://github.com/chen08209/FlClash/releases) |
 | **MacOS** | **Sparkle** | 🟢 | 原生感极强，支持状态栏切换，核心成员开发。 | 暂无明显缺点，Swift 开发。 | [Github](https://github.com/xishang0128/sparkle/releases) |
@@ -113,9 +122,12 @@
 | **Android** | **Clash Meta (CMFA)** | 🟢 | 官方分支，设置选项最全，兼容性最好。 | UI 交互逻辑一般，已停止大版本更新(但仍好用)。 | [Github](https://github.com/MetaCubeX/ClashMetaForAndroid/releases) |
 | **Android** | Clash Mi | 🟡 | KaringX 作者新作，全协议支持。 | 新项目，处于早期阶段。 | [Telegram](https://t.me/clash_mi) |
 | **Android** | YumeBox | 🟡 | UI 美观，集成 Sub-Store 和 Smart 策略组。 | 策略组切换操作较繁琐。 | [Github](https://github.com/Dreamacro/clash/issues) |
-| **Android** | Surfing | 🟠 | Root 模块。集成配置，开箱即用。 | 需 Magisk/KSU 环境。 | [Github](https://github.com/GitMetaio/Surfing) |
-| **Android** | Box4Magisk | 🟠 | Root 模块。全能核心 (Mihomo/Sing-box等)。 | 纯命令行/模块，无界面，门槛高。 | [Github](https://github.com/boxproxy/box) |
 | **HarmonyOS** | **ClashBox** | 🟢 | (原 ClashNEXT) 基于安卓端 FlClash 二次开发。 | 需切换海外 App 商店下载，适配纯血鸿蒙。 | [Github](https://github.com/xiaobaigroup/ClashBox) |
+|  |  |  |  |  |  |
+| **Magisk/KSU** | **Surfing** | 🟠 | (Root) 模块化透明代理，集成配置，开箱即用。 | 需 Magisk/KernelSU 环境，无独立 App 界面。 | [Github](https://github.com/GitMetaio/Surfing) |
+| **Magisk/KSU** | **AkashaProxy** | 🟠 | (Root) 基于 Shell 的透明代理管理工具。 | 功能强大但门槛较高。 | [Github](https://github.com/akashaProxy/akashaProxy) |
+| **Magisk/KSU** | **ClashMix** | 🟠 | (Root) 经典的 Clash 模块封装。 | 适合老用户。 | [Github](https://github.com/AXEVO/Clash-MIX) |
+| **Magisk/KSU** | **BoxProxy** | 🟠 | (Root) 全能核心 (Mihomo/Sing-box等)。 | 纯命令行/模块，无界面，新手劝退。 | [Github](https://github.com/boxproxy/box) |
 |  |  |  |  |  |  |
 | **iOS** | **Stash** ($5.99) | 🟢 | 强大的分流与重写，集成 MitM。 | 配置文件与标准 Mihomo 不完全互通，新协议跟进慢。 | [App Store](https://apps.apple.com/app/stash/id1596063349) |
 | **iOS** | **Pharos Pro** ($2.99) | 🟢 | 一份配置通杀全平台，兼容性好。 | 佛系更新，缺席极个别 2025 新协议。 | [App Store](https://apps.apple.com/us/app/pharos-pro/id1456610173) |
