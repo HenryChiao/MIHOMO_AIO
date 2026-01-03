@@ -96,8 +96,9 @@ listeners:
   # Shadowsocks监听器 - 远程代理入口
   - {name: SS-IN, type: shadowsocks, listen: '::', port: 10000, udp: true, password: Xf3#Lp9WqZ, cipher: aes-256-gcm}
   # Mixed监听器 - 分地区专用端口
+  - {name: MIXED-FB, type: mixed, port: 49999, proxy: 故障转移}
   - {name: MIXED-HK, type: mixed, port: 50000, proxy: 香港自动}
-  - {name: MIXED-SG, type: mixed, port: 50001, proxy: 新加坡自动}
+  - {name: MIXED-SG, type: mixed, port: 50001, proxy: 狮城自动}
   - {name: MIXED-JP, type: mixed, port: 50002, proxy: 日本自动}
   - {name: MIXED-TW, type: mixed, port: 50003, proxy: 台湾自动}
   - {name: MIXED-US, type: mixed, port: 50004, proxy: 美国自动}
