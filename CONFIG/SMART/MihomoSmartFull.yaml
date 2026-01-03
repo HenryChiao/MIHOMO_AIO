@@ -598,7 +598,7 @@ rule-providers:
   
   # 商业服务
   github: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs}
-  Github: {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Github.mrs}
+  Github: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/666OS/rules/refs/heads/release/mihomo/domain/GitHub.mrs}
   gitbook: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/gitbook.mrs}
   onedrive: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs}
   OneDrive: {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/OneDrive.mrs}
