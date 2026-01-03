@@ -264,7 +264,7 @@ dns:
   # DNS策略路由 - 新增
   nameserver-policy:
     # 广告域名返回空结果
-    'rule-set:category-ads-all,AWAvenue-Ads-Rule': [rcode://name_error]
+    'rule-set:category-ads-all,AWAvenueAds': [rcode://name_error]
     # 国内域名使用国内DNS
     'rule-set:private,direct_domain,cn': [system, https://dns.alidns.com/dns-query, https://doh.pub/dns-query]
 
