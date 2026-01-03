@@ -413,8 +413,8 @@ rules:
   - RULE-SET,signal,Signal
   
   # AI服务
-  - RULE-SET,ai!cn,人工智能
-  - RULE-SET,openai,人工智能
+  # - RULE-SET,ai!cn,人工智能
+  # - RULE-SET,openai,人工智能
   - RULE-SET,AI,人工智能
   - RULE-SET,AIIP,人工智能,no-resolve
   
@@ -550,8 +550,8 @@ rule-providers:
   signal: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/signal.mrs}
   
   # AI服务
-  ai!cn: {<<: *BehaviorDN, url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ai-!cn.mrs}
-  openai: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/openai.mrs}
+  # ai!cn: {<<: *BehaviorDN, url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ai-!cn.mrs}
+  # openai: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/openai.mrs}
   AI: {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/AI.mrs}
   AIIP: {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/AI.mrs}
   
