@@ -298,7 +298,7 @@ proxy-groups:
   - {name: 谷歌服务, <<: *SelectProxy, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/google.png"}
   - {name: GoogleVPN, <<: *SelectProxy, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/googlevpn.png"}
   - {name: 苹果服务, <<: *SelectDirect, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/apple.png"}
-  - {name: Cloudflare, <<: *SelectProxy, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/cloudflare.png"}
+  - {name: Cloudflare, <<: *SelectProxy, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/cloudflare.png"}
   - {name: PayPal, <<: *SelectProxy, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/paypal.png"}
   - {name: 游戏平台, <<: *SelectProxy, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/game.png"}
   - {name: Steam, <<: *SelectProxy, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/steam.png"}
@@ -313,7 +313,7 @@ proxy-groups:
   - {name: 韩国节点, type: select, proxies: [韩国自动, 韩国智能], include-all: true, filter: *FilterKR, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Korea.png"}
   - {name: 美国节点, type: select, proxies: [美国自动, 美国智能], include-all: true, filter: *FilterUS, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/America.png"}
   - {name: 欧洲节点, type: select, include-all: true, filter: *FilterEU, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/European.png"}
-  - {name: 冷门节点, type: select, include-all: true, filter: *FilterOT, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Europe_Map.png"}
+  - {name: 冷门节点, type: select, include-all: true, filter: *FilterOT, icon: "https://github.com/DustinWin/ruleset_geodata/releases/download/icons/other.png"}
   - {name: 全部节点, type: select, include-all: true, filter: *FilterAL, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/all.png"}
 
   # ==================== 自动测速组 ====================
