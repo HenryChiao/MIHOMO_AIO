@@ -304,11 +304,11 @@ proxy-groups:
   - {name: Meta平台, <<: *SelectPY, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png}
   - {name: Discord, <<: *SelectPY, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Discord.png}
   - {name: Line, <<: *SelectPY, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Line.png}
-  - {name: Signal, <<: *SelectPY, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Messages.png}
+  - {name: Signal, <<: *SelectPY, icon: https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/signal.png}
 
   # ==================== 商业服务 ====================
   - {name: 人工智能, <<: *SelectUS, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/AI.png}
-  - {name: FCM推送, <<: *SelectPY, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Messages.png}
+  - {name: FCM推送, <<: *SelectPY, icon: https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/fcm.png}
   - {name: 游戏平台, <<: *SelectPY, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png}
   - {name: STEAM, <<: *SelectPY, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png}
   - {name: STEAM中国, <<: *SelectDC, icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png}
