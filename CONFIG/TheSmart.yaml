@@ -17,7 +17,7 @@
 # 【主要功能】
 # - FakeIP模式: 提升DNS解析速度和连接性能
 # - 自动测速: url-test组每5分钟自动选择最快节点
-# - 负载均衡: load-balance组分散流量提升稳定性
+# - 智能均衡: smart组分散流量提升稳定性
 # - 故障转移: fallback组自动切换可用节点
 # - 广告拦截: 基于规则集自动拦截广告和追踪
 #
@@ -66,7 +66,7 @@ BaseProvider: &BaseProvider
 
 # 策略组类型模板
 BaseFB: &BaseFB {type: fallback, interval: 300, lazy: true, url: 'https://www.google.com/generate_204'}
-BaseLB: &BaseLB {type: load-balance, interval: 300, lazy: true, url: 'https://www.google.com/generate_204', strategy: consistent-hashing, hidden: true}
+BaseLB: &BaseLB {type: smart, interval: 300, lazy: true, url: 'https://www.google.com/generate_204', strategy: consistent-hashing, hidden: true}
 BaseUT: &BaseUT {type: url-test, interval: 300, lazy: true, url: 'https://www.google.com/generate_204', tolerance: 20, hidden: true}
 
 # 节点筛选正则表达式 - 基于地理位置和关键词过滤
@@ -305,31 +305,31 @@ proxy-groups:
   - {name: 测速平台, <<: *SelectProxy, include-all: true, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/speedtest.png"}
 
   # ==================== 地区策略组 ====================
-  - {name: 香港节点, type: select, proxies: [香港自动, 香港均衡], include-all: true, filter: *FilterHK, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Hongkong.png"}
-  - {name: 新加坡节点, type: select, proxies: [新加坡自动, 新加坡均衡], include-all: true, filter: *FilterSG, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Singapore.png"}
-  - {name: 日本节点, type: select, proxies: [日本自动, 日本均衡], include-all: true, filter: *FilterJP, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Japan.png"}
-  - {name: 台湾节点, type: select, proxies: [台湾自动, 台湾均衡], include-all: true, filter: *FilterTW, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Taiwan_China.png"}
-  - {name: 韩国节点, type: select, proxies: [韩国自动, 韩国均衡], include-all: true, filter: *FilterKR, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Korea.png"}
-  - {name: 美国节点, type: select, proxies: [美国自动, 美国均衡], include-all: true, filter: *FilterUS, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/America.png"}
+  - {name: 香港节点, type: select, proxies: [香港自动, 香港智能], include-all: true, filter: *FilterHK, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Hongkong.png"}
+  - {name: 新加坡节点, type: select, proxies: [狮城自动, 狮城智能], include-all: true, filter: *FilterSG, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Singapore.png"}
+  - {name: 日本节点, type: select, proxies: [日本自动, 日本智能], include-all: true, filter: *FilterJP, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Japan.png"}
+  - {name: 台湾节点, type: select, proxies: [台湾自动, 台湾智能], include-all: true, filter: *FilterTW, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Taiwan_China.png"}
+  - {name: 韩国节点, type: select, proxies: [韩国自动, 韩国智能], include-all: true, filter: *FilterKR, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Korea.png"}
+  - {name: 美国节点, type: select, proxies: [美国自动, 美国智能], include-all: true, filter: *FilterUS, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/America.png"}
   - {name: 欧洲节点, type: select, include-all: true, filter: *FilterEU, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/European.png"}
   - {name: 冷门节点, type: select, include-all: true, filter: *FilterOT, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/Europe_Map.png"}
   - {name: 全部节点, type: select, include-all: true, filter: *FilterAL, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/all.png"}
 
   # ==================== 自动测速组 ====================
   - {name: 香港自动, <<: *BaseUT, include-all: true, filter: *FilterHK, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/automation2.png"}
-  - {name: 新加坡自动, <<: *BaseUT, include-all: true, filter: *FilterSG, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/automation2.png"}
+  - {name: 狮城自动, <<: *BaseUT, include-all: true, filter: *FilterSG, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/automation2.png"}
   - {name: 日本自动, <<: *BaseUT, include-all: true, filter: *FilterJP, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/automation2.png"}
   - {name: 台湾自动, <<: *BaseUT, include-all: true, filter: *FilterTW, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/automation2.png"}
   - {name: 韩国自动, <<: *BaseUT, include-all: true, filter: *FilterKR, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/automation2.png"}
   - {name: 美国自动, <<: *BaseUT, include-all: true, filter: *FilterUS, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/automation2.png"}
 
   # ==================== 负载均衡组 ====================
-  - {name: 香港均衡, <<: *BaseLB, include-all: true, filter: *FilterHK, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
-  - {name: 新加坡均衡, <<: *BaseLB, include-all: true, filter: *FilterSG, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
-  - {name: 日本均衡, <<: *BaseLB, include-all: true, filter: *FilterJP, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
-  - {name: 台湾均衡, <<: *BaseLB, include-all: true, filter: *FilterTW, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
-  - {name: 韩国均衡, <<: *BaseLB, include-all: true, filter: *FilterKR, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
-  - {name: 美国均衡, <<: *BaseLB, include-all: true, filter: *FilterUS, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
+  - {name: 香港智能, <<: *BaseLB, include-all: true, filter: *FilterHK, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
+  - {name: 狮城智能, <<: *BaseLB, include-all: true, filter: *FilterSG, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
+  - {name: 日本智能, <<: *BaseLB, include-all: true, filter: *FilterJP, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
+  - {name: 台湾智能, <<: *BaseLB, include-all: true, filter: *FilterTW, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
+  - {name: 韩国智能, <<: *BaseLB, include-all: true, filter: *FilterKR, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
+  - {name: 美国智能, <<: *BaseLB, include-all: true, filter: *FilterUS, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
 
 # ==================== 路由规则 (优化顺序) ====================
 rules:
