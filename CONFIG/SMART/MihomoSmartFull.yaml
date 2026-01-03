@@ -374,7 +374,9 @@ proxy-groups:
 
 # ==================== 规则路由 ====================
 rules:
-  # 广告拦截
+  # 拦截与防治
+  - DST-PORT,123,DIRECT
+  - IP-CIDR,95.161.76.100/31,REJECT-DROP,no-resolve
   - RULE-SET,banAd,广告拦截
   - RULE-SET,Tracking,广告拦截
   - RULE-SET,AWAvenueAds,广告拦截
