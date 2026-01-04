@@ -241,7 +241,7 @@ dns:
     - https://dns.cloudflare.com/dns-query
   nameserver-policy:
     'rule-set:category-ads-all,banAd,AWAvenueAds': [rcode://name_error]
-    'rule-set:private,direct,cn': [system, https://dns.alidns.com/dns-query, https://doh.pub/dns-query]
+    'rule-set:private,direct,cn': [https://dns.alidns.com/dns-query, https://doh.pub/dns-query]
 
 # ==================== 代理策略组 (优化精简版) ====================
 proxy-groups:
