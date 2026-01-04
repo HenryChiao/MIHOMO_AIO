@@ -226,7 +226,7 @@ dns:
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - 'RULE-SET:fakeip-filter,private,direct,cn,wechat,bank_cn,alibaba,xiaomi,apple_cn,steam_cn,media_cn,iptv,pt_cn,115,aliyun,NetEaseMusic,fcm,ai_cn,game_cn,public-tracker,apple_firmware'
+    - 'RULE-SET:fakeip-filter,private,direct,cn,wechat,bank_cn,alibaba,xiaomi,apple_cn,steam_cn,media_cn,iptv,pt_cn,115,aliyun,NetEaseMusic,fcm,ai_cn,game_cn,public-tracker,apple_firmware,category-ads-all,AWAvenueAds'
   default-nameserver:
     - 119.29.29.29
     - 180.184.1.1
@@ -240,7 +240,7 @@ dns:
     - https://dns.google/dns-query
     - https://dns.cloudflare.com/dns-query
   nameserver-policy:
-    'rule-set:category-ads-all,banAd': [rcode://name_error]
+    'rule-set:category-ads-all,banAd,AWAvenueAds': [rcode://name_error]
     'rule-set:private,direct,cn': [system, https://dns.alidns.com/dns-query, https://doh.pub/dns-query]
 
 # ==================== 代理策略组 (优化精简版) ====================
@@ -325,6 +325,7 @@ rules:
   - IP-CIDR,95.161.76.100/31,REJECT-DROP,no-resolve
   - RULE-SET,banAd,广告拦截
   - RULE-SET,category-ads-all,广告拦截
+  - RULE-SET,AWAvenueAds,广告拦截
   - AND,((DST-PORT,443),(NETWORK,UDP)),REJECT
 
   # ==================== 私有网络直连 ====================
@@ -431,7 +432,8 @@ rule-providers:
   # ==================== 广告拦截 ====================
   banAd: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/banAd_mini.mrs"}
   category-ads-all: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs"}
-  
+  AWAvenueAds: {type: http, interval: 86400, behavior: domain, format: yaml, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
+
   # ==================== 基础规则 ====================
   private: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
   direct: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/direct.mrs"}
