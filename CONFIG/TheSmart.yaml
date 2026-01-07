@@ -343,8 +343,9 @@ rules:
   - RULE-SET,speedtest,测速平台
   
   # ==================== AI服务 ====================
+  - RULE-SET,openai,人工智能
+  - RULE-SET,claude,人工智能
   - RULE-SET,ai,人工智能
-  - RULE-SET,AI,人工智能
   - RULE-SET,aiip,人工智能,no-resolve
   
   # ==================== FCM推送 ====================
@@ -447,8 +448,9 @@ rule-providers:
   speedtest: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ookla-speedtest.mrs"}
   
   # ==================== AI服务 ====================
+  openai: {type: http, interval: 86400, behavior: domain, format: yaml, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OpenAI/OpenAI.yaml}
+  claude: {type: http, interval: 86400, behavior: domain, format: yaml, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Claude/Claude.yaml}
   ai: {<<: *BehaviorDN, url: "https://github.com/666OS/rules/raw/release/mihomo/domain/AI.mrs"}
-  AI: {<<: *BehaviorDN, url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs"}
   aiip: {<<: *BehaviorIP, url: "https://github.com/666OS/rules/raw/release/mihomo/ip/AI.mrs"}
   
   # ==================== FCM ====================
