@@ -344,7 +344,8 @@ rules:
   
   # ==================== AI服务 ====================
   - RULE-SET,ai,人工智能
-  - RULE-SET,openai,人工智能
+  - RULE-SET,AI,人工智能
+  - RULE-SET,ai_ip,人工智能,no-resolve
   
   # ==================== FCM推送 ====================
   - OR,((DST-PORT,5228),(DST-PORT,5229),(DST-PORT,5230),(RULE-SET,fcm)),节点选择
@@ -447,7 +448,8 @@ rule-providers:
   
   # ==================== AI服务 ====================
   ai: {<<: *BehaviorDN, url: "https://github.com/666OS/rules/raw/release/mihomo/domain/AI.mrs"}
-  openai: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/openai.mrs"}
+  AI: {<<: *BehaviorDN, url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs"}
+  ai_IP: {<<: *BehaviorIP, url: "https://github.com/666OS/rules/raw/release/mihomo/ip/AI.mrs"}
   
   # ==================== FCM ====================
   fcm: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs"}
