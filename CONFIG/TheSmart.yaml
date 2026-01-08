@@ -236,6 +236,7 @@ dns:
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
     - 'RULE-SET:fakeip-filter,private,direct,cn,wechat,bank_cn,alibaba,xiaomi,apple_cn,steam_cn,media_cn,iptv,pt_cn,115,aliyun,NetEaseMusic,fcm,ai_cn,game_cn,public-tracker,apple_firmware,category-ads-all,AWAvenueAds'
+    - +.mimimi.cc
   default-nameserver:
     - 119.29.29.29
     - 180.184.1.1
