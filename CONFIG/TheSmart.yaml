@@ -360,7 +360,7 @@ rules:
   - RULE-SET,aiip,人工智能,no-resolve
   
   # ==================== FCM推送 ====================
-  - OR,((DST-PORT,5228),(DST-PORT,5229),(DST-PORT,5230),(RULE-SET,fcm)),节点选择
+  - OR,((DST-PORT,5228),(DST-PORT,5229),(DST-PORT,5230),(RULE-SET,fcm)),谷歌服务
   
   # ==================== 社交平台 ====================
   - RULE-SET,telegram,电报消息
