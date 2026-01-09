@@ -337,7 +337,7 @@ rules:
   - RULE-SET,banAd,广告拦截
   - RULE-SET,category-ads-all,广告拦截
   - RULE-SET,AWAvenueAds,广告拦截
-  - AND,((DST-PORT,443),(NETWORK,UDP)),REJECT
+  - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((RULE-SET,cn_ip)))),REJECT
 
   # ==================== 私有网络直连 ====================
   - RULE-SET,private,全球直连
