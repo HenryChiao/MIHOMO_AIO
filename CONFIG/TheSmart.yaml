@@ -330,9 +330,8 @@ proxy-groups:
   - {name: 美国智能, <<: *BaseLB, include-all: true, filter: *FilterUS, icon: "https://pub-8feead0908f649a8b94397f152fb9cba.r2.dev/load-balance.png"}
 
 # ==================== 路由规则 (优化顺序) ====================
-
 rules:
-  # ==================== 基础拦截（始终最前） ====================
+  # ==================== 基础拦截（最前，不参与业务分流） ====================
   - DST-PORT,123,DIRECT
   - IP-CIDR,95.161.76.100/31,REJECT-DROP,no-resolve
   - RULE-SET,banAd,广告拦截
@@ -340,27 +339,27 @@ rules:
   - RULE-SET,AWAvenueAds,广告拦截
   - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((RULE-SET,cn_ip)))),REJECT
 
-  # ==================== WeChat / 直连优先 ====================
+  # ==================== 私有 / 直连优先 ====================
+  - RULE-SET,private,全球直连
   - RULE-SET,wechat,全球直连
+  - RULE-SET,wechat_asn,全球直连,no-resolve
 
-  # ==================== Speedtest ====================
+  # ==================== 测速 / 基础平台 ====================
   - DOMAIN-KEYWORD,speedtest,测速平台
   - RULE-SET,speedtest,测速平台
-
-  # ==================== Cloudflare ====================
   - RULE-SET,cloudflare,Cloudflare
 
-  # ==================== PayPal ====================
+  # ==================== 金融 / 支付 ====================
   - RULE-SET,paypal,PayPal
 
-  # ==================== Proxy 白名单 ====================
+  # ==================== 代理白名单 ====================
   - RULE-SET,proxy,节点选择
 
   # ==================== AI ====================
   - RULE-SET,ai,人工智能
+  - RULE-SET,aiip,人工智能,no-resolve
   - RULE-SET,openai,人工智能
   - RULE-SET,claude,人工智能
-  - RULE-SET,aiip,人工智能,no-resolve
 
   # ==================== Bilibili / ACG ====================
   - RULE-SET,biliintl,哔哩东南亚
@@ -368,36 +367,36 @@ rules:
   - RULE-SET,bilibili_ip,哔哩哔哩,no-resolve
   - RULE-SET,bahamut,巴哈姆特
 
-  # ==================== 国内金融 / 电商 / Apple CN ====================
+  # ==================== 国内金融 / AI / 直连 ====================
   - RULE-SET,bank_cn,全球直连
+  - RULE-SET,ai_cn,全球直连
+  - RULE-SET,direct,全球直连
   - RULE-SET,alibaba,全球直连
   - RULE-SET,apple_cn,全球直连
 
-  # ==================== GitHub / GitBook ====================
+  # ==================== GitHub / 文档 ====================
   - RULE-SET,github,Github
   - RULE-SET,gitbook,Github
 
-  # ==================== Google / FCM ====================
-  - OR,((DST-PORT,5228),(DST-PORT,5229),(DST-PORT,5230),(RULE-SET,fcm)),谷歌服务
+  # ==================== Google 体系 ====================
   - RULE-SET,googlevpn,GoogleVPN
+  - OR,((DST-PORT,5228),(DST-PORT,5229),(DST-PORT,5230),(RULE-SET,fcm)),谷歌服务
   - RULE-SET,google,谷歌服务
   - RULE-SET,google_ip,谷歌服务,no-resolve
 
-  # ==================== OneDrive / Microsoft ====================
+  # ==================== 微软 ====================
   - RULE-SET,onedrive,OneDrive
   - RULE-SET,microsoft,微软服务
 
-  # ==================== Telegram / Line / Signal ====================
+  # ==================== 通讯 / 社交 ====================
   - RULE-SET,telegram,电报消息
   - RULE-SET,telegram_ip,电报消息,no-resolve
   - RULE-SET,line,Line
   - RULE-SET,signal,Signal
-
-  # ==================== Discord ====================
   - RULE-SET,discord,Discord
   - RULE-SET,discord_asn,Discord,no-resolve
 
-  # ==================== YouTube / 流媒体 ====================
+  # ==================== 流媒体 ====================
   - RULE-SET,youtube,油管视频
   - RULE-SET,tiktok,TikTok
   - RULE-SET,netflix,奈飞视频
@@ -410,7 +409,7 @@ rules:
   - RULE-SET,emby_ip,Emby,no-resolve
   - RULE-SET,spotify,Spotify
 
-  # ==================== Meta / Twitter ====================
+  # ==================== Meta / X ====================
   - RULE-SET,facebook,Meta平台
   - RULE-SET,facebook_ip,Meta平台,no-resolve
   - RULE-SET,instagram,Meta平台
@@ -419,7 +418,7 @@ rules:
   - RULE-SET,twitter,推特社交
   - RULE-SET,twitter_ip,推特社交,no-resolve
 
-  # ==================== 游戏平台 ====================
+  # ==================== 游戏 ====================
   - DOMAIN-SUFFIX,steamserver.net,全球直连
   - RULE-SET,steam_cn,Steam中国
   - RULE-SET,steamcdn,Steam中国
@@ -440,15 +439,14 @@ rules:
   - RULE-SET,gfw,节点选择
   - RULE-SET,geolocation-!cn,节点选择
 
-  # ==================== CN / Private ====================
+  # ==================== 国内兜底 ====================
   - RULE-SET,cn,全球直连
-  - RULE-SET,private,全球直连
 
   # ==================== IP ====================
   - RULE-SET,private_ip,全球直连,no-resolve
   - RULE-SET,cn_ip,全球直连,no-resolve
 
-  # ==================== 兜底 ====================
+  # ==================== 最终兜底 ====================
   - MATCH,兜底策略
 
 # ==================== 规则集 (去重优化版) ====================
