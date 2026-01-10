@@ -455,7 +455,7 @@ BehaviorIP: &BehaviorIP {type: http, behavior: ipcidr, format: mrs, interval: 86
 
 rule-providers:
   # ==================== 广告拦截 ====================
-  banAd: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/banAd_mini.mrs"}
+  banAd: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/adrules.mrs"}
   category-ads-all: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs"}
   AWAvenueAds: {type: http, interval: 86400, behavior: domain, format: yaml, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
 
