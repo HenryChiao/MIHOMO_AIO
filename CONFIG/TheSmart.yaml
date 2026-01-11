@@ -227,7 +227,7 @@ dns:
   enable: true
   cache-algorithm: arc
   ipv6: true
-  prefer-h3: true
+  prefer-h3: false
   use-hosts: true
   use-system-hosts: false
   respect-rules: true
