@@ -468,7 +468,7 @@ rule-providers:
   wechat_asn: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/rules/IP/AS132203.mrs" }
   alibaba: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/alibaba.mrs"}
   bank_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-bank-cn.mrs"}
-  apple_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/apple_cn.mrs"}
+  apple_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/apple-cn.mrs"}
   ai_cn_domain: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/category-ai-cn.mrs" }
   # ==================== 测速 ====================
   speedtest: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/speedtest.mrs"}
@@ -545,7 +545,7 @@ rule-providers:
   proxy: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/proxy.mrs"}
   gfw: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/gfw.mrs"}
   geolocation-!cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
-  cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/cn.mrs"}
+  cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/ipcidr/cn.mrs"}
   
   # ==================== IP规则 ====================
   private_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/private.mrs"}
