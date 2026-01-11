@@ -529,7 +529,7 @@ rule-providers:
   nintendo: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/nintendo.mrs"}
   
   # ==================== 商业服务 ====================
-  github: {type: http, behavior: classical, interval: 3600, format: yaml, url: "https://rule.kelee.one/Clash/GitHub.yaml"}
+  github: {type: http, behavior: classical, interval: 3600, format: yaml, proxy: DIRECT, url: "https://rule.kelee.one/Clash/GitHub.yaml"}
   gitbook: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/gitbook.mrs"}
   googlevpn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/googleVPN.mrs"}
   google: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/google.mrs"}
