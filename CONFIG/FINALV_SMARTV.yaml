@@ -552,7 +552,7 @@ rule-providers:
   cn_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/cn.mrs"}
   
   # ==================== FakeIP过滤 ====================
-  fakeip-filter: {<<: *BehaviorDN, url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs"}
+  fakeip-filter: {type: http, interval: 86400, behavior: domain, format: text, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/main/custom/domain/fake-ip-filter.list"}
   game_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-games@cn.mrs"}
   xiaomi: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/xiaomi.mrs"}
   pt_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-pt.mrs"}
