@@ -483,8 +483,8 @@ rule-providers:
   fcm: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs"}
   
   # ==================== 社交平台 ====================
-  telegram: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"}
-  telegram_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"}
+  telegram: {<<: *BehaviorDN, url: "https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Telegram.mrs"}
+  telegram_ip: {<<: *BehaviorIP, url: "https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/ip/Telegram.mrs"}
   twitter: {<<: *BehaviorDN, url: "https://github.com/666OS/rules/raw/release/mihomo/domain/Twitter.mrs"}
   twitter_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs"}
   meta: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs"}
