@@ -64,9 +64,9 @@ BaseProvider: &BaseProvider
     ip-version: ipv6-prefer
   filter: '^(?!.*(群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|traffic|套餐|剩余|重置))' 
 
-# 策略组类型模板，如不需要smart，请将BaseLB锚点中 smart 改为 load-balance
+# 策略组类型模板，如不需要smart，请将BaseLB锚点中 smart 改为 load-balance ；将hidden：ture后面替换为 strategy: consistent-hashing
 BaseFB: &BaseFB {type: fallback, interval: 300, lazy: true, url: 'https://www.google.com/generate_204'}
-BaseLB: &BaseLB {type: smart, interval: 300, lazy: true, url: 'https://www.google.com/generate_204', strategy: consistent-hashing, hidden: true, policy-priority: '优:2;备:0.5'}
+BaseLB: &BaseLB {type: smart, interval: 300, lazy: true, url: 'https://www.google.com/generate_204', hidden: true, uselightgbm: true, policy-priority: '优:2;备:0.5'}
 BaseUT: &BaseUT {type: url-test, interval: 300, lazy: true, url: 'https://www.google.com/generate_204', tolerance: 20, hidden: true}
 
 # 节点筛选正则表达式 - 基于地理位置和关键词过滤
