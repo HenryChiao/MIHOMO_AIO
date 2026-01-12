@@ -178,6 +178,22 @@ dns:
     - RULE-SET,XPTV,real-ip
     - RULE-SET,Download,real-ip
     - RULE-SET,AppleCN,real-ip
+    - RULE-SET,AI,fake-ip
+    - DOMAIN-KEYWORD,speedtest,fake-ip
+    - RULE-SET,Speedtest,fake-ip
+    - RULE-SET,Twitter,fake-ip
+    - RULE-SET,Telegram,fake-ip
+    - RULE-SET,SocialMedia,fake-ip
+    - RULE-SET,NewsMedia,fake-ip
+    - RULE-SET,Games,fake-ip
+    - RULE-SET,Crypto,fake-ip
+    - RULE-SET,Emby,fake-ip
+    - RULE-SET,Netflix,fake-ip
+    - RULE-SET,YouTube,fake-ip
+    - RULE-SET,Streaming,fake-ip
+    - RULE-SET,Apple,fake-ip 
+    - RULE-SET,Google,fake-ip
+    - RULE-SET,Microsoft,fake-ip
     - RULE-SET,Proxy,fake-ip
     - RULE-SET,China,real-ip
     - MATCH,real-ip
