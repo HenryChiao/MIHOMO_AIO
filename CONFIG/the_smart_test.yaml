@@ -169,6 +169,7 @@ dns:
   ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
+  fake-ip-range6: fc00::/16
   default-nameserver:
     - 119.29.29.29
     - 180.184.1.1
@@ -176,15 +177,15 @@ dns:
   nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
+  fake-ip-filter-mode: rule
   fake-ip-filter:
-    - rule-set:Direct
-    - rule-set:Private
-    - rule-set:China
-    - +.miwifi.com
-    - +.docker.io
-    - +.market.xiaomi.com
-    - +.push.apple.com
-
+    - RULE-SET,fakeip-filter,real-ip
+    - RULE-SET,Proxy,fake-ip
+    - RULE-SET,Private,real-ip
+    - RULE-SET,Direct,real-ip
+    - RULE-SET,China,real-ip
+    - MATCH,real-ip
+ 
 proxy-groups:
   # ==================== 主要策略组 ====================
   - {name: 默认代理,     <<: *SelectFB, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Static.png}
@@ -302,6 +303,7 @@ BehaviorIP: &BehaviorIP {type: http, behavior: ipcidr, format: mrs, interval: 86
 # 规则提供者
 rule-providers:  
   # 域名规则
+  fakeip-filter:  {<<: *BehaviorDN, url: https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs} 
   Tracking:       {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Tracking.mrs}
   Advertising:    {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Advertising.mrs} 
   Direct:         {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Direct.mrs}
