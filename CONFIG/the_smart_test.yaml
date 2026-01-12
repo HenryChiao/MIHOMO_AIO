@@ -172,9 +172,9 @@ dns:
   fake-ip-filter-mode: rule
   fake-ip-filter:
     - RULE-SET,fakeip-filter,real-ip
-    - RULE-SET,Proxy,fake-ip
     - RULE-SET,Private,real-ip
     - RULE-SET,Direct,real-ip
+    - RULE-SET,Proxy,fake-ip
     - RULE-SET,China,real-ip
     - MATCH,real-ip
  
