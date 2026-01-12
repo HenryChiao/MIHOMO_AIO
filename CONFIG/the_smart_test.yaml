@@ -172,8 +172,12 @@ dns:
   fake-ip-filter-mode: rule
   fake-ip-filter:
     - RULE-SET,fakeip-filter,real-ip
+    - RULE-SET,LocationDKS,抖快书定位
     - RULE-SET,Private,real-ip
     - RULE-SET,Direct,real-ip
+    - RULE-SET,XPTV,real-ip
+    - RULE-SET,Download,real-ip
+    - RULE-SET,AppleCN,real-ip
     - RULE-SET,Proxy,fake-ip
     - RULE-SET,China,real-ip
     - MATCH,real-ip
