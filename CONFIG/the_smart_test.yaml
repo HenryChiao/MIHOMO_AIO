@@ -6,45 +6,6 @@
 # 优化内容: 精简策略组、去重规则集、优化规则顺序
 #####################################
 
-# ==================== 📖 配置说明 ====================
-# 
-# 【快速开始】
-# 1. 修改 proxy-providers 中的订阅链接
-# 2. 修改 authentication 中的用户名密码
-# 3. 修改 secret 中的面板密码
-# 4. 根据需要调整监听端口(默认7890)
-#
-# 【主要功能】
-# - FakeIP模式: 提升DNS解析速度和连接性能
-# - 自动测速: url-test组每5分钟自动选择最快节点
-# - 智能均衡: smart组分散流量提升稳定性
-# - 故障转移: fallback组自动切换可用节点
-# - 广告拦截: 基于规则集自动拦截广告和追踪
-#
-# 【策略组说明】
-# - 节点选择: 手动选择代理节点或策略
-# - 故障转移: 自动切换到可用节点
-# - 地区节点: 按地区分类的节点组(香港/新加坡/日本等)
-# - 应用策略: 针对特定应用的专用策略(Netflix/YouTube等)
-#
-# 【端口说明】
-# - 7890: HTTP/SOCKS5混合端口
-# - 7891: SOCKS5端口
-# - 7893: 混合端口(推荐使用)
-# - 9090: 管理面板端口
-# - 50000-50005: 按地区分配的专用端口
-#
-# 【面板访问】
-# - 地址: http://127.0.0.1:9090/ui
-# - 密码: 在下方 secret 字段设置
-#
-# 【注意事项】
-# - 首次使用需要等待GEO数据库下载完成
-# - 建议定期更新订阅和规则集
-# - TUN模式需要管理员权限
-#
-#####################################
-
 # ==================== 锚点配置 ====================
 # 代理提供者模板
 BaseProvider: &BaseProvider 
@@ -157,51 +118,31 @@ profile:
   store-fake-ip: true
 
 # ==================== 流量嗅探 ====================
+# 流量嗅探
 sniffer:
   enable: true
-  force-dns-mapping: false
-  parse-pure-ip: true
-  override-destination: false
   sniff:
     HTTP:
-      ports: [80, 8080-8880, 2052, 2082, 2086, 2095]
+      ports: [80, 8080-8880]
       override-destination: true
     TLS:
-      ports: [443, 8443, 2053, 2083, 2087, 2096]
-      override-destination: true
+      ports: [443, 8443]
     QUIC:
-      ports: [443, 8443, 2053, 2083, 2087, 2096]
-      override-destination: true
+      ports: [443, 8443]
   skip-domain:
     - "Mijia Cloud"
-    - "dlg.io.mi.com"
     - "+.push.apple.com"
-    - "+.apple.com"
-    - "+.wechat.com"
-    - "+.qq.com"
-    - "+.qpic.cn"
-    - "+.vivox.com"
-    - "+.oray.com"
-    - "+.sunlogin.net"
-  force-domain:
-    - "+.v2ex.com"
 
-# TUN模式
+# TUN模式配置
 tun:
-  enable: true
+  enable: false
   stack: mixed
-  device: utun9
   dns-hijack:
     - "any:53"
     - "tcp://any:53"
-    - "any:853"
-    - "tcp://any:853"
   auto-route: true
   auto-redirect: true
   auto-detect-interface: true
-  strict-route: true
-  mtu: 9000
-  udp-timeout: 300
 
 # Hosts配置
 hosts:
@@ -225,34 +166,24 @@ hosts:
 # ==================== DNS配置 ====================
 dns:
   enable: true
-  cache-algorithm: arc
   ipv6: true
-  prefer-h3: false
-  use-hosts: true
-  use-system-hosts: false
-  respect-rules: true
-  listen: 0.0.0.0:1053
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-filter-mode: blacklist
-  fake-ip-filter:
-    - 'RULE-SET:fakeip-filter,private,direct,cn,wechat,bank_cn,alibaba,xiaomi,apple_cn,steam_cn,media_cn,iptv,pt_cn,115,aliyun,NetEaseMusic,fcm,ai_cn,game_cn,public-tracker,apple_firmware,category-ads-all,AWAvenueAds'
-    - +.mimimi.cc
   default-nameserver:
     - 119.29.29.29
     - 180.184.1.1
-  proxy-server-nameserver:
-    - https://doh.pub/dns-query
-    - https://223.5.5.5/dns-query#h3=true
-  direct-nameserver:
-    - https://doh.pub/dns-query
-    - https://223.5.5.5/dns-query#h3=true
+    - 223.5.5.5
   nameserver:
-    - https://dns.google/dns-query
-    - https://dns.cloudflare.com/dns-query
-  nameserver-policy:
-    'rule-set:category-ads-all,banAd,AWAvenueAds': [rcode://name_error]
-    'rule-set:private,direct,cn': [https://dns.alidns.com/dns-query, https://doh.pub/dns-query]
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fake-ip-filter:
+    - rule-set:Direct
+    - rule-set:Private
+    - rule-set:China
+    - +.miwifi.com
+    - +.docker.io
+    - +.market.xiaomi.com
+    - +.push.apple.com
 
 # ==================== 代理策略组 (优化精简版) ====================
 proxy-groups:
