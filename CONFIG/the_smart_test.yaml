@@ -334,231 +334,100 @@ rules:
   # ==================== 基础拦截（最前，不参与业务分流） ====================
   - DST-PORT,123,DIRECT
   - IP-CIDR,95.161.76.100/31,REJECT-DROP,no-resolve
-  - RULE-SET,banAd,广告拦截
-  - RULE-SET,banAd_ip,广告拦截
-  - RULE-SET,category-ads-all,广告拦截
-  - RULE-SET,AWAvenueAds,广告拦截
-  - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((RULE-SET,cn_ip)))),REJECT
+  - RULE-SET,Tracking,REJECT
+  - RULE-SET,Advertising,REJECT
+  - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((GEOIP,CN)))),REJECT  # 阻止海外 QUIC
+  
+  # 域名规则
+  - RULE-SET,LocationDKS,抖快书定位
+  - RULE-SET,Private,直接连接
+  - RULE-SET,Direct,直接连接
+  - RULE-SET,XPTV,直接连接
+  - RULE-SET,Download,直接连接
+  - RULE-SET,AppleCN,直接连接
+  - RULE-SET,AI,人工智能
+  - DOMAIN-KEYWORD,speedtest,网络测试
+  - RULE-SET,Speedtest,网络测试
+  - RULE-SET,Twitter,推特社交
+  - RULE-SET,Telegram,电报消息
+  - RULE-SET,SocialMedia,社交平台
+  - RULE-SET,NewsMedia,新闻媒体
+  - RULE-SET,Games,游戏平台
+  - RULE-SET,Crypto,货币平台
+  - RULE-SET,Emby,Emby服
+  - RULE-SET,Netflix,奈飞视频
+  - RULE-SET,YouTube,油管视频
+  - RULE-SET,Streaming,国际媒体
+  - RULE-SET,Apple,苹果服务 
+  - RULE-SET,Google,谷歌服务
+  - RULE-SET,Microsoft,微软服务
+  - RULE-SET,Proxy,国外流量
+  - RULE-SET,China,国内流量
 
-  # ==================== 私有 / 直连优先 ====================
-  - RULE-SET,private,全球直连
-  - RULE-SET,wechat,全球直连
-  - RULE-SET,wechat_asn,全球直连,no-resolve
+  # IP规则
+  - RULE-SET,AdvertisingIP,REJECT,no-resolve
+  - RULE-SET,PrivateIP,直接连接,no-resolve
+  - RULE-SET,XPTVIP,直接连接,no-resolve
+  - RULE-SET,AIIP,人工智能,no-resolve
+  - RULE-SET,TelegramIP,电报消息,no-resolve
+  - RULE-SET,SocialMediaIP,社交平台,no-resolve
+  - RULE-SET,EmbyIP,Emby服,no-resolve
+  - RULE-SET,NetflixIP,奈飞视频,no-resolve
+  - RULE-SET,StreamingIP,国际媒体,no-resolve
+  - RULE-SET,GoogleIP,谷歌服务,no-resolve
+  - RULE-SET,ProxyIP,国外流量,no-resolve
+  - RULE-SET,ChinaIP,国内流量,no-resolve
 
-  # ==================== 测速 / 基础平台 ====================
-  - DOMAIN-KEYWORD,speedtest,测速平台
-  - RULE-SET,speedtest,测速平台
-  - RULE-SET,cloudflare,Cloudflare
+  # 兜底规则
+  - MATCH,兜底流量
 
-  # ==================== 金融 / 支付 ====================
-  - RULE-SET,paypal,PayPal
-
-  # ==================== AI ====================
-  - RULE-SET,ai,人工智能
-  - RULE-SET,aiip,人工智能,no-resolve
-  - RULE-SET,openai,人工智能
-  - RULE-SET,claude,人工智能
-
-  # ==================== Bilibili / ACG ====================
-  - RULE-SET,biliintl,哔哩东南亚
-  - RULE-SET,bilibili,哔哩哔哩
-  - RULE-SET,bilibili_ip,哔哩哔哩,no-resolve
-  - RULE-SET,bahamut,巴哈姆特
-
-  # ==================== 国内金融 / AI / 直连 ====================
-  - RULE-SET,bank_cn,全球直连
-  - RULE-SET,ai_cn,全球直连
-  - RULE-SET,direct,全球直连
-  - RULE-SET,alibaba,全球直连
-  - RULE-SET,apple_cn,全球直连
-
-  # ==================== GitHub / 文档 ====================
-  - RULE-SET,github,Github
-  - RULE-SET,gitbook,Github
-
-  # ==================== Google 体系 ====================
-  - RULE-SET,googlevpn,GoogleVPN
-  - OR,((DST-PORT,5228),(DST-PORT,5229),(DST-PORT,5230),(RULE-SET,fcm)),谷歌服务
-  - RULE-SET,google,谷歌服务
-  - RULE-SET,google_ip,谷歌服务,no-resolve
-
-  # ==================== 微软 ====================
-  - RULE-SET,onedrive,OneDrive
-  - RULE-SET,microsoft,微软服务
-
-  # ==================== 通讯 / 社交 ====================
-  - RULE-SET,telegram,电报消息
-  - RULE-SET,telegram_ip,电报消息,no-resolve
-  - RULE-SET,line,Line
-  - RULE-SET,signal,Signal
-  - RULE-SET,discord,Discord
-  - RULE-SET,discord_asn,Discord,no-resolve
-
-  # ==================== 流媒体 ====================
-  - RULE-SET,youtube,油管视频
-  - RULE-SET,tiktok,TikTok
-  - RULE-SET,netflix,奈飞视频
-  - RULE-SET,netflix_ip,奈飞视频,no-resolve
-  - RULE-SET,disney,迪士尼+
-  - RULE-SET,hbo,HBO视频
-  - RULE-SET,primevideo,Prime视频
-  - RULE-SET,appletv,AppleTV+
-  - RULE-SET,emby,Emby
-  - RULE-SET,emby_ip,Emby,no-resolve
-  - RULE-SET,spotify,Spotify
-
-  # ==================== Meta / X ====================
-  - RULE-SET,facebook,Meta平台
-  - RULE-SET,facebook_ip,Meta平台,no-resolve
-  - RULE-SET,instagram,Meta平台
-  - RULE-SET,whatsapp,Meta平台
-  - RULE-SET,meta,Meta平台
-  - RULE-SET,twitter,推特社交
-  - RULE-SET,twitter_ip,推特社交,no-resolve
-
-  # ==================== 游戏 ====================
-  - DOMAIN-SUFFIX,steamserver.net,全球直连
-  - RULE-SET,steam_cn,Steam中国
-  - RULE-SET,steamcdn,Steam中国
-  - RULE-SET,steamcdn_ip,Steam中国,no-resolve
-  - RULE-SET,steam,Steam
-  - RULE-SET,game,游戏平台
-  - RULE-SET,epic,游戏平台
-  - RULE-SET,ea,游戏平台
-  - RULE-SET,blizzard,游戏平台
-  - RULE-SET,sony,游戏平台
-  - RULE-SET,nintendo,游戏平台
-
-  # ==================== 媒体 ====================
-  - RULE-SET,media_cn,国内媒体
-  - RULE-SET,media,国外媒体
-
-  # ==================== GFW / GEO ====================
-  - RULE-SET,gfw,节点选择
-  - RULE-SET,geolocation-!cn,节点选择
-  - RULE-SET,proxy,节点选择
-
-  # ==================== 国内兜底 ====================
-  - RULE-SET,cn,全球直连
-
-  # ==================== IP ====================
-  - RULE-SET,private_ip,全球直连,no-resolve
-  - RULE-SET,cn_ip,全球直连,no-resolve
-
-  # ==================== 最终兜底 ====================
-  - MATCH,兜底策略
-
-# ==================== 规则集 (去重优化版) ====================
+# ==================== 规则集 ====================
+# 规则集行为模板
 BehaviorDN: &BehaviorDN {type: http, behavior: domain, format: mrs, interval: 86400}
 BehaviorIP: &BehaviorIP {type: http, behavior: ipcidr, format: mrs, interval: 86400}
 
-rule-providers:
-  # ==================== 广告拦截 ====================
-  banAd: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/adrules.mrs"}
-  banAd_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/ipcidr/adrules.mrs"}
-  category-ads-all: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs"}
-  AWAvenueAds: {type: http, interval: 86400, behavior: domain, format: yaml, url: https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.yaml}
+# 规则提供者
+rule-providers:  
+  # 域名规则
+  Tracking:       {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Tracking.mrs}
+  Advertising:    {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Advertising.mrs} 
+  Direct:         {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Direct.mrs}
+  LocationDKS:    {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/LocationDKS.mrs}
+  Private:        {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Private.mrs}
+  Download:       {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Download.mrs}
+  Speedtest:      {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Speedtest.mrs}
+  AI:             {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/AI.mrs}  
+  Telegram:       {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Telegram.mrs}
+  Twitter:        {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Twitter.mrs}  
+  SocialMedia:    {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/SocialMedia.mrs}
+  NewsMedia:      {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/NewsMedia.mrs}
+  Games:          {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Games.mrs}
+  Crypto:         {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Crypto.mrs}
+  Netflix:        {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Netflix.mrs}
+  YouTube:        {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/YouTube.mrs}
+  XPTV:           {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/XPTV.mrs}  
+  Emby:           {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Emby.mrs}
+  Streaming:      {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Streaming.mrs}  
+  AppleCN:        {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/AppleCN.mrs}
+  Apple:          {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Apple.mrs}
+  Google:         {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Google.mrs}
+  Microsoft:      {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Microsoft.mrs}  
+  Facebook:       {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Facebook.mrs}
+  Proxy:          {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Proxy.mrs}
+  China:          {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/China.mrs}
 
-  # ==================== 基础规则 ====================
-  private: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/private.mrs"}
-  direct: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/direct.mrs"}
-  wechat: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/WeChat.mrs"}
-  wechat_asn: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/refs/heads/main/rules/IP/AS132203.mrs" }
-  alibaba: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/alibaba.mrs"}
-  bank_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-bank-cn.mrs"}
-  apple_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/apple-cn.mrs"}
-  ai_cn_domain: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/category-ai-cn.mrs" }
-  # ==================== 测速 ====================
-  speedtest: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/speedtest.mrs"}
-  
-  # ==================== AI服务 ====================
-  openai: {type: http, interval: 86400, behavior: domain, format: yaml, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/OpenAI/OpenAI.yaml}
-  claude: {type: http, interval: 86400, behavior: domain, format: yaml, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Claude/Claude.yaml}
-  ai: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/ai.mrs"}
-  aiip: {<<: *BehaviorIP, url: "https://github.com/666OS/rules/raw/release/mihomo/ip/AI.mrs"}
-  
-  # ==================== FCM ====================
-  fcm: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/googlefcm.mrs"}
-  
-  # ==================== 社交平台 ====================
-  telegram: {<<: *BehaviorDN, url: "https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/domain/Telegram.mrs"}
-  telegram_ip: {<<: *BehaviorIP, url: "https://git.imee.me/https://github.com/666OS/rules/raw/release/mihomo/ip/Telegram.mrs"}
-  twitter: {<<: *BehaviorDN, url: "https://github.com/666OS/rules/raw/release/mihomo/domain/Twitter.mrs"}
-  twitter_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs"}
-  meta: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/meta.mrs"}
-  facebook: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/facebook.mrs"}
-  facebook_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs"}
-  instagram: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/instagram.mrs"}
-  whatsapp: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs"}
-  discord: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/discord.mrs"}
-  discord_asn: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/IP/AS49544.mrs"}
-  line: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/line.mrs"}
-  signal: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/signal.mrs"}
-  
-  # ==================== 流媒体 ====================
-  youtube: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"}
-  netflix: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"}
-  netflix_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"}
-  disney: {<<: *BehaviorDN, url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/disney.mrs"}
-  hbo: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/hbo.mrs"}
-  primevideo: {<<: *BehaviorDN, url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/primevideo.mrs"}
-  appletv: {<<: *BehaviorDN, url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/appletv.mrs"}
-  tiktok: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs"}
-  spotify: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs"}
-  emby: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/emby.mrs"}
-  emby_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/IP/emby-ip.mrs"}
-  bilibili: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili.mrs"}
-  bilibili_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/bilibili.mrs"}
-  biliintl: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili@!cn.mrs"}
-  bahamut: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bahamut.mrs"}
-  media: {<<: *BehaviorDN, url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/media.mrs"}
-  media_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-media-cn.mrs"}
-  
-  # ==================== 游戏平台 ====================
-  steam_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam@cn.mrs"}
-  steamcdn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/Steam-domain.mrs"}
-  steamcdn_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/IP/steamCDN-ip.mrs"}
-  steam: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs"}
-  game: {<<: *BehaviorDN, url: "https://github.com/666OS/rules/raw/release/mihomo/domain/Games.mrs"}
-  epic: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/epicgames.mrs"}
-  ea: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ea.mrs"}
-  blizzard: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/blizzard.mrs"}
-  sony: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/sony.mrs"}
-  nintendo: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/nintendo.mrs"}
-  
-  # ==================== 商业服务 ====================
-  github: {<<: *BehaviorDN, url: "https://github.com/666OS/rules/raw/refs/heads/release/mihomo/domain/GitHub.mrs"}
-  gitbook: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/gitbook.mrs"}
-  googlevpn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/googleVPN.mrs"}
-  google: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/google.mrs"}
-  google_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"}
-  onedrive: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"}
-  microsoft: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs"}
-  apple: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs"}
-  apple_firmware: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/applefirmware.mrs"}
-  cloudflare: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cloudflare.mrs"}
-  paypal: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs"}
-  
-  # ==================== 代理和直连 ====================
-  proxy: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/proxy.mrs"}
-  gfw: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/gfw.mrs"}
-  geolocation-!cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
-  cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/domain/cn.mrs"}
-  
-  # ==================== IP规则 ====================
-  private_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/ipcidr/private.mrs"}
-  cn_ip: {<<: *BehaviorIP, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/ruleset/meta/ipcidr/cn.mrs"}
-  
-  # ==================== FakeIP过滤 ====================
-  fakeip-filter: {type: http, interval: 86400, behavior: domain, format: text, url: "https://raw.githubusercontent.com/HenryChiao/mihomo_yamls/refs/heads/main/custom/domain/fake-ip-filter.list"}
-  game_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-games@cn.mrs"}
-  xiaomi: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/xiaomi.mrs"}
-  pt_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-pt.mrs"}
-  public-tracker: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-public-tracker.mrs"}
-  115: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/115.mrs"}
-  aliyun: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/aliyun.mrs"}
-  NetEaseMusic: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/NetEaseMusic-domain.mrs"}
-  ai_cn: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-cn.mrs"}
-  iptv: {<<: *BehaviorDN, url: "https://raw.githubusercontent.com/Lanlan13-14/Rules/main/rules/Domain/iptv.mrs"}
-
-# ==================== EOF ====================、
+  # IP规则
+  AdvertisingIP:  {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Advertising.mrs}
+  PrivateIP:      {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Private.mrs}
+  AIIP:           {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/AI.mrs}
+  TelegramIP:     {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Telegram.mrs}  
+  SocialMediaIP:  {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/SocialMedia.mrs}  
+  XPTVIP:         {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/XPTV.mrs}
+  EmbyIP:         {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Emby.mrs}
+  NetflixIP:      {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Netflix.mrs}
+  StreamingIP:    {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Streaming.mrs}  
+  GoogleIP:       {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Google.mrs}
+  FacebookIP:     {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Facebook.mrs}  
+  ProxyIP:        {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/Proxy.mrs} 
+  ChinaIP:        {<<: *BehaviorIP, url: https://github.com/666OS/rules/raw/release/mihomo/ip/China.mrs}
+# ==================== EOF ====================
