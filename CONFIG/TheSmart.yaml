@@ -434,9 +434,9 @@ rules:
   - RULE-SET,media,国外媒体
 
   # ==================== GFW / GEO ====================
-  - RULE-SET,proxy,节点选择
   - RULE-SET,gfw,节点选择
   - RULE-SET,geolocation-!cn,节点选择
+  - RULE-SET,proxy,节点选择
 
   # ==================== 国内兜底 ====================
   - RULE-SET,cn,全球直连
