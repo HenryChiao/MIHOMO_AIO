@@ -353,9 +353,6 @@ rules:
   # ==================== 金融 / 支付 ====================
   - RULE-SET,paypal,PayPal
 
-  # ==================== 代理白名单 ====================
-  - RULE-SET,proxy,节点选择
-
   # ==================== AI ====================
   - RULE-SET,ai,人工智能
   - RULE-SET,aiip,人工智能,no-resolve
@@ -437,6 +434,7 @@ rules:
   - RULE-SET,media,国外媒体
 
   # ==================== GFW / GEO ====================
+  - RULE-SET,proxy,节点选择
   - RULE-SET,gfw,节点选择
   - RULE-SET,geolocation-!cn,节点选择
 
