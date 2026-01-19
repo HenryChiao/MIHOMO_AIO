@@ -146,14 +146,14 @@ hosts:
   cn.bing.com: global.bing.com
   '192.168.31.1': 1.mimimi.cc
   '192.168.31.2': 2.mimimi.cc
-  '91.108.56.100': 91.108.56.147
-  '91.108.56.101': 91.108.56.147
-  '91.108.56.104': 91.108.56.147
-  '91.108.56.107': 91.108.56.147
-  '91.108.56.125': 91.108.56.147
-  '91.108.56.126': 91.108.56.147
-  '91.108.56.128': 91.108.56.147
-  '91.108.56.156': 91.108.56.147
+  '91.108.56.100': 91.108.56.200
+  '91.108.56.101': 91.108.56.200
+  '91.108.56.104': 91.108.56.200
+  '91.108.56.107': 91.108.56.200
+  '91.108.56.125': 91.108.56.200
+  '91.108.56.126': 91.108.56.200
+  '91.108.56.128': 91.108.56.200
+  '91.108.56.156': 91.108.56.200
 
 # ==================== DNS配置 ====================
 dns:
@@ -267,6 +267,7 @@ rules:
   # 域名规则
   - RULE-SET,LocationDKS,抖快书定位
   - RULE-SET,Private,直接连接
+  - RULE-SET,Github,Github
   - RULE-SET,Direct,直接连接
   - RULE-SET,XPTV,直接连接
   - RULE-SET,Download,直接连接
@@ -315,6 +316,7 @@ BehaviorIP: &BehaviorIP {type: http, behavior: ipcidr, format: mrs, interval: 86
 # 规则提供者
 rule-providers:  
   # 域名规则
+  Github: {<<: *BehaviorDN, url: https://raw.githubusercontent.com/666OS/rules/refs/heads/release/mihomo/domain/GitHub.mrs}
   fakeip-filter:  {<<: *BehaviorDN, url: https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs} 
   Tracking:       {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Tracking.mrs}
   Advertising:    {<<: *BehaviorDN, url: https://github.com/666OS/rules/raw/release/mihomo/domain/Advertising.mrs} 
