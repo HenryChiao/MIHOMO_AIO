@@ -1,0 +1,273 @@
+name: 构建 OpenClash 运行文件
+
+# 必须添加权限声明，否则无法创建 Release
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: 准备工作目录
+        run: |
+          mkdir -p workspace/openclash-x86
+          mkdir -p workspace/openclash-a53
+          mkdir -p output
+          echo "✅ 工作目录创建完成"
+
+      - name: 拉取 OpenClash 软件包分支
+        uses: actions/checkout@v4
+        with:
+          repository: vernesong/OpenClash
+          path: OpenClash
+          ref: package
+          fetch-depth: 1
+
+      - name: 复制最新的 OpenClash IPK 安装包
+        run: |
+          if [ ! -f OpenClash/master/*.ipk ]; then
+            echo "❌ 错误: 未找到 IPK 文件"
+            exit 1
+          fi
+          cp -v OpenClash/master/*.ipk workspace/openclash-x86/
+          cp -v OpenClash/master/*.ipk workspace/openclash-a53/
+          echo "✅ IPK 文件复制完成"
+
+      - name: 提取版本信息
+        id: extract_version
+        run: |
+          if [ ! -f OpenClash/master/version ]; then
+            echo "❌ 错误: 版本文件不存在"
+            exit 1
+          fi
+          ver=$(head -n 1 OpenClash/master/version | tr -d '[:space:]')
+          if [ -z "$ver" ]; then
+            echo "❌ 错误: 无法提取版本号"
+            exit 1
+          fi
+          echo "version=$ver" >> $GITHUB_ENV
+          echo "✅ 检测到版本: $ver"
+
+      - name: 拉取 OpenClash 内核分支
+        uses: actions/checkout@v4
+        with:
+          repository: vernesong/OpenClash
+          path: Meta
+          ref: core
+          fetch-depth: 1
+
+      - name: 解压内核文件
+        run: |
+          # 检查压缩包是否存在
+          if [ ! -f Meta/master/meta/clash-linux-amd64-v1.tar.gz ]; then
+            echo "❌ 错误: x86 内核文件不存在"
+            exit 1
+          fi
+          if [ ! -f Meta/master/meta/clash-linux-arm64.tar.gz ]; then
+            echo "❌ 错误: ARM64 内核文件不存在"
+            exit 1
+          fi
+          
+          # 解压 x86_64 内核
+          echo "📦 解压 x86_64 内核..."
+          tar -xzf Meta/master/meta/clash-linux-amd64-v1.tar.gz -C workspace/openclash-x86
+          mv workspace/openclash-x86/clash workspace/openclash-x86/clash_meta
+          
+          # 解压 ARM64 内核
+          echo "📦 解压 ARM64 内核..."
+          tar -xzf Meta/master/meta/clash-linux-arm64.tar.gz -C workspace/openclash-a53
+          mv workspace/openclash-a53/clash workspace/openclash-a53/clash_meta
+          
+          # 验证文件
+          if [ ! -f workspace/openclash-x86/clash_meta ]; then
+            echo "❌ 错误: x86 内核解压失败"
+            exit 1
+          fi
+          if [ ! -f workspace/openclash-a53/clash_meta ]; then
+            echo "❌ 错误: ARM64 内核解压失败"
+            exit 1
+          fi
+          
+          echo "✅ 内核文件解压完成"
+          echo "=== 文件检查 ==="
+          ls -lh workspace/openclash-x86/
+          ls -lh workspace/openclash-a53/
+
+      - name: 创建安装脚本
+        run: |
+          cat << 'EOF' > workspace/openclash-x86/install.sh
+          #!/bin/sh
+          
+          echo "================================"
+          echo "  OpenClash 自动安装脚本"
+          echo "================================"
+          
+          # 更新软件包列表
+          echo "📦 正在更新软件包列表..."
+          opkg update
+          if [ $? -ne 0 ]; then
+              echo "❌ 错误: 软件包列表更新失败"
+              exit 1
+          fi
+          
+          # 安装 IPK 包
+          echo "📦 正在安装 OpenClash..."
+          opkg install *.ipk
+          if [ $? -ne 0 ]; then
+              echo "❌ 错误: OpenClash 安装失败"
+              exit 1
+          fi
+          
+          # 创建内核目录
+          echo "📁 正在配置内核文件..."
+          if [ ! -d "/etc/openclash/core/" ]; then
+              mkdir -p /etc/openclash/core/
+          fi
+          
+          # 移动内核文件
+          if [ ! -f "clash_meta" ]; then
+              echo "❌ 错误: 内核文件不存在"
+              exit 1
+          fi
+          
+          mv clash_meta /etc/openclash/core/
+          chmod +x /etc/openclash/core/clash_meta
+          
+          echo "⏳ 等待系统稳定..."
+          sleep 10
+          
+          # 检查网络接口
+          echo "🔍 检查网络接口..."
+          ifconfig br-lan > /dev/null 2>&1
+          if [ $? -ne 0 ]; then
+              echo "⚠️  警告: 网络接口异常,正在重启网络服务..."
+              /etc/init.d/network restart
+              sleep 5
+              echo "✅ 网络服务重启完成"
+          fi
+          
+          echo "================================"
+          echo "  ✅ OpenClash 安装成功!"
+          echo "================================"
+          exit 0
+          EOF
+          
+          # 设置执行权限
+          chmod +x workspace/openclash-x86/install.sh
+          
+          # 复制到 ARM64 目录
+          cp workspace/openclash-x86/install.sh workspace/openclash-a53/install.sh
+          chmod +x workspace/openclash-a53/install.sh
+          
+          echo "✅ 安装脚本创建完成"
+
+      - name: 安装 Makeself 打包工具
+        run: | 
+          echo "📥 正在下载 Makeself 工具..."
+          git clone --depth 1 https://github.com/megastep/makeself.git makeself-tool
+          chmod +x makeself-tool/makeself.sh
+          echo "✅ Makeself 工具安装完成"
+
+      - name: 构建自解压运行文件
+        run: |
+          echo "🔨 开始构建运行文件..."
+          
+          # 构建 x86_64 版本
+          echo "📦 构建 x86_64 版本..."
+          ./makeself-tool/makeself.sh \
+            workspace/openclash-x86/ \
+            output/openclash-x86-64-${{ env.version }}.run \
+            "OpenClash x86_64 自动安装包 - 由 GitHub Actions 自动构建" \
+            ./install.sh
+          
+          # 构建 ARM64 版本
+          echo "📦 构建 ARM64 版本..."
+          ./makeself-tool/makeself.sh \
+            workspace/openclash-a53/ \
+            output/openclash-aarch64_cortex-a53-${{ env.version }}.run \
+            "OpenClash ARM64 自动安装包 - 由 GitHub Actions 自动构建" \
+            ./install.sh
+          
+          # 验证构建结果
+          if [ ! -f output/openclash-x86-64-${{ env.version }}.run ] || \
+             [ ! -f output/openclash-aarch64_cortex-a53-${{ env.version }}.run ]; then
+            echo "❌ 错误: 构建文件生成失败"
+            exit 1
+          fi
+          
+          echo "✅ 运行文件构建完成"
+          echo "=== 构建产物 ==="
+          ls -lh output/
+          
+          # 计算文件哈希值
+          echo "=== 文件校验和 ==="
+          cd output
+          sha256sum *.run | tee sha256sums.txt
+          cd ..
+
+      - name: 发布版本并上传文件
+        uses: softprops/action-gh-release@v2
+        if: env.version != ''
+        with:
+          tag_name: ${{ env.version }}
+          name: "OpenClash v${{ env.version }}"
+          files: |
+            output/*.run
+            output/sha256sums.txt
+          body: |
+            ## 📦 OpenClash v${{ env.version }} 自动构建版本
+            
+            ![GitHub](https://img.shields.io/badge/OpenClash.run-自动构建-blue?logo=github&logoColor=fff&labelColor=red&style=for-the-badge)
+            [![国内加速下载](https://img.shields.io/badge/国内加速站下载-FC7C0D?logo=github&logoColor=fff&labelColor=000&style=for-the-badge)](https://wkdaily.cpolar.cn/archives/1)
+            ![下载统计](https://img.shields.io/github/downloads/wukongdaily/RunFilesBuilder/${{ env.version }}/total?style=for-the-badge&labelColor=black&color=%2325c2a0)
+            
+            ### 📋 版本信息
+            - **版本号**: ${{ env.version }}
+            - **构建时间**: ${{ github.event.repository.updated_at }}
+            - **构建方式**: GitHub Actions 自动化构建
+            
+            ### 📥 下载说明
+            
+            | 架构 | 文件名 | 适用设备 |
+            |------|--------|----------|
+            | x86_64 | `openclash-x86-64-${{ env.version }}.run` | x86_64 软路由、虚拟机 |
+            | ARM64 | `openclash-aarch64_cortex-a53-${{ env.version }}.run` | ARM64 设备 (如树莓派、NanoPi 等) |
+            
+            ### 🚀 安装方法
+            
+            1. 上传 `.run` 文件到路由器
+            2. 添加执行权限: `chmod +x openclash-*.run`
+            3. 运行安装: `./openclash-*.run`
+            
+            ### 🔐 文件校验
+            
+            请下载 `sha256sums.txt` 文件验证完整性。
+            
+            ### ⚠️ 注意事项
+            
+            - 安装前请备份重要配置
+            - 确保网络连接正常
+            - 安装过程中可能会重启网络服务
+            
+            ---
+            
+            *由 GitHub Actions 自动构建和发布*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 构建完成通知
+        if: success()
+        run: |
+          echo "================================"
+          echo "  🎉 构建流程全部完成!"
+          echo "================================"
+          echo "版本: ${{ env.version }}"
+          echo "构建时间: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "Release 地址: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ env.version }}"
+          echo "================================"
