@@ -174,7 +174,8 @@ dns:
   fake-ip-filter-mode: rule
   fake-ip-filter:
     - RULE-SET,fakeip-filter,real-ip
-    - DOMAIN-KEYWORD,mimimi,fake-ip
+    - DOMAIN,mimimi.com,real-ip
+    - DOMAIN,www.mimimi.cc,real-ip
     - RULE-SET,LocationDKS,real-ip
     - RULE-SET,Private,real-ip
     - RULE-SET,Direct,real-ip
