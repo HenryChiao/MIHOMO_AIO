@@ -63,48 +63,7 @@
 
 <br/>
 
-## 📂 每日更新配置仓库
 
-> [!NOTE]
-> **自动同步状态**
->
-> 以下配置由 GitHub Actions 每日北京时间 08:00 自动从上游抓取并分类。
-> <br>点击下方卡片可直接进入对应文件夹查看详细列表。
-
-<table width="100%">
-    <tr>
-        <td width="33%" align="center">
-            <h3>🦄 ACL4SSR 分类</h3>
-            <p>基于 ACL4SSR 及其衍生版<br>适合精细化分流与极客用户</p>
-            <a href="./Overwrite/ACL4Category">
-                <img src="https://img.shields.io/badge/浏览-ACL_Rules-7057ff?style=for-the-badge&logo=github actions" alt="ACL">
-            </a>
-        </td>
-        <td width="33%" align="center">
-            <h3>🛫 机场定制分类</h3>
-            <p>各大机场或订阅转换特色规则<br>包含 jklolixxs 等定制配置</p>
-            <a href="./Overwrite/Airport">
-                <img src="https://img.shields.io/badge/浏览-Airport_Rules-0366d6?style=for-the-badge&logo=github actions" alt="Airport">
-            </a>
-        </td>
-        <td width="33%" align="center">
-            <h3>🧩 通用/其他分类</h3>
-            <p>ShellCrash、DustinWin 等<br>通用性强，适合大多数场景</p>
-            <a href="./Overwrite/Ordinary">
-                <img src="https://img.shields.io/badge/浏览-General_Rules-2ea44f?style=for-the-badge&logo=github actions" alt="General">
-            </a>
-        </td>
-    </tr>
-</table>
-
-<div align="center">
-    <p>👇 <b>或者直接浏览完整文件树</b> 👇</p>
-    <a href="./Overwrite">
-        <img src="https://img.shields.io/badge/📂_进入_Overwrite_根目录-Browse_All_Files-black?style=flat&logo=github&labelColor=gray">
-    </a>
-</div>
-
----
 
 ## 🔰 新手指南
 
