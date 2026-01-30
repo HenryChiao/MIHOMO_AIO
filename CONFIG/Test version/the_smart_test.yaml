@@ -183,7 +183,6 @@ dns:
   fake-ip-filter:
     - RULE-SET,fakeip-filter,real-ip
     - DOMAIN,mimimi.com,real-ip
-    - DOMAIN,www.mimimi.cc,real-ip
     - RULE-SET,LocationDKS,real-ip
     - RULE-SET,Private,real-ip
     - RULE-SET,Direct,real-ip
