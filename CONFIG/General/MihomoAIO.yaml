@@ -9,8 +9,8 @@
 #####################################
 # Name: MihomoAllInOne_Full  
 # Designer: HenryChiao  
-# Version: v1-251208
-# Date: 2025-12-08
+# Version: v1-20260131
+# Date: 2026-01-31
 
 # Please add your subscription link in the proxy-providers section.
 
@@ -82,9 +82,9 @@ tcp-concurrent: true
 log-level: warning
 bind-address: '*'
 find-process-mode: 'always'
-global-client-fingerprint: chrome
 keep-alive-interval: 15
 keep-alive-idle: 600
+# global-client-fingerprint: chrome
 
 # 认证配置
 authentication:
@@ -320,7 +320,7 @@ rules:
   - RULE-SET,mediaip,国外媒体,no-resolve
   - RULE-SET,GoogleIP,谷歌服务,no-resolve
   - RULE-SET,ProxyIP,国外流量,no-resolve
-  - RULE-SET,ChinaIP,国内流量,no-resolve
+  - RULE-SET,ChinaIP,国内流量
 
   # 兜底规则
   - MATCH,兜底流量
