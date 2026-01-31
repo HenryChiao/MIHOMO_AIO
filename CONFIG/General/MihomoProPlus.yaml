@@ -10,10 +10,10 @@
 # >>=====================================<<
 # 名称: MihomoProPlus
 # 地址: https://github.com/666OS/YYDS
-# 版本: v6-251208
+# 版本: v6-20260131
 # 原者: YYDS666
 # 修改: HenryChiao
-# 更新: 2025 年 12 月 08 日
+# 更新: 2026 年 1 月 31 日
 # 频道: https://t.me/Pinched666
 # 描述: 在proxy-providers加入您的机场订阅链接（代理提供者）
 
@@ -85,9 +85,9 @@ tcp-concurrent: true
 log-level: warning
 bind-address: '*'
 find-process-mode: 'always'
-global-client-fingerprint: chrome
 keep-alive-interval: 15
 keep-alive-idle: 600
+# global-client-fingerprint: chrome
 
 # 认证配置
 authentication:
@@ -318,7 +318,7 @@ rules:
   - RULE-SET,StreamingIP,国际媒体,no-resolve
   - RULE-SET,GoogleIP,谷歌服务,no-resolve
   - RULE-SET,ProxyIP,国外流量,no-resolve
-  - RULE-SET,ChinaIP,国内流量,no-resolve
+  - RULE-SET,ChinaIP,国内流量
 
   # 兜底规则
   - MATCH,兜底流量
