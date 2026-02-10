@@ -47,15 +47,15 @@ proxy-providers:
 # ==================== 监听器 ====================
 listeners:
   # Shadowsocks监听器 - 远程代理入口
-  - {name: SS-IN, type: shadowsocks, listen: '::', port: 10000, udp: true, password: Xf3#Lp9WqZ, cipher: aes-256-gcm}
+  - {name: SS-IN, type: shadowsocks, listen: '::', port: 10010, udp: true, password: password, cipher: aes-256-gcm}
   # Mixed监听器 - 分地区专用端口
   - {name: MIXED-FB, type: mixed, port: 49999, proxy: 故障转移}
-  - {name: MIXED-HK, type: mixed, port: 50000, proxy: 香港自动}
-  - {name: MIXED-SG, type: mixed, port: 50001, proxy: 狮城自动}
-  - {name: MIXED-JP, type: mixed, port: 50002, proxy: 日本自动}
-  - {name: MIXED-TW, type: mixed, port: 50003, proxy: 台湾自动}
-  - {name: MIXED-US, type: mixed, port: 50004, proxy: 美国自动}
-  - {name: MIXED-KR, type: mixed, port: 50005, proxy: 韩国自动}
+  - {name: MIXED-HK, type: mixed, port: 50000, proxy: 香港策略}
+  - {name: MIXED-SG, type: mixed, port: 50001, proxy: 狮城策略}
+  - {name: MIXED-JP, type: mixed, port: 50002, proxy: 日本策略}
+  - {name: MIXED-TW, type: mixed, port: 50003, proxy: 台湾策略}
+  - {name: MIXED-US, type: mixed, port: 50004, proxy: 美国策略}
+  - {name: MIXED-KR, type: mixed, port: 50005, proxy: 韩国策略}
   - {name: MIXED-DIRECT, type: mixed, port: 10086, proxy: 直接连接}
 
 # ==================== 核心配置 ====================
