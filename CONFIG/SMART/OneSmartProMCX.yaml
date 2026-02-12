@@ -10,12 +10,13 @@
 # >>=====================================<<
 # 名称: OneSmartPro 一键智能代理
 # 地址: https://github.com/666OS/YYDS
-# 版本: v1.3.0
+# 版本: v26.1.1
 # 作者: YYDS666
-# 更新: 2025 年 1 月 26 日
+# 更新: 2026 年 1 月 30 日
 # 频道: https://t.me/Pinched666
 # 描述: 基于Mihomo的智能代理配置，提供四层架构智能路由和全场景规则集
 # 集成Smart算法自动选择最优节点，支持故障转移和负载均衡
+# 覆盖AI、流媒体、TikTok等应用场景，提供多种监听协议支持
 
 
 # ==================== 锚点配置 ====================
@@ -231,7 +232,7 @@ proxy-groups:
   - {name: 国内直连,     type: select, proxies: [DIRECT], hidden: true, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png}
 
     # 中转服务层 - LoadBalance负载均衡，提供中转服务提升连通性，选用一个或多个服务商做中转，比如 优质服务商，可通过正则表达式，过滤掉不需要的节点，使用时请修改
-  - {name: 中转服务,  <<: *BaseLB, use: [优质服务商], filter: 'HK|TW', hidden: true, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Round_Robin.png}
+  - {name: 中转服务,   <<: *BaseLB, use: [优质服务商], filter: 'HK|TW', hidden: true, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Round_Robin.png}
 
     # 线路特性层 - Fallback故障转移，（适合不想节点总是被切换或者对固定IP有要求，若手动选择节点飘红 会自动切到智能策略组，保证节点可用性）,（不需要该策略可以在组名上添加 # 注释）
   - {name: 香港-故转,  <<: *BaseFB, proxies: [香港-手选, 香港-智能 ], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
@@ -274,7 +275,7 @@ rules:
   - RULE-SET,HTTPDNS-CN,国内直连                   # HTTPDNS 直连 (防止 CDN 误判)
 
 # ==================== 独立/特定分流规则 ====================
-  # --- PikPak (直连下载) ---
+  # --- PikPak (屏蔽地区检测/直连下载) ---
   - DOMAIN,access.mypikpak.com,REJECT
   - DOMAIN,access.mypikpak.net,REJECT
   - DOMAIN,access.pikpak.me,REJECT
@@ -366,9 +367,6 @@ rules:
   - RULE-SET,GoogleFCM,Google                      # Google 推送服务
 
 # --- 常用代理服务 ---
-  - RULE-SET,Google,Google                         # Google 全家桶
-  - RULE-SET,Google-IP,Google,no-resolve           # Google IP
-  - RULE-SET,GoogleFCM,Google                      # Google 推送服务
   - RULE-SET,Telegram,Proxy                        # Telegram 域名
   - RULE-SET,Telegram-IP,Proxy,no-resolve          # Telegram IP (通话/图片)
   - RULE-SET,Twitter,Proxy                         # Twitter (X)
