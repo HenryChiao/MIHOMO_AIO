@@ -266,18 +266,16 @@ proxy-groups:
   - {name: 英国智能,  <<: *BaseSmart, filter: *FilterUK, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_Kingdom.png}
   - {name: 欧洲智能,  <<: *BaseSmart, filter: *FilterEU, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
 
+# 请根据面板得到的ip进行改进不懂问ai什么意思，一般都是域名或者ip强制。
 tunnels:
   - {network: [tcp, udp], address: 127.0.0.1:9100, target: 91.108.56.147:443, proxy: "电报消息"}
   - {network: [tcp, udp], address: 127.0.0.1:9101, target: 91.108.56.117:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9102, target: 149.154.167.91:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9103, target: 149.154.167.92:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9104, target: 149.154.175.100:443, proxy: "电报消息"}
   - {network: [tcp, udp], address: 127.0.0.1:9105, target: 91.108.56.135:443, proxy: "电报消息"}
   - {network: [tcp, udp], address: 127.0.0.1:9106, target: 91.108.56.130:443, proxy: "电报消息"}
   - {network: [tcp, udp], address: 127.0.0.1:9107, target: 91.108.56.200:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:7701, target: accounts.google.com:443, proxy: "🌐Google服务"}
-  - {network: [tcp, udp], address: 127.0.0.1:7702, target: www.googleapis.com:443, proxy: "🌐Google服务"}
-
+  - {network: [tcp, udp], address: 127.0.0.1:9102, target: 149.154.167.91:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 127.0.0.1:9103, target: 149.154.167.92:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 127.0.0.1:9104, target: 149.154.175.100:443, proxy: "电报消息"}
   
 # ==================== 路由规则 (优化顺序) ====================
 rules:
