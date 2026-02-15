@@ -180,13 +180,15 @@ dns:
   nameserver:
     - https://8.8.8.8/dns-query#RULES&ecs=223.5.5.0/24
   nameserver-policy:
-    "rule-set:Advertising": rcode://success
-    # 直连类规则集匹配的域名绑定国内上游，首跳即国内，不触发国外→国内回切
-    "rule-set:Direct,Private,China":
+    "rule-set:Tracking,Advertising": rcode://success
+    "rule-set:LocationDKS,Private,Direct,XPTV,Download,AppleCN,China":
       - 1.12.12.12
-      - 180.184.1.1"
-    "rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Github,Proxy":
+      - 180.184.1.1
+    "rule-set:Github,AI,Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Proxy":
       - https://8.8.8.8/dns-query#RULES&ecs=223.5.5.0/24
+      - https://cloudflare-dns.com/dns-query
+    "domain-keyword:speedtest":
+      - https://8.8.8.8/dns-query
       - https://cloudflare-dns.com/dns-query
   fake-ip-filter-mode: rule
   fake-ip-filter:
@@ -289,8 +291,6 @@ tunnels:
 # ==================== 路由规则 (优化顺序) ====================
 rules:
   # ==================== 基础拦截（最前，不参与业务分流） ====================
-  - DST-PORT,123,DIRECT
-  - IP-CIDR,95.161.76.100/31,REJECT-DROP,no-resolve
   - RULE-SET,Tracking,REJECT
   - RULE-SET,Advertising,REJECT
   - AND,((DST-PORT,443),(NETWORK,UDP),(NOT,((GEOIP,CN)))),REJECT  # 阻止海外 QUIC
