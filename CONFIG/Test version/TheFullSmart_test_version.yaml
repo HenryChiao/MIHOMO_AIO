@@ -38,7 +38,7 @@ SelectSG: &SelectSG {type: select, proxies: [狮城策略, 默认代理, 故障�
 SelectUS: &SelectUS {type: select, proxies: [美国策略, 默认代理, 故障转移, 香港策略, 狮城策略, 日本策略, 韩国策略, 台湾策略, 欧盟策略, 冷门自选, 全球手动, 直接连接]}
 
 # dns相关
-cn-dns: &cn-dns ["https://dns.alidns.com/dns-query", "https://doh.pub/dns-query"]
+direct-dns: &direct-dns ['https://dns.alidns.com/dns-query#DIRECT','https://doh.pub/dns-query#DIRECT&h3=false']
 global-dns: &global-dns ["https://1.1.1.1/dns-query", "https://dns.google/dns-query", "https://dns.quad9.net/dns-query", "tls://cloudflare-dns.com:853", "tls://dns.google:853"]
 
 # ==================== 代理提供者 ====================
@@ -180,9 +180,14 @@ dns:
   nameserver:
     - https://8.8.8.8/dns-query#RULES&ecs=223.5.5.0/24
   nameserver-policy:
-    'rule-set:Private,Direct,China':
-      - 1.12.12.12
-      - 180.184.1.1
+    "rule-set:Advertising": rcode://success
+    # 直连类规则集匹配的域名绑定国内上游，首跳即国内，不触发国外→国内回切
+    "rule-set:Direct,Private,China":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Github":
+      - https://dns.google/dns-query
+      - https://cloudflare-dns.com/dns-query
   fake-ip-filter-mode: rule
   fake-ip-filter:
     - RULE-SET,fakeip-filter,real-ip
