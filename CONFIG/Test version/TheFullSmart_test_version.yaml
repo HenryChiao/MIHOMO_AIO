@@ -279,14 +279,14 @@ proxy-groups:
 
 # 请根据面板得到的ip进行改进不懂问ai什么意思，一般都是域名或者ip强制。
 tunnels:
-  - {network: [tcp, udp], address: 127.0.0.1:9100, target: 91.108.56.147:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9101, target: 91.108.56.117:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9105, target: 91.108.56.135:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9106, target: 91.108.56.130:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9107, target: 91.108.56.200:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9102, target: 149.154.167.91:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9103, target: 149.154.167.92:443, proxy: "电报消息"}
-  - {network: [tcp, udp], address: 127.0.0.1:9104, target: 149.154.175.100:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9100, target: 91.108.56.147:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9101, target: 91.108.56.117:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9105, target: 91.108.56.135:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9106, target: 91.108.56.130:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9107, target: 91.108.56.200:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9102, target: 149.154.167.91:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9103, target: 149.154.167.92:443, proxy: "电报消息"}
+  - {network: [tcp, udp], address: 0.0.0.0:9104, target: 149.154.175.100:443, proxy: "电报消息"}
   
 # ==================== 路由规则 (优化顺序) ====================
 rules:
