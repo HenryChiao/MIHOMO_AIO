@@ -183,10 +183,10 @@ dns:
     "rule-set:Advertising": rcode://success
     # 直连类规则集匹配的域名绑定国内上游，首跳即国内，不触发国外→国内回切
     "rule-set:Direct,Private,China":
-      - "https://dns.alidns.com/dns-query"
-      - "https://doh.pub/dns-query"
-    "rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Github":
-      - https://dns.google/dns-query
+      - 1.12.12.12
+      - 180.184.1.1"
+    "rule-set:Speedtest,Twitter,Telegram,SocialMedia,NewsMedia,Games,Crypto,Emby,Netflix,YouTube,Streaming,Apple,Google,Microsoft,Github,Proxy":
+      - https://8.8.8.8/dns-query#RULES&ecs=223.5.5.0/24
       - https://cloudflare-dns.com/dns-query
   fake-ip-filter-mode: rule
   fake-ip-filter:
