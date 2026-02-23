@@ -1,0 +1,462 @@
+log-level: warning
+dns:
+  default-nameserver:
+    - 223.5.5.5
+  nameserver:
+    - https://durable0762.com:44443/dns-query
+    - https://delirium9599.com:44443/dns-query
+  enable: true
+  enhanced-mode: fake-ip
+  respect-rules: false
+proxies:
+    - name: 主节点
+      type: vless
+      server: 65.xxx.xxx.xxxx
+      port: 443
+      uuid: xxxxx-2191-4389-82b9-xxxxx
+      network: tcp
+      tls: true
+      udp: true
+      flow: xtls-rprx-vision
+      client-fingerprint: chrome
+      servername: www.xxxxxx.xxxxx
+      reality-opts:
+        public-key: w95O-xxxxx-xxxxxxxx-xxxxxx
+        short-id: xxxxx23
+    
+    - name: AI专用
+      type: vless
+      server: 65.xxx.xxx.xxxx
+      port: 443
+      uuid: xxxxx-2191-4389-82b9-xxxxx
+      network: tcp
+      tls: true
+      udp: true
+      flow: xtls-rprx-vision
+      client-fingerprint: chrome
+      servername: www.xxxxxx.xxxxx
+      reality-opts:
+        public-key: w95O-xxxxx-xxxxxxxx-xxxxxx
+        short-id: xxxxx23
+
+
+proxy-groups:
+  - name: AI
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png"
+    type: select
+    proxies:
+      - AI专用               
+
+  - name: YouTube
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+      
+  - name: Emby
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: TikTok
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT     
+  - name: Bilibili
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png"
+    type: select
+    proxies:
+      - DIRECT       
+      - 主节点
+  - name: Netflix
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Netflix.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Disney
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Disney.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Telegram
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT       
+  - name: Twitter
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Instagram
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Instagram.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Facebook
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Spotify
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Speedtest
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: GitHub
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/GitHub.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Google
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Apple
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_1.png"
+    type: select
+    proxies:
+      - DIRECT 
+      - 主节点
+  - name: Microsoft
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png"
+    type: select
+    proxies:
+      - DIRECT 
+      - 主节点
+  - name: Steam
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Xbox
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Xbox.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: PlayStation
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/PlayStation_1.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Nintendo
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Nintendo.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT 
+  - name: Porn
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Pornhub_1.png"
+    type: select
+    proxies:
+      - 主节点
+      - DIRECT     
+  - name: 国外网站
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png"
+    type: select
+    proxies:
+      - 主节点
+  - name: 兜底流量
+    icon: "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Final.png"
+    type: select
+    proxies:
+      - 主节点
+    
+    
+
+
+# ruleSet配置模块
+rule-anchor:
+  ip: &ip {type: http, interval: 43200, behavior: ipcidr, format: mrs}
+  domain: &domain {type: http, interval: 43200, behavior: domain, format: mrs}
+rule-providers:
+  bilibili:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili.mrs
+
+  cn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
+
+  tiktok:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs
+
+  emby:
+    <<: *domain
+    url: https://github.com/666OS/rules/raw/release/mihomo/domain/Emby.mrs
+  
+  netflix:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs
+  
+  disney:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/disney.mrs
+
+  spotify:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs
+
+  speedtest:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/speedtest.mrs
+  
+  github:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs
+
+  telegram:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs
+
+  youtube:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs
+
+  google:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs
+
+  twitter:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs
+
+  instagram:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/instagram.mrs
+
+  facebook:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/facebook.mrs
+
+  steam@cn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam@cn.mrs
+
+  steam:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs
+
+  apple@cn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple@cn.mrs
+
+  apple:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs
+
+  microsoft@cn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft@cn.mrs
+
+  microsoft:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs
+
+  xbox:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/xbox.mrs
+
+  playstation:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/playstation.mrs
+
+  nintendo@cn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/nintendo@cn.mrs
+
+  nintendo:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/nintendo.mrs
+
+  category-porn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-porn.mrs
+
+  category-ai-!cn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs
+
+  geolocation-!cn:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs
+    
+  category-ads-all:
+    <<: *domain
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs
+
+  private_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/private.mrs
+
+  apple_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/apple.mrs
+
+  google_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/google.mrs
+
+  telegram_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/telegram.mrs
+
+  netflix_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/netflix.mrs
+
+  twitter_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/twitter.mrs
+
+  emby_ip:
+    <<: *ip
+    url: https://github.com/666OS/rules/raw/release/mihomo/ip/Emby.mrs
+
+  cn_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/cn.mrs
+  
+  ad_ip:
+    <<: *ip
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/ad.mrs
+
+rules:
+  # 自用规则
+  - DOMAIN-KEYWORD,v1.uhdnow.com,主节点
+  - DOMAIN-KEYWORD,mlc.once.im,主节点
+  # 所长TV
+  - DOMAIN-SUFFIX,hinet.net,主节点
+  - DOMAIN-SUFFIX,4gtv.tv,主节点
+  - DOMAIN-SUFFIX,api2.4gtv.tv,主节点
+  - DOMAIN-SUFFIX,ofiii.com,主节点
+  - DOMAIN-SUFFIX,starhubgo.com,主节点
+  - DOMAIN-SUFFIX,catvod.com,主节点
+  - IP-CIDR,50.7.158.194/32,主节点
+  - IP-CIDR,123.51.231.132/32,主节点
+  - IP-CIDR,60.250.121.103/32,主节点
+  - DOMAIN-SUFFIX,go-iptv.ggff.net,主节点
+  - DOMAIN-SUFFIX,z2u.com,主节点
+  - DOMAIN-SUFFIX,amazonaws.com,主节点
+  - DOMAIN-SUFFIX,cloudflare.com,主节点
+  - DOMAIN-SUFFIX,nodeseek.com,主节点
+  - DOMAIN-SUFFIX,tvb.com,主节点
+  - DOMAIN-SUFFIX,stream-link.org,主节点
+  - DOMAIN-SUFFIX,lioncdn.net,主节点
+  - DOMAIN-SUFFIX,edgeware.tvb.com,主节点
+  - DOMAIN-SUFFIX,cdn.hinet.net,主节点
+  - DOMAIN-SUFFIX,858.qzz.io,主节点
+  - DOMAIN-SUFFIX,bee.tzh911.qzz.io,主节点
+  - DOMAIN-SUFFIX,cluster-cz5nqyh5nreq6ua6gaqd7okl7o.cloudworkstations.dev,主节点
+  - DOMAIN-SUFFIX,qzz.io,主节点
+  - DOMAIN-SUFFIX,hrtn.net,主节点
+  - DOMAIN-SUFFIX,pendy.dpdns.org,主节点
+  - DOMAIN-SUFFIX,diver.eu.org,主节点
+  - DOMAIN-SUFFIX,wrod.diver.eu.org,主节点
+  - DOMAIN-SUFFIX,judy.xx.kg,主节点
+  - DOMAIN-SUFFIX,8plus.eu.org,主节点
+  - DOMAIN-SUFFIX,ru8.dpdns.org,主节点
+  - DOMAIN-SUFFIX,vip-tptv.xyz,主节点
+  - DOMAIN-SUFFIX,passwdword.xyz,主节点
+  - DOMAIN-SUFFIX,infini.money,主节点
+  - DOMAIN-SUFFIX,hudsonvalleyhost.com,主节点
+  - DOMAIN-KEYWORD,astro,主节点
+  - DOMAIN-KEYWORD,wavve,主节点
+
+  # 去广告
+  - RULE-SET,category-ads-all,REJECT
+  - RULE-SET,ad_ip,REJECT,no-resolve
+  # Bilibili
+  - RULE-SET,bilibili,Bilibili
+  # Apple
+  - RULE-SET,apple@cn,DIRECT
+  - RULE-SET,apple,Apple
+  # TikTok
+  - RULE-SET,tiktok,TikTok
+  # Emby
+  - RULE-SET,emby,Emby
+  # Netflix
+  - RULE-SET,netflix,Netflix
+  # Disney
+  - RULE-SET,disney,Disney
+  # Spotify
+  - RULE-SET,spotify,Spotify
+  # Speedtest
+  - RULE-SET,speedtest,Speedtest
+  # GitHub
+  - RULE-SET,github,GitHub
+  # Telegram
+  - RULE-SET,telegram,Telegram
+  # YouTube
+  - RULE-SET,youtube,YouTube
+  # Google
+  - RULE-SET,google,Google
+  # Twitter
+  - RULE-SET,twitter,Twitter
+  # Instagram
+  - RULE-SET,instagram,Instagram
+  # Facebook
+  - RULE-SET,facebook,Facebook
+  # Steam
+  - RULE-SET,steam@cn,DIRECT
+  - RULE-SET,steam,Steam
+  # Microsoft
+  - RULE-SET,microsoft@cn,DIRECT
+  - RULE-SET,microsoft,Microsoft
+  # Xbox
+  - RULE-SET,xbox,Xbox
+  # PlayStation
+  - RULE-SET,playstation,PlayStation
+  # Nintendo
+  - RULE-SET,nintendo@cn,DIRECT
+  - RULE-SET,nintendo,Nintendo
+  # Porn
+  - RULE-SET,category-porn,Porn
+  # AI
+  - RULE-SET,category-ai-!cn,AI
+  # 国外网站
+  - RULE-SET,geolocation-!cn,国外网站
+  # 国内网站
+  - RULE-SET,cn,DIRECT
+  # private_ip
+  - RULE-SET,private_ip,DIRECT,no-resolve
+  # apple_ip
+  - RULE-SET,apple_ip,Apple,no-resolve
+  # google_ip
+  - RULE-SET,google_ip,Google,no-resolve
+  # telegram_ip
+  - RULE-SET,telegram_ip,Telegram,no-resolve
+  # netflix_ip
+  - RULE-SET,netflix_ip,Netflix,no-resolve
+  # twitter_ip
+  - RULE-SET,twitter_ip,Twitter,no-resolve
+  # emby_ip
+  - RULE-SET,emby_ip,Emby,no-resolve
+  # cn_ip
+  - RULE-SET,cn_ip,DIRECT
+  # 兜底流量
+  - MATCH,兜底流量
