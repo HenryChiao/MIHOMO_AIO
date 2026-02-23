@@ -1,0 +1,36 @@
+name: Sync Tutorial to Wiki
+
+on:
+  push:
+    paths:
+      # 当这个文件发生变动时触发自动化部署
+      - 'doc/mihomo配置从入门到进阶完全教程.md'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  build-and-deploy-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout MIHOMO_AIO
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Split Script
+        run: |
+          python scripts/split_wiki.py
+          
+      - name: Deploy to mihomo_yamls Wiki
+        # 这一步将生成好的 markdown 文件推送到另一个仓库的 wiki 中
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # 注意：需要你配置一个 Personal Access Token
+          personal_token: ${{ secrets.WIKI_SYNC_TOKEN }}
+          publish_dir: ./wiki_output
+          # 指向你要部署的那个 Wiki 仓库
+          external_repository: HenryChiao/mihomo_yamls.wiki
+          publish_branch: master
+          commit_message: "Auto-sync and split wiki from MIHOMO_AIO docs"
