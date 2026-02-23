@@ -1,7 +1,7 @@
 # Mihomo 配置从入门到进阶：三阶段完全教程
 
 > **参考来源：**
-> [虚空终端官方文档](https://wiki.metacubex.one/) · [官方语法手册](https://wiki.metacubex.one/en/handbook/syntax/) · [官方 dialer-proxy 文档](https://wiki.metacubex.one/en/config/proxies/dialer-proxy/) · [iyyh 自用配置](https://iyyh.net/posts/mihomo-self-config) · [SukkA 规则集](https://ruleset.skk.moe/) · [HenryChiao YAMLS 合集](https://github.com/HenryChiao/MIHOMO_YAMLS)
+> [虚空终端官方文档](https://wiki.metacubex.one/) 
 
 ---
 
