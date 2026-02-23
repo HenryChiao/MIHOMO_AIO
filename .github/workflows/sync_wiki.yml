@@ -31,6 +31,6 @@ jobs:
           personal_token: ${{ secrets.WIKI_SYNC_TOKEN }}
           publish_dir: ./wiki_output
           # 指向你要部署的那个 Wiki 仓库
-          external_repository: ChiaoYenta/THE_HNERYCHIAO_MIHOMO_YAMLS.wiki
+          external_repository: HenryChiao/mihomo_yamls.wiki
           publish_branch: master
           commit_message: "Auto-sync and split wiki from MIHOMO_AIO docs"
