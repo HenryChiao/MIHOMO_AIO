@@ -1,0 +1,44 @@
+# 策略组
+proxy-groups:
+  # 默认选择新加坡节点
+  - {name: 🎥 奈飞视频, type: select, proxies: [🇸🇬 新加坡节点]}
+  # 默认选择日本节点，也可切换到直连
+  - {name: 📺 哔哩哔哩, type: select, proxies: [🇯🇵 日本节点, 🎯 全球直连]}
+  # 自动选择延迟最低的新加坡节点；容差大于 50ms 才会切换到延迟低的那个节点
+  - {name: 🇸🇬 新加坡节点, type: url-test, tolerance: 50, include-all: true, filter: "(?i)(🇸🇬|新|sg|singapore)"}
+  # 手动选择日本任一节点
+  - {name: 🇯🇵 日本节点, type: select, include-all: true, filter: "(?i)(🇯🇵|日|jp|japan)"}
+  - {name: 🎯 全球直连, type: select, proxies: [DIRECT], hidden: true}
+
+# 规则集（yaml 文件每天自动更新）
+rule-providers:
+  netflix:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/netflix.mrs
+    url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/netflix.mrs"
+    interval: 86400
+
+  netflixip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    path: ./ruleset/netflixip.mrs
+    url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/netflixip.mrs"
+    interval: 86400
+
+  bilibili:
+    type: http
+    behavior: domain
+    format: mrs
+    path: ./ruleset/bilibili.mrs
+    url: "https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/bilibili.mrs"
+    interval: 86400
+
+# 规则
+rules:
+  # 自定义规则优先放前面
+  - RULE-SET,netflix,🎥 奈飞视频
+  - RULE-SET,netflixip,🎥 奈飞视频
+  - RULE-SET,bilibili,📺 哔哩哔哩
