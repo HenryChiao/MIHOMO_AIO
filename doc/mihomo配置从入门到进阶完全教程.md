@@ -59,603 +59,7 @@ nameserver:
   - 119.29.29.29
 ```
 
-### YAML 锚点：进阶配置的灵魂
 
-当你有大量结构相同的配置项（比如几十个代理组都要写相同的 `url`、`interval`、`timeout`），就可以用 YAML 锚点来消除重复：
-
-```yaml
-# & 定义锚点，给这块内容起一个名字
-# * 引用锚点
-# <<: 将引用的内容"合并"进当前对象（覆盖同名键，缺失的键则补入）
-
-# 第一步：在顶层定义锚点（键名 p 不存在于 mihomo，会被忽略，只用于锚点）
-p: &p                         # &p 给这个块起名叫 p
-  type: http
-  interval: 86400
-  health-check:
-    enable: true
-    url: "https://www.gstatic.com/generate_204"
-    interval: 300
-    lazy: true
-
-# 第二步：在 proxy-providers 中用 <<: *p 引用
-proxy-providers:
-  机场A:
-    <<: *p                    # 把 p 锚点的所有字段合并进来
-    url: "https://your-airport-a.com/subscribe?token=xxx"
-    path: ./proxy_providers/airport-a.yaml
-
-  机场B:
-    <<: *p                    # 同样引用 p，避免重复
-    url: "https://your-airport-b.com/subscribe?token=xxx"
-    path: ./proxy_providers/airport-b.yaml
-```
-
-等价展开后是：
-
-```yaml
-proxy-providers:
-  机场A:
-    type: http
-    interval: 86400
-    health-check: { enable: true, url: "...", interval: 300, lazy: true }
-    url: "https://your-airport-a.com/subscribe?token=xxx"
-    path: ./proxy_providers/airport-a.yaml
-  # 机场B 同理...
-```
-
-**注意：** 锚点内有重复键时，当前块的键优先（不会被锚点覆盖）。例如 `机场B` 里如果单独写了 `interval: 43200`，则该值覆盖锚点里的 `86400`。
-
----
-
-### 📊 各流派锚点写法对比
-
-社区里存在四种主要的锚点使用风格，各有侧重，没有绝对的好坏，理解区别后选择适合自己的即可。
-
----
-
-**流派一：只锚定 proxy-providers（最简单，入门首选）**
-
-```yaml
-# 来源：大量入门教程、官方示例
-p: &p
-  type: http
-  interval: 86400
-  health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300 }
-
-proxy-providers:
-  机场A: { <<: *p, url: "...", path: ./proxy_providers/a.yaml }
-  机场B: { <<: *p, url: "...", path: ./proxy_providers/b.yaml }
-
-# proxy-groups 部分仍然手写，没有锚点
-proxy-groups:
-  - name: "🚀 节点选择"
-    type: select
-    use: [机场A, 机场B]
-    proxies: [DIRECT]
-```
-
-| 优点 | 缺点 |
-|------|------|
-| 结构清晰，一眼看懂 | proxy-groups 部分仍有大量重复 |
-| 对新手友好，易于调试 | 地区组多时维护成本上升 |
-| 修改 provider 参数只需改一处 | 不适合十几个地区的大型配置 |
-
----
-
-**流派二：providers + groups 全部锚定（iyyh 风格，社区主流）**
-
-```yaml
-# 来源：iyyh 自用配置 / 多数进阶教程
-# 特点：同时锚定 provider 参数 和 group 类型参数，filter 正则也锚定为字符串
-
-NodeParam: &NodeParam
-  type: http
-  interval: 86400
-  health-check: { enable: true, url: "https://...", interval: 300 }
-
-# 代理组四种类型全部锚定
-Select:    &Select    { type: select,       include-all: true }
-UrlTest:   &UrlTest   { type: url-test,     include-all: true, interval: 300, lazy: true, tolerance: 50, timeout: 2000, hidden: true }
-FallBack:  &FallBack  { type: fallback,     include-all: true, interval: 300, lazy: true, timeout: 2000, hidden: true }
-LoadBalance: &LoadBalance { type: load-balance, include-all: true, interval: 300, lazy: true, strategy: consistent-hashing, hidden: true }
-
-# filter 正则也锚定为字符串引用
-FilterHK: &FilterHK '^(?=.*(🇭🇰|港|HK))(?!.*(剩余|到期|客服)).*$'
-
-proxy-providers:
-  Node: { <<: *NodeParam, url: "...", path: ./proxy_providers/node.yaml }
-
-proxy-groups:
-  - { name: "🇭🇰 香港-自动",   <<: *UrlTest,    filter: *FilterHK }
-  - { name: "🇭🇰 香港-回退",   <<: *FallBack,   filter: *FilterHK }
-  - { name: "🇭🇰 香港-均衡",   <<: *LoadBalance, filter: *FilterHK }
-  - { name: "🇭🇰 手动选择",   <<: *Select,     filter: *FilterHK }
-```
-
-| 优点 | 缺点 |
-|------|------|
-| 极大减少重复，地区组增减只需一行 | 初次阅读有一定理解门槛 |
-| filter 锚点保证正则一致，不怕改漏 | 调试时需要展开锚点才能看完整参数 |
-| 是目前社区最主流的进阶写法 | `<<:` 合并不能覆盖数组，只能整体替换 |
-
----
-
-**流派三：proxies 选项也锚定（旧式兼容写法）**
-
-```yaml
-# 来源：部分早期教程，官方示例中也有体现
-# 特点：把一组 proxy-groups 里常用的 proxies 列表也做成锚点，方便多个功能组复用
-
-# 一个"通用备选节点列表"
-pr: &pr
-  type: select
-  proxies: ["手动选择", "自动选择", "🇭🇰 香港", "🇯🇵 日本", "🇸🇬 新加坡", "🇺🇸 美国", DIRECT]
-
-proxy-groups:
-  - name: "🤖 AI 服务"
-    <<: *pr              # 直接继承完整 proxies 列表
-
-  - name: "📹 流媒体"
-    <<: *pr              # 同一套选项
-
-  - name: "✈️ 电报消息"
-    <<: *pr
-```
-
-| 优点 | 缺点 |
-|------|------|
-| 功能组的 proxies 选项保持统一，不容易漏写 | 各功能组的首选节点无法个性化（比如 AI 想默认美国、流媒体想默认香港） |
-| 配置极短，适合"懒人"场景 | 如果某个功能组需要不同的 proxies 顺序，锚点就无法满足，反而要额外处理 |
-| | 随着需求复杂，这种锚定方式往往最终被放弃 |
-
-> **注意一个 YAML 限制：** `<<:` 合并时，如果锚点和当前块都有同名的列表键（如 `proxies`），**不会合并列表，而是当前块的值整体覆盖锚点的值**。所以 `<<: *pr` + 单独写 `proxies:` 时，单独写的 `proxies` 完全替换锚点里的 `proxies`，两个列表不会合并。
-
----
-
-**流派四：单行 JSON 花括号 + 锚点极简写法（HenryChiao / YYDS 等配置合集风格）**
-
-```yaml
-# 来源：HenryChiao YAMLS、666OS/YYDS 等重度配置合集
-# 特点：把锚点和单行花括号结合到极致，一行一个 group，视觉上类似表格
-
-# 锚点定义
-p:  &p  { type: http, interval: 86400, health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true } }
-g_t: &g_t { type: url-test,  url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true, tolerance: 50, timeout: 2000, include-all: true, hidden: true }
-g_f: &g_f { type: fallback,  url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true, timeout: 2000, include-all: true, hidden: true }
-g_b: &g_b { type: load-balance, url: "https://www.gstatic.com/generate_204", interval: 300, strategy: consistent-hashing, include-all: true, hidden: true }
-FHK: &FHK '^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服|订阅)).*$'
-FSG: &FSG '^(?=.*(🇸🇬|新|SG|Singapore))(?!.*(回国|剩余|到期|客服|订阅)).*$'
-FJP: &FJP '^(?=.*(🇯🇵|日|JP|Japan))(?!.*(回国|剩余|到期|客服|订阅)).*$'
-
-proxy-providers:
-  机场A: { <<: *p, url: "...", path: ./proxy_providers/a.yaml }
-  机场B: { <<: *p, url: "...", path: ./proxy_providers/b.yaml }
-
-proxy-groups:
-  # 地区三合一，一气呵成
-  - { name: "🇭🇰 香港-自动", <<: *g_t, filter: *FHK }
-  - { name: "🇭🇰 香港-回退", <<: *g_f, filter: *FHK }
-  - { name: "🇭🇰 香港-均衡", <<: *g_b, filter: *FHK }
-  - { name: "🇸🇬 新加坡-自动", <<: *g_t, filter: *FSG }
-  - { name: "🇸🇬 新加坡-回退", <<: *g_f, filter: *FSG }
-  - { name: "🇯🇵 日本-自动",   <<: *g_t, filter: *FJP }
-  # ... 每个地区三行，极其整齐
-```
-
-| 优点 | 缺点 |
-|------|------|
-| 配置文件最短，视觉最整洁，像表格一样一目了然 | 对 YAML 锚点不熟悉的人几乎无法读懂 |
-| 增加一个地区只需加三行，维护成本极低 | 单行花括号不能加注释，调试困难 |
-| 结构高度一致，适合大型配置（几十个地区） | 锚点名称短（如 `g_t`）不语义化，需要配套文档 |
-| 是目前大型配置仓库的主流做法 | 一旦某个 group 需要特殊参数，要单独处理，破坏整齐感 |
-
----
-
-**流派五：三层嵌套锚点（理论最优，有重要限制）**
-
-这是来自 [HenryChiao MIHOMO_AIO](https://github.com/HenryChiao/MIHOMO_AIO) 以及 issue #2274 中社区用户提议的终极写法，思路是把锚点再拆一层：**基础参数层** → **组类型层** → **地区层**，三层级联继承。
-
-```yaml
-# 来源：HenryChiao AIO / 社区 Issue #2274 的理想写法
-# 思路：把"公共基础"、"组类型"、"地区 filter+icon" 各自锚定，然后合并
-
-# 第一层：所有 group 共享的基础参数
-area: &area
-  url: "https://www.gstatic.com/generate_204"
-  interval: 300
-  include-all: true
-  lazy: true
-  timeout: 2000
-
-# 第二层：在 area 基础上叠加各类型特有参数
-auto:  &auto  { type: url-test,      <<: *area, tolerance: 50, max-failed-times: 3, hidden: true }
-fall:  &fall  { type: fallback,      <<: *area, max-failed-times: 3, hidden: true }
-bal:   &bal   { type: load-balance,  <<: *area, strategy: consistent-hashing, hidden: true }
-
-# 第三层：每个地区的 filter + icon 也锚定成一个对象
-hk: &hk { filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/hk.svg" }
-sg: &sg { filter: "^(?=.*(🇸🇬|新|SG|Singapore))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/sg.svg" }
-jp: &jp { filter: "^(?=.*(🇯🇵|日|JP|Japan))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/jp.svg" }
-
-# ── 理想写法（目前 mihomo 不支持！会静默忽略第二个 <<:）────────────────
-proxy-groups:
-  - { name: "香港|自动", <<: *auto, <<: *hk }   # ❌ 第二个 <<: *hk 被忽略
-  - { name: "香港|回退", <<: *fall, <<: *hk }   # ❌ icon 和 filter 都丢失
-  - { name: "香港|均衡", <<: *bal,  <<: *hk }   # ❌ 同上
-
-# ── 当前实际可用的绕过写法（手动把 filter 和 icon 写进去）────────────────
-proxy-groups:
-  - { name: "香港|自动", <<: *auto, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/hk.svg" }
-  - { name: "香港|回退", <<: *fall, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/hk.svg" }
-  # 或者用字符串锚点替代 filter，但 icon 还是得重复写：
-  - { name: "香港|自动", <<: *auto, filter: *hk_filter, icon: "https://example.com/hk.svg" }
-```
-
-> **⚠️ 关键限制（来自 [mihomo issue #2274](https://github.com/MetaCubeX/mihomo/issues/2274)，于 2025 年 9 月提出，closed as not planned）：**
->
-> 在**单行 JSON 花括号**格式中，mihomo 目前只支持**一个** `<<:` 合并操作。如果你写了两个 `<<:`（如 `{ <<: *auto, <<: *hk }`），第二个会被 YAML 解析器静默忽略（YAML 规范中同名键后者覆盖前者，而 `<<:` 本身就是一个键）。
->
-> **标准多行 YAML 格式中也有同样限制**——多个 `<<:` 在 YAML 1.1 规范里理论上是允许的，但 mihomo 使用的 Go YAML 库只处理第一个。
->
-> 结论：**三层锚点思路是最优雅的，但第三层（地区的 filter+icon）目前无法通过第二个 `<<:` 合并进来，只能手写或用字符串锚点替代 filter。** 等这个特性被支持后，流派五将是最推荐的写法。
-
-| 优点 | 缺点 |
-|------|------|
-| 逻辑分层最清晰，修改基础参数只需改 `area`，改某类型参数只需改 `auto`/`fall` 等 | 多 `<<:` 合并目前不被支持，第三层地区锚点只是"理想" |
-| 增加新地区理论上只需加一行 | 现实中仍需手动重复 filter/icon，部分抵消了优雅性 |
-| icon 参数与 filter 打包，视觉管理更方便 | 三层嵌套对新手完全不友好，调试链路更长 |
-| 代表了社区对锚点用法的最新探索方向 | 当前最佳实践仍是流派二或流派四，而非流派五 |
-
----
-
-**流派六（a）：官方 geox 快捷配置风格（`pr` 极简锚点，来自官方 Wiki 示例）**
-
-这是 [MetaCubeX 官方 Wiki 快捷配置示例](https://wiki.metacubex.one/example/conf/)的写法，也是早期社区教程广泛流传的格式。
-
-```yaml
-# 来源：官方 Wiki geox 快捷配置 / Discussion #1024
-# 特点：只锚定"功能组候选列表"，地区组直接 include-all-providers
-
-pr: &pr
-  type: select
-  proxies:
-    - 默认
-    - 香港
-    - 台湾
-    - 日本
-    - 新加坡
-    - 美国
-    - 全部节点
-    - 自动选择
-    - DIRECT
-
-p: &p
-  type: http
-  interval: 3600
-  health-check:
-    enable: true
-    url: https://www.gstatic.com/generate_204
-    interval: 300
-
-proxy-providers:
-  provider1: { <<: *p, url: "..." }
-  provider2: { <<: *p, url: "..." }
-
-proxy-groups:
-  # 顶层和功能组全部用 pr 锚点（极简两行）
-  - { name: 默认,      type: select, proxies: [自动选择, DIRECT, 香港, 台湾, 日本, 新加坡, 美国, 全部节点] }
-  - { name: Google,    <<: *pr }
-  - { name: Telegram,  <<: *pr }
-  - { name: YouTube,   <<: *pr }
-  - { name: NETFLIX,   <<: *pr }
-  # 地区组：include-all-providers 直接取所有 provider，按 filter 筛选
-  - { name: 香港, type: select, include-all-providers: true, filter: "(?i)港|hk|hongkong|hong kong" }
-  - { name: 台湾, type: select, include-all-providers: true, filter: "(?i)台|tw|taiwan" }
-  - { name: 全部节点,   type: select, include-all-providers: true }
-  - { name: 自动选择,   type: url-test, include-all-providers: true, tolerance: 10 }
-```
-
-| 优点 | 缺点 |
-|------|------|
-| 配置文件极短，即抄即用，适合新手快速上手 | 所有功能组候选列表完全相同，无法给 AI 配美国优先、给流媒体配香港优先 |
-| 官方维护，写法稳定，不依赖任何第三方规则集 | 地区组用 select 而不是 url-test，没有自动测速 |
-| 功能组用 `<<: *pr` 一行搞定，对应到 `pr` 锚点就知道有哪些选项 | 一旦需要差异化，这种模式就要大改，扩展性差 |
-| 作为模板起点很好，在此基础上逐步添加功能 | 不区分"自动测速"和"手动选择"层次，结构比较扁平 |
-
----
-
-**流派六（b）：echs-top 风格（`use` 锚点嵌套 + `zl`/`dl` 双模板，来自真实个人配置）**
-
-这是 [echs-top/proxy](https://github.com/echs-top/proxy) 的真实个人配置（持续更新至 2026 年），也是 Issue #2274 的提交者本人使用的写法。它有几个和其他流派完全不同的设计思路：
-
-```yaml
-# 来源：echs-top/proxy（2026-02-21 更新）
-# 核心特色：
-#  1. providers 锚点（包含 exclude-filter，一次性净化垃圾节点）
-#  2. use 锚点（锚定"使用哪些 provider"）
-#  3. fall 锚点嵌套引用 use 锚点（锚点套锚点）
-#  4. zl/dl 双模板（直连优先 vs 代理优先）
-
-providers: &providers
-  type: http
-  interval: 86400
-  proxy: 直接连接
-  health-check: { enable: true, url: 'https://dns.google/generate_204', expected-status: 204, interval: 600, timeout: 3000, max-failed-times: 2, lazy: false }
-  exclude-filter: '(?i)套餐|剩余|流量|到期|重置|频道|订阅|官网|禁止|客户端|有效|联系|测试|节点|...'
-
-proxy-providers:
-  link1: { <<: *providers, url: '订阅链接1', path: ./providers/link1.yaml }
-  link2: { <<: *providers, url: '订阅链接2', path: ./providers/link2.yaml }
-  link3: { <<: *providers, url: '订阅链接3', path: ./providers/link3.yaml }
-
-# ── 关键设计：use 锚点定义"哪些 provider 进自动组"
-use: &use { use: [link1, link2] }    # link3 是手动组专用，不进自动测速
-
-# ── fall 锚点嵌套引用 use 锚点（<<: *use 会展开 use 字段）
-fall: &fall { type: fallback, <<: *use, hidden: true }
-
-# ── zl（直连优先选择）和 dl（代理优先选择）两套功能组模板
-zl: &zl { type: select, proxies: [直接连接, 代理连接, 最低延迟, 香港|故障转移, ...], include-all-providers: true }
-dl: &dl { type: select, proxies: [代理连接, 直接连接, 最低延迟, 香港|故障转移, ...], include-all-providers: true }
-
-proxy-groups:
-  - { name: 代理连接, type: select, proxies: [最低延迟, 香港|故障转移, ...], include-all-providers: true, icon: '...' }
-  - { name: 直接连接, type: select, proxies: [DIRECT, ipv4-prefer, ipv6-prefer], icon: '...' }
-  # zl 用于"直连时也允许代理"的服务（如 FCM 推送）
-  - { name: FCM推送,  <<: *zl, icon: '...' }
-  # dl 用于"走代理为主"的服务
-  - { name: TELEGRAM, <<: *dl, icon: '...' }
-  - { name: 国外AI,   <<: *dl, icon: '...' }
-  # 最低延迟：url-test
-  - { name: 最低延迟, type: url-test, tolerance: 30, <<: *use, hidden: true, icon: '...' }
-  # 地区组：只用 fallback，没有 url-test + load-balance 三合一
-  - { name: 香港|故障转移, <<: *fall, filter: '(?i)🇭🇰|香港|\bHK\b', icon: '...' }
-  - { name: 日本|故障转移, <<: *fall, filter: '(?i)🇯🇵|日本|\bJP\b', icon: '...' }
-  # ...
-```
-
-**几个真正独特的设计决策：**
-
-1. **`use` 锚点嵌套**：把"哪些 provider 进组"也抽象成锚点。`fall: &fall { type: fallback, <<: *use }` 展开后 `use` 字段直接从锚点继承，这样修改参与自动组的 provider 只需改一行 `use` 锚点。
-
-2. **`zl` / `dl` 双模板**：zl（直连优先）和 dl（代理优先）本质上是同一套候选列表，区别在于 `proxies` 列表里"直接连接"和"代理连接"的先后顺序不同。功能组选哪套模板，就决定了面板里的默认选项是什么——而不是所有功能组都用同一套。
-
-3. **只用 fallback，不用 url-test + load-balance**：echs-top 的选择是"只要能用就用，挂了再切"（fallback），而不是"持续测速选最快的"（url-test）。这降低了节点的健康检查频率和流量消耗。
-
-4. **`exclude-filter` 在 provider 层而不是 filter**：用"黑名单"排除垃圾节点，而不是"白名单"只保留想要的，这样一个订阅里不同地区的节点都能被各自地区组正确筛选。
-
-| 特点 | 说明 |
-|------|------|
-| `use` 锚点嵌套 | 地区组的 provider 来源集中管理，不用重复写 `use: [link1, link2]` |
-| `zl`/`dl` 双模板 | 功能组有"直连优先"和"代理优先"两套候选顺序，而不是统一的一套 |
-| 只用 fallback | 减少健康检查流量，适合节点稳定的场景；代价是没有实时测速排序 |
-| `exclude-filter` 净化 | provider 层用黑名单排垃圾，比用 filter 白名单更能保留有效节点 |
-| 与 iyyh 的本质差异 | iyyh 用三合一（自动/回退/均衡），每个地区三个组；echs-top 只用一个 fallback 组 |
-| 不设 url-test 地区组 | 不追求最低延迟，追求稳定连接，适合不需要精细调节速度的用户 |
-
----
-
-**横向对比一：`filter` 的三种写法**
-
-这是锚点写法中最容易忽视的细节差异，不同风格对 filter 的处理方式不同：
-
-```yaml
-# 写法 A：filter 完全内联（不用锚点）
-# 优点：直观；缺点：同一地区的多个 group 要粘贴三遍相同正则，改一处要改三处
-- { name: "香港|自动", <<: *g_t, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$" }
-- { name: "香港|回退", <<: *g_f, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$" }
-- { name: "香港|均衡", <<: *g_b, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$" }
-
-# 写法 B：filter 锚定为字符串（iyyh 风格，目前最佳）
-# 优点：正则统一管理，改一处全部生效；缺点：需要额外一行定义
-FilterHK: &FilterHK "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$"
-
-- { name: "香港|自动", <<: *g_t, filter: *FilterHK }
-- { name: "香港|回退", <<: *g_f, filter: *FilterHK }
-- { name: "香港|均衡", <<: *g_b, filter: *FilterHK }
-
-# 写法 C：filter + icon 锚定为对象（HenryChiao AIO 理想写法）
-# 优点：连 icon 也一起管理，最终极；缺点：受限于多 <<: 不支持，需要绕过
-hk: &hk
-  filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$"
-  icon: "https://example.com/flags/hk.svg"
-
-# 当前绕过写法：只能用 *hk 引用 filter，icon 要从锚点中取出或单独写
-# 待 issue #2274 支持后可直接 <<: *hk 合并
-```
-
-| | 写法 A（完全内联） | 写法 B（字符串锚点） | 写法 C（对象锚点） |
-|--|--|--|--|
-| 正则维护 | ❌ 每处单独维护 | ✅ 集中管理 | ✅ 集中管理 |
-| icon 维护 | 手动或省略 | 手动 | ✅ 打包（待支持） |
-| 可读性 | ✅ 最直观 | ✅ 清晰 | ⚠️ 需理解锚点 |
-| 当前可用性 | ✅ 完全可用 | ✅ 完全可用 | ⚠️ filter 可用，icon 合并受限 |
-| 推荐程度 | 小型配置 | **推荐** | 待特性支持后推荐 |
-
----
-
-**横向对比二：`include-all` vs 显式 `use: [provider]`**
-
-这两种写法决定了代理组"从哪里取节点"，混淆使用会导致节点消失或重复：
-
-```yaml
-# 写法 A：显式列出 use（老写法，精确控制）
-proxy-groups:
-  - name: "🚀 节点选择"
-    type: select
-    use:
-      - 机场A          # 只包含 机场A 的节点
-      - 机场B          # 再加上 机场B 的节点
-    proxies:
-      - DIRECT
-
-# 写法 B：include-all（新写法，自动包含一切）
-proxy-groups:
-  - name: "🚀 节点选择"
-    type: select
-    include-all: true  # 自动包含所有 proxies + 所有 proxy-providers
-    proxies:
-      - DIRECT          # proxies 里手写的条目仍然有效，排在 include-all 节点之前
-
-# 写法 C：include-all-proxies / include-all-providers（拆分控制）
-proxy-groups:
-  - name: "🚀 节点选择"
-    type: select
-    include-all-proxies: true    # 只包含 proxies 段手写的节点
-    include-all-providers: false # 不包含 proxy-providers 的节点
-    proxies: [DIRECT]
-```
-
-| | 写法 A（显式 use） | 写法 B（include-all） | 写法 C（拆分） |
-|--|--|--|--|
-| 新增 provider 后 | ❌ 要手动去每个 group 加 `use` | ✅ 自动包含，零维护 | 按需控制 |
-| 精确指定来源 | ✅ 精确到 provider 级别 | ❌ 全包含，无法排除某个 provider | ✅ 可分别控制 |
-| 搭配 filter 使用 | ✅ 在 group 层 filter | ✅ 在 group 层 filter | ✅ |
-| 推荐场景 | 多机场各司其职、不想混合 | **日常主力，最省事** | 精细控制场景 |
-
-> **注意：** `include-all` 时 `use:` 字段会失效，`include-all-providers` 设为 true 后同样使 `use:` 失效。不要同时写两者。
-
----
-
-**流派六：liuran001「懒人配置」风格（`pr` + `use` 双锚点，完全不同的思路）**
-
-这是 [liuran001 的社区高星配置（584 stars）](https://gist.github.com/liuran001/5ca84f7def53c70b554d3f765ff86a33) 代表的另一套完全不同的锚点哲学：**不锚定组类型参数，而是锚定"功能组的 proxies 候选列表"和"订阅组的完整定义"**。
-
-```yaml
-# 来源：liuran001 懒人配置（社区高星）
-# 核心思路：
-#   pr  锚定所有功能组共用的 proxies 候选列表
-#   use 锚定订阅组的完整写法（类型+订阅来源）
-#   p   锚定 proxy-provider 参数（与其他风格相同）
-
-# 1. pr：所有功能组共享的代理候选列表
-pr: &pr
-  type: select
-  proxies:
-    - 节点选择
-    - 香港
-    - 台湾
-    - 日本
-    - 新加坡
-    - 美国
-    - 其它地区
-    - 全部节点
-    - 自动选择
-    - DIRECT
-
-# 2. use：订阅聚合组的完整写法
-use: &use
-  type: url-test        # 改为 type: select 则变成手动选择
-  use:
-    - 订阅一
-    - 订阅二
-
-# 3. p：provider 参数
-p: &p
-  type: http
-  interval: 3600
-  health-check:
-    enable: true
-    url: https://cp.cloudflare.com
-    interval: 300
-    timeout: 1000
-    tolerance: 100
-
-proxy-providers:
-  订阅一:
-    <<: *p
-    url: "https://airport-a.com/..."
-  订阅二:
-    <<: *p
-    url: "https://airport-b.com/..."
-
-proxy-groups:
-  # 顶层入口
-  - name: 节点选择
-    <<: *use          # 直接用 use 锚点，订阅类型和来源一行搞定
-
-  # 地区自动组（不用锚点，直接写）
-  - name: 香港
-    type: url-test
-    use: [订阅一, 订阅二]
-    filter: "(?i)🇭🇰|香港|HK"
-    url: https://cp.cloudflare.com
-    interval: 300
-
-  # 功能组全部继承 pr 候选列表
-  - name: "🤖 AI 服务"
-    <<: *pr           # 一行继承完整候选列表
-
-  - name: "📹 流媒体"
-    <<: *pr           # 同上，功能组配置极简
-```
-
-| 特点 | 说明 |
-|------|------|
-| `pr` 锚点 | 把所有功能组的候选 proxies 列表统一管理，加减地区只改一处 |
-| `use` 锚点 | 订阅聚合组的写法也锚定，多个聚合组（全部节点、自动选择等）复用 |
-| 与 iyyh 风格的本质区别 | iyyh 锚定"组类型参数"；liuran001 锚定"组的 proxies 候选列表" |
-| 优点 | 功能组极其简洁（两行），新手容易看懂 proxies 来源 |
-| 缺点 | 所有功能组候选列表完全相同，无法给 AI 服务单独配美国优先、流媒体配香港优先；`pr` 锚点一旦修改影响所有功能组 |
-| DNS 模式 | 该配置使用 `redir-host`（不是 `fake-ip`），这是另一个值得对比的设计选择（见下文） |
-
----
-
-**横向对比三：`fake-ip` vs `redir-host`——两种主流 DNS 模式的真实差异**
-
-这是配置文件中争议最多的选项之一，两种模式在不同场景下各有优劣：
-
-```yaml
-# 模式 A：fake-ip（iyyh / 本教程主推）
-dns:
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  # ✅ 特点：收到 DNS 查询后立即返回假 IP，流量发到假 IP 后才真正建立连接
-  # 域名规则在 DNS 解析完成前就能匹配，速度快，fake-ip 不在本地真正解析代理域名
-
-# 模式 B：redir-host（liuran001 / 路由器常用）
-dns:
-  enhanced-mode: redir-host
-  # ✅ 特点：正常完成 DNS 解析，用真实 IP 匹配规则；DNS 解析结果透传给应用
-  # 路由器兼容性最好；某些不兼容 fake-ip 的 APP（游戏/国内支付）更稳定
-```
-
-| 对比项 | fake-ip | redir-host |
-|--------|---------|------------|
-| 连接速度 | ⭐⭐⭐ 更快（无需等待真实 DNS） | ⭐⭐ 稍慢（需完成真实 DNS 解析） |
-| 规则匹配 | 域名规则优先，无需 DNS 就能匹配 | 先 DNS 再匹配，可能触发 DNS 解析 |
-| 游戏/特殊 APP 兼容 | ⚠️ 部分游戏/支付不兼容，需加白名单 | ✅ 原生兼容，无需白名单 |
-| 路由器场景 | ⚠️ 需额外配置 fake-ip-filter | ✅ 首选，兼容性最好 |
-| DNS 泄露控制 | ✅ 代理流量不在本地解析，最干净 | ⚠️ 代理域名仍在本地 DNS 解析一次 |
-| 推荐场景 | 个人电脑/手机日常使用 | 软路由/OpenWrt/旁路由/路由器 |
-
-> **结论：** 个人设备日常使用推荐 `fake-ip`，路由器/软路由部署推荐 `redir-host`。两种模式的规则写法相同，只需改 `enhanced-mode` 一行，其他规则无需调整。
-
----
-
-**总结：八种锚点风格横向速查表**
-
-| | 锚定对象 | 代表配置 | 配置长度 | 可读性 | 灵活性 | 推荐 |
-|--|--|--|--|--|--|--|
-| 流派一 | 只锚 provider 参数 | 官方示例 / 入门教程 | 长 | ⭐⭐⭐ | ⭐⭐ | 新手入门 |
-| 流派二 | provider + group 类型参数 | iyyh / 进阶主流 | 中 | ⭐⭐ | ⭐⭐⭐ | ✅ 日常主力 |
-| 流派三 | proxies 候选列表 | 早期教程 | 中 | ⭐⭐⭐ | ⭐ | 不推荐 |
-| 流派四 | provider + group（单行极简） | HenryChiao / YYDS | 最短 | ⭐ | ⭐⭐⭐ | ✅ 大型配置 |
-| 流派五 | 三层嵌套（含地区 filter+icon） | 社区理想（issue #2274） | 最短（理论） | ⭐ | ⭐⭐⭐⭐ | 等特性支持 |
-| 流派六 | proxies 候选列表 + 订阅聚合组 | liuran001 懒人配置 | 中 | ⭐⭐⭐ | ⭐⭐ | 懒人/入门 |
-| **流派七（a）** | provider + `pr` 功能组模板（官方极简） | 官方 geox 快捷配置 | 极短 | ⭐⭐⭐ | ⭐ | 临时过渡 |
-| **流派七（b）** | `use` 订阅组 + `zl`/`dl` 双功能模板 + 嵌套锚点 | echs-top | 短 | ⭐⭐ | ⭐⭐⭐ | 进阶自用 |
-
-**如何选择：**
-
-- 刚入门、想跑通：流派七(a) 或流派六
-- 个人日常使用、想精准控制：流派二（iyyh 风格）
-- 配置地区多（8+）、追求文件最短：流派四（极简单行）
-- 不在乎延迟最低、只要稳定连接、节点多且稳：流派七(b)（echs-top）
-- 想等未来功能：流派五（多 `<<:` 支持后升级）
-
----
 
 # 第一阶段：小白篇 —— 能跑起来就是胜利
 
@@ -2817,6 +2221,8 @@ rules:
 
 ---
 
+# 附录
+
 ## 八、常见问题与排查
 
 **Q：启动报错 `yaml: line N: did not find expected...`**
@@ -2845,7 +2251,7 @@ rules:
 
 ---
 
-## 附录：推荐资源
+## 推荐资源
 
 | 类型 | 名称 | 地址 |
 |------|------|------|
@@ -2863,3 +2269,601 @@ rules:
 ---
 
 > **一句话总结：** 不要复制你看不懂的配置。从小白的最小示例出发，每解决一个"这里不对劲"就多理解一个概念，配置文件是你对自己网络需求的精确表达，没有"最好的配置"，只有最适合你的配置。
+
+---
+
+## YAML 锚点：进阶配置的灵魂
+
+当你有大量结构相同的配置项（比如几十个代理组都要写相同的 `url`、`interval`、`timeout`），就可以用 YAML 锚点来消除重复：
+
+```yaml
+# & 定义锚点，给这块内容起一个名字
+# * 引用锚点
+# <<: 将引用的内容"合并"进当前对象（覆盖同名键，缺失的键则补入）
+
+# 第一步：在顶层定义锚点（键名 p 不存在于 mihomo，会被忽略，只用于锚点）
+p: &p                         # &p 给这个块起名叫 p
+  type: http
+  interval: 86400
+  health-check:
+    enable: true
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    lazy: true
+
+# 第二步：在 proxy-providers 中用 <<: *p 引用
+proxy-providers:
+  机场A:
+    <<: *p                    # 把 p 锚点的所有字段合并进来
+    url: "https://your-airport-a.com/subscribe?token=xxx"
+    path: ./proxy_providers/airport-a.yaml
+
+  机场B:
+    <<: *p                    # 同样引用 p，避免重复
+    url: "https://your-airport-b.com/subscribe?token=xxx"
+    path: ./proxy_providers/airport-b.yaml
+```
+
+等价展开后是：
+
+```yaml
+proxy-providers:
+  机场A:
+    type: http
+    interval: 86400
+    health-check: { enable: true, url: "...", interval: 300, lazy: true }
+    url: "https://your-airport-a.com/subscribe?token=xxx"
+    path: ./proxy_providers/airport-a.yaml
+  # 机场B 同理...
+```
+
+**注意：** 锚点内有重复键时，当前块的键优先（不会被锚点覆盖）。例如 `机场B` 里如果单独写了 `interval: 43200`，则该值覆盖锚点里的 `86400`。
+
+---
+
+### 📊 各流派锚点写法对比
+
+社区里存在四种主要的锚点使用风格，各有侧重，没有绝对的好坏，理解区别后选择适合自己的即可。
+
+---
+
+**流派一：只锚定 proxy-providers（最简单，入门首选）**
+
+```yaml
+# 来源：大量入门教程、官方示例
+p: &p
+  type: http
+  interval: 86400
+  health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300 }
+
+proxy-providers:
+  机场A: { <<: *p, url: "...", path: ./proxy_providers/a.yaml }
+  机场B: { <<: *p, url: "...", path: ./proxy_providers/b.yaml }
+
+# proxy-groups 部分仍然手写，没有锚点
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    use: [机场A, 机场B]
+    proxies: [DIRECT]
+```
+
+| 优点 | 缺点 |
+|------|------|
+| 结构清晰，一眼看懂 | proxy-groups 部分仍有大量重复 |
+| 对新手友好，易于调试 | 地区组多时维护成本上升 |
+| 修改 provider 参数只需改一处 | 不适合十几个地区的大型配置 |
+
+---
+
+**流派二：providers + groups 全部锚定（iyyh 风格，社区主流）**
+
+```yaml
+# 来源：iyyh 自用配置 / 多数进阶教程
+# 特点：同时锚定 provider 参数 和 group 类型参数，filter 正则也锚定为字符串
+
+NodeParam: &NodeParam
+  type: http
+  interval: 86400
+  health-check: { enable: true, url: "https://...", interval: 300 }
+
+# 代理组四种类型全部锚定
+Select:    &Select    { type: select,       include-all: true }
+UrlTest:   &UrlTest   { type: url-test,     include-all: true, interval: 300, lazy: true, tolerance: 50, timeout: 2000, hidden: true }
+FallBack:  &FallBack  { type: fallback,     include-all: true, interval: 300, lazy: true, timeout: 2000, hidden: true }
+LoadBalance: &LoadBalance { type: load-balance, include-all: true, interval: 300, lazy: true, strategy: consistent-hashing, hidden: true }
+
+# filter 正则也锚定为字符串引用
+FilterHK: &FilterHK '^(?=.*(🇭🇰|港|HK))(?!.*(剩余|到期|客服)).*$'
+
+proxy-providers:
+  Node: { <<: *NodeParam, url: "...", path: ./proxy_providers/node.yaml }
+
+proxy-groups:
+  - { name: "🇭🇰 香港-自动",   <<: *UrlTest,    filter: *FilterHK }
+  - { name: "🇭🇰 香港-回退",   <<: *FallBack,   filter: *FilterHK }
+  - { name: "🇭🇰 香港-均衡",   <<: *LoadBalance, filter: *FilterHK }
+  - { name: "🇭🇰 手动选择",   <<: *Select,     filter: *FilterHK }
+```
+
+| 优点 | 缺点 |
+|------|------|
+| 极大减少重复，地区组增减只需一行 | 初次阅读有一定理解门槛 |
+| filter 锚点保证正则一致，不怕改漏 | 调试时需要展开锚点才能看完整参数 |
+| 是目前社区最主流的进阶写法 | `<<:` 合并不能覆盖数组，只能整体替换 |
+
+---
+
+**流派三：proxies 选项也锚定（旧式兼容写法）**
+
+```yaml
+# 来源：部分早期教程，官方示例中也有体现
+# 特点：把一组 proxy-groups 里常用的 proxies 列表也做成锚点，方便多个功能组复用
+
+# 一个"通用备选节点列表"
+pr: &pr
+  type: select
+  proxies: ["手动选择", "自动选择", "🇭🇰 香港", "🇯🇵 日本", "🇸🇬 新加坡", "🇺🇸 美国", DIRECT]
+
+proxy-groups:
+  - name: "🤖 AI 服务"
+    <<: *pr              # 直接继承完整 proxies 列表
+
+  - name: "📹 流媒体"
+    <<: *pr              # 同一套选项
+
+  - name: "✈️ 电报消息"
+    <<: *pr
+```
+
+| 优点 | 缺点 |
+|------|------|
+| 功能组的 proxies 选项保持统一，不容易漏写 | 各功能组的首选节点无法个性化（比如 AI 想默认美国、流媒体想默认香港） |
+| 配置极短，适合"懒人"场景 | 如果某个功能组需要不同的 proxies 顺序，锚点就无法满足，反而要额外处理 |
+| | 随着需求复杂，这种锚定方式往往最终被放弃 |
+
+> **注意一个 YAML 限制：** `<<:` 合并时，如果锚点和当前块都有同名的列表键（如 `proxies`），**不会合并列表，而是当前块的值整体覆盖锚点的值**。所以 `<<: *pr` + 单独写 `proxies:` 时，单独写的 `proxies` 完全替换锚点里的 `proxies`，两个列表不会合并。
+
+---
+
+**流派四：单行 JSON 花括号 + 锚点极简写法（HenryChiao / YYDS 等配置合集风格）**
+
+```yaml
+# 来源：HenryChiao YAMLS、666OS/YYDS 等重度配置合集
+# 特点：把锚点和单行花括号结合到极致，一行一个 group，视觉上类似表格
+
+# 锚点定义
+p:  &p  { type: http, interval: 86400, health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true } }
+g_t: &g_t { type: url-test,  url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true, tolerance: 50, timeout: 2000, include-all: true, hidden: true }
+g_f: &g_f { type: fallback,  url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true, timeout: 2000, include-all: true, hidden: true }
+g_b: &g_b { type: load-balance, url: "https://www.gstatic.com/generate_204", interval: 300, strategy: consistent-hashing, include-all: true, hidden: true }
+FHK: &FHK '^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服|订阅)).*$'
+FSG: &FSG '^(?=.*(🇸🇬|新|SG|Singapore))(?!.*(回国|剩余|到期|客服|订阅)).*$'
+FJP: &FJP '^(?=.*(🇯🇵|日|JP|Japan))(?!.*(回国|剩余|到期|客服|订阅)).*$'
+
+proxy-providers:
+  机场A: { <<: *p, url: "...", path: ./proxy_providers/a.yaml }
+  机场B: { <<: *p, url: "...", path: ./proxy_providers/b.yaml }
+
+proxy-groups:
+  # 地区三合一，一气呵成
+  - { name: "🇭🇰 香港-自动", <<: *g_t, filter: *FHK }
+  - { name: "🇭🇰 香港-回退", <<: *g_f, filter: *FHK }
+  - { name: "🇭🇰 香港-均衡", <<: *g_b, filter: *FHK }
+  - { name: "🇸🇬 新加坡-自动", <<: *g_t, filter: *FSG }
+  - { name: "🇸🇬 新加坡-回退", <<: *g_f, filter: *FSG }
+  - { name: "🇯🇵 日本-自动",   <<: *g_t, filter: *FJP }
+  # ... 每个地区三行，极其整齐
+```
+
+| 优点 | 缺点 |
+|------|------|
+| 配置文件最短，视觉最整洁，像表格一样一目了然 | 对 YAML 锚点不熟悉的人几乎无法读懂 |
+| 增加一个地区只需加三行，维护成本极低 | 单行花括号不能加注释，调试困难 |
+| 结构高度一致，适合大型配置（几十个地区） | 锚点名称短（如 `g_t`）不语义化，需要配套文档 |
+| 是目前大型配置仓库的主流做法 | 一旦某个 group 需要特殊参数，要单独处理，破坏整齐感 |
+
+---
+
+**流派五：三层嵌套锚点（理论最优，有重要限制）**
+
+这是来自 [HenryChiao MIHOMO_AIO](https://github.com/HenryChiao/MIHOMO_AIO) 以及 issue #2274 中社区用户提议的终极写法，思路是把锚点再拆一层：**基础参数层** → **组类型层** → **地区层**，三层级联继承。
+
+```yaml
+# 来源：HenryChiao AIO / 社区 Issue #2274 的理想写法
+# 思路：把"公共基础"、"组类型"、"地区 filter+icon" 各自锚定，然后合并
+
+# 第一层：所有 group 共享的基础参数
+area: &area
+  url: "https://www.gstatic.com/generate_204"
+  interval: 300
+  include-all: true
+  lazy: true
+  timeout: 2000
+
+# 第二层：在 area 基础上叠加各类型特有参数
+auto:  &auto  { type: url-test,      <<: *area, tolerance: 50, max-failed-times: 3, hidden: true }
+fall:  &fall  { type: fallback,      <<: *area, max-failed-times: 3, hidden: true }
+bal:   &bal   { type: load-balance,  <<: *area, strategy: consistent-hashing, hidden: true }
+
+# 第三层：每个地区的 filter + icon 也锚定成一个对象
+hk: &hk { filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/hk.svg" }
+sg: &sg { filter: "^(?=.*(🇸🇬|新|SG|Singapore))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/sg.svg" }
+jp: &jp { filter: "^(?=.*(🇯🇵|日|JP|Japan))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/jp.svg" }
+
+# ── 理想写法（目前 mihomo 不支持！会静默忽略第二个 <<:）────────────────
+proxy-groups:
+  - { name: "香港|自动", <<: *auto, <<: *hk }   # ❌ 第二个 <<: *hk 被忽略
+  - { name: "香港|回退", <<: *fall, <<: *hk }   # ❌ icon 和 filter 都丢失
+  - { name: "香港|均衡", <<: *bal,  <<: *hk }   # ❌ 同上
+
+# ── 当前实际可用的绕过写法（手动把 filter 和 icon 写进去）────────────────
+proxy-groups:
+  - { name: "香港|自动", <<: *auto, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/hk.svg" }
+  - { name: "香港|回退", <<: *fall, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(回国|剩余|到期|客服)).*$", icon: "https://example.com/hk.svg" }
+  # 或者用字符串锚点替代 filter，但 icon 还是得重复写：
+  - { name: "香港|自动", <<: *auto, filter: *hk_filter, icon: "https://example.com/hk.svg" }
+```
+
+> **⚠️ 关键限制（来自 [mihomo issue #2274](https://github.com/MetaCubeX/mihomo/issues/2274)，于 2025 年 9 月提出，closed as not planned）：**
+>
+> 在**单行 JSON 花括号**格式中，mihomo 目前只支持**一个** `<<:` 合并操作。如果你写了两个 `<<:`（如 `{ <<: *auto, <<: *hk }`），第二个会被 YAML 解析器静默忽略（YAML 规范中同名键后者覆盖前者，而 `<<:` 本身就是一个键）。
+>
+> **标准多行 YAML 格式中也有同样限制**——多个 `<<:` 在 YAML 1.1 规范里理论上是允许的，但 mihomo 使用的 Go YAML 库只处理第一个。
+>
+> 结论：**三层锚点思路是最优雅的，但第三层（地区的 filter+icon）目前无法通过第二个 `<<:` 合并进来，只能手写或用字符串锚点替代 filter。** 等这个特性被支持后，流派五将是最推荐的写法。
+
+| 优点 | 缺点 |
+|------|------|
+| 逻辑分层最清晰，修改基础参数只需改 `area`，改某类型参数只需改 `auto`/`fall` 等 | 多 `<<:` 合并目前不被支持，第三层地区锚点只是"理想" |
+| 增加新地区理论上只需加一行 | 现实中仍需手动重复 filter/icon，部分抵消了优雅性 |
+| icon 参数与 filter 打包，视觉管理更方便 | 三层嵌套对新手完全不友好，调试链路更长 |
+| 代表了社区对锚点用法的最新探索方向 | 当前最佳实践仍是流派二或流派四，而非流派五 |
+
+---
+
+**流派六（a）：官方 geox 快捷配置风格（`pr` 极简锚点，来自官方 Wiki 示例）**
+
+这是 [MetaCubeX 官方 Wiki 快捷配置示例](https://wiki.metacubex.one/example/conf/)的写法，也是早期社区教程广泛流传的格式。
+
+```yaml
+# 来源：官方 Wiki geox 快捷配置 / Discussion #1024
+# 特点：只锚定"功能组候选列表"，地区组直接 include-all-providers
+
+pr: &pr
+  type: select
+  proxies:
+    - 默认
+    - 香港
+    - 台湾
+    - 日本
+    - 新加坡
+    - 美国
+    - 全部节点
+    - 自动选择
+    - DIRECT
+
+p: &p
+  type: http
+  interval: 3600
+  health-check:
+    enable: true
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+
+proxy-providers:
+  provider1: { <<: *p, url: "..." }
+  provider2: { <<: *p, url: "..." }
+
+proxy-groups:
+  # 顶层和功能组全部用 pr 锚点（极简两行）
+  - { name: 默认,      type: select, proxies: [自动选择, DIRECT, 香港, 台湾, 日本, 新加坡, 美国, 全部节点] }
+  - { name: Google,    <<: *pr }
+  - { name: Telegram,  <<: *pr }
+  - { name: YouTube,   <<: *pr }
+  - { name: NETFLIX,   <<: *pr }
+  # 地区组：include-all-providers 直接取所有 provider，按 filter 筛选
+  - { name: 香港, type: select, include-all-providers: true, filter: "(?i)港|hk|hongkong|hong kong" }
+  - { name: 台湾, type: select, include-all-providers: true, filter: "(?i)台|tw|taiwan" }
+  - { name: 全部节点,   type: select, include-all-providers: true }
+  - { name: 自动选择,   type: url-test, include-all-providers: true, tolerance: 10 }
+```
+
+| 优点 | 缺点 |
+|------|------|
+| 配置文件极短，即抄即用，适合新手快速上手 | 所有功能组候选列表完全相同，无法给 AI 配美国优先、给流媒体配香港优先 |
+| 官方维护，写法稳定，不依赖任何第三方规则集 | 地区组用 select 而不是 url-test，没有自动测速 |
+| 功能组用 `<<: *pr` 一行搞定，对应到 `pr` 锚点就知道有哪些选项 | 一旦需要差异化，这种模式就要大改，扩展性差 |
+| 作为模板起点很好，在此基础上逐步添加功能 | 不区分"自动测速"和"手动选择"层次，结构比较扁平 |
+
+---
+
+**流派六（b）：echs-top 风格（`use` 锚点嵌套 + `zl`/`dl` 双模板，来自真实个人配置）**
+
+这是 [echs-top/proxy](https://github.com/echs-top/proxy) 的真实个人配置（持续更新至 2026 年），也是 Issue #2274 的提交者本人使用的写法。它有几个和其他流派完全不同的设计思路：
+
+```yaml
+# 来源：echs-top/proxy（2026-02-21 更新）
+# 核心特色：
+#  1. providers 锚点（包含 exclude-filter，一次性净化垃圾节点）
+#  2. use 锚点（锚定"使用哪些 provider"）
+#  3. fall 锚点嵌套引用 use 锚点（锚点套锚点）
+#  4. zl/dl 双模板（直连优先 vs 代理优先）
+
+providers: &providers
+  type: http
+  interval: 86400
+  proxy: 直接连接
+  health-check: { enable: true, url: 'https://dns.google/generate_204', expected-status: 204, interval: 600, timeout: 3000, max-failed-times: 2, lazy: false }
+  exclude-filter: '(?i)套餐|剩余|流量|到期|重置|频道|订阅|官网|禁止|客户端|有效|联系|测试|节点|...'
+
+proxy-providers:
+  link1: { <<: *providers, url: '订阅链接1', path: ./providers/link1.yaml }
+  link2: { <<: *providers, url: '订阅链接2', path: ./providers/link2.yaml }
+  link3: { <<: *providers, url: '订阅链接3', path: ./providers/link3.yaml }
+
+# ── 关键设计：use 锚点定义"哪些 provider 进自动组"
+use: &use { use: [link1, link2] }    # link3 是手动组专用，不进自动测速
+
+# ── fall 锚点嵌套引用 use 锚点（<<: *use 会展开 use 字段）
+fall: &fall { type: fallback, <<: *use, hidden: true }
+
+# ── zl（直连优先选择）和 dl（代理优先选择）两套功能组模板
+zl: &zl { type: select, proxies: [直接连接, 代理连接, 最低延迟, 香港|故障转移, ...], include-all-providers: true }
+dl: &dl { type: select, proxies: [代理连接, 直接连接, 最低延迟, 香港|故障转移, ...], include-all-providers: true }
+
+proxy-groups:
+  - { name: 代理连接, type: select, proxies: [最低延迟, 香港|故障转移, ...], include-all-providers: true, icon: '...' }
+  - { name: 直接连接, type: select, proxies: [DIRECT, ipv4-prefer, ipv6-prefer], icon: '...' }
+  # zl 用于"直连时也允许代理"的服务（如 FCM 推送）
+  - { name: FCM推送,  <<: *zl, icon: '...' }
+  # dl 用于"走代理为主"的服务
+  - { name: TELEGRAM, <<: *dl, icon: '...' }
+  - { name: 国外AI,   <<: *dl, icon: '...' }
+  # 最低延迟：url-test
+  - { name: 最低延迟, type: url-test, tolerance: 30, <<: *use, hidden: true, icon: '...' }
+  # 地区组：只用 fallback，没有 url-test + load-balance 三合一
+  - { name: 香港|故障转移, <<: *fall, filter: '(?i)🇭🇰|香港|\bHK\b', icon: '...' }
+  - { name: 日本|故障转移, <<: *fall, filter: '(?i)🇯🇵|日本|\bJP\b', icon: '...' }
+  # ...
+```
+
+**几个真正独特的设计决策：**
+
+1. **`use` 锚点嵌套**：把"哪些 provider 进组"也抽象成锚点。`fall: &fall { type: fallback, <<: *use }` 展开后 `use` 字段直接从锚点继承，这样修改参与自动组的 provider 只需改一行 `use` 锚点。
+
+2. **`zl` / `dl` 双模板**：zl（直连优先）和 dl（代理优先）本质上是同一套候选列表，区别在于 `proxies` 列表里"直接连接"和"代理连接"的先后顺序不同。功能组选哪套模板，就决定了面板里的默认选项是什么——而不是所有功能组都用同一套。
+
+3. **只用 fallback，不用 url-test + load-balance**：echs-top 的选择是"只要能用就用，挂了再切"（fallback），而不是"持续测速选最快的"（url-test）。这降低了节点的健康检查频率和流量消耗。
+
+4. **`exclude-filter` 在 provider 层而不是 filter**：用"黑名单"排除垃圾节点，而不是"白名单"只保留想要的，这样一个订阅里不同地区的节点都能被各自地区组正确筛选。
+
+| 特点 | 说明 |
+|------|------|
+| `use` 锚点嵌套 | 地区组的 provider 来源集中管理，不用重复写 `use: [link1, link2]` |
+| `zl`/`dl` 双模板 | 功能组有"直连优先"和"代理优先"两套候选顺序，而不是统一的一套 |
+| 只用 fallback | 减少健康检查流量，适合节点稳定的场景；代价是没有实时测速排序 |
+| `exclude-filter` 净化 | provider 层用黑名单排垃圾，比用 filter 白名单更能保留有效节点 |
+| 与 iyyh 的本质差异 | iyyh 用三合一（自动/回退/均衡），每个地区三个组；echs-top 只用一个 fallback 组 |
+| 不设 url-test 地区组 | 不追求最低延迟，追求稳定连接，适合不需要精细调节速度的用户 |
+
+---
+
+**横向对比一：`filter` 的三种写法**
+
+这是锚点写法中最容易忽视的细节差异，不同风格对 filter 的处理方式不同：
+
+```yaml
+# 写法 A：filter 完全内联（不用锚点）
+# 优点：直观；缺点：同一地区的多个 group 要粘贴三遍相同正则，改一处要改三处
+- { name: "香港|自动", <<: *g_t, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$" }
+- { name: "香港|回退", <<: *g_f, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$" }
+- { name: "香港|均衡", <<: *g_b, filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$" }
+
+# 写法 B：filter 锚定为字符串（iyyh 风格，目前最佳）
+# 优点：正则统一管理，改一处全部生效；缺点：需要额外一行定义
+FilterHK: &FilterHK "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$"
+
+- { name: "香港|自动", <<: *g_t, filter: *FilterHK }
+- { name: "香港|回退", <<: *g_f, filter: *FilterHK }
+- { name: "香港|均衡", <<: *g_b, filter: *FilterHK }
+
+# 写法 C：filter + icon 锚定为对象（HenryChiao AIO 理想写法）
+# 优点：连 icon 也一起管理，最终极；缺点：受限于多 <<: 不支持，需要绕过
+hk: &hk
+  filter: "^(?=.*(🇭🇰|港|HK|Hong))(?!.*(剩余|到期)).*$"
+  icon: "https://example.com/flags/hk.svg"
+
+# 当前绕过写法：只能用 *hk 引用 filter，icon 要从锚点中取出或单独写
+# 待 issue #2274 支持后可直接 <<: *hk 合并
+```
+
+| | 写法 A（完全内联） | 写法 B（字符串锚点） | 写法 C（对象锚点） |
+|--|--|--|--|
+| 正则维护 | ❌ 每处单独维护 | ✅ 集中管理 | ✅ 集中管理 |
+| icon 维护 | 手动或省略 | 手动 | ✅ 打包（待支持） |
+| 可读性 | ✅ 最直观 | ✅ 清晰 | ⚠️ 需理解锚点 |
+| 当前可用性 | ✅ 完全可用 | ✅ 完全可用 | ⚠️ filter 可用，icon 合并受限 |
+| 推荐程度 | 小型配置 | **推荐** | 待特性支持后推荐 |
+
+---
+
+**横向对比二：`include-all` vs 显式 `use: [provider]`**
+
+这两种写法决定了代理组"从哪里取节点"，混淆使用会导致节点消失或重复：
+
+```yaml
+# 写法 A：显式列出 use（老写法，精确控制）
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    use:
+      - 机场A          # 只包含 机场A 的节点
+      - 机场B          # 再加上 机场B 的节点
+    proxies:
+      - DIRECT
+
+# 写法 B：include-all（新写法，自动包含一切）
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    include-all: true  # 自动包含所有 proxies + 所有 proxy-providers
+    proxies:
+      - DIRECT          # proxies 里手写的条目仍然有效，排在 include-all 节点之前
+
+# 写法 C：include-all-proxies / include-all-providers（拆分控制）
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    include-all-proxies: true    # 只包含 proxies 段手写的节点
+    include-all-providers: false # 不包含 proxy-providers 的节点
+    proxies: [DIRECT]
+```
+
+| | 写法 A（显式 use） | 写法 B（include-all） | 写法 C（拆分） |
+|--|--|--|--|
+| 新增 provider 后 | ❌ 要手动去每个 group 加 `use` | ✅ 自动包含，零维护 | 按需控制 |
+| 精确指定来源 | ✅ 精确到 provider 级别 | ❌ 全包含，无法排除某个 provider | ✅ 可分别控制 |
+| 搭配 filter 使用 | ✅ 在 group 层 filter | ✅ 在 group 层 filter | ✅ |
+| 推荐场景 | 多机场各司其职、不想混合 | **日常主力，最省事** | 精细控制场景 |
+
+> **注意：** `include-all` 时 `use:` 字段会失效，`include-all-providers` 设为 true 后同样使 `use:` 失效。不要同时写两者。
+
+---
+
+**流派六：liuran001「懒人配置」风格（`pr` + `use` 双锚点，完全不同的思路）**
+
+这是 [liuran001 的社区高星配置（584 stars）](https://gist.github.com/liuran001/5ca84f7def53c70b554d3f765ff86a33) 代表的另一套完全不同的锚点哲学：**不锚定组类型参数，而是锚定"功能组的 proxies 候选列表"和"订阅组的完整定义"**。
+
+```yaml
+# 来源：liuran001 懒人配置（社区高星）
+# 核心思路：
+#   pr  锚定所有功能组共用的 proxies 候选列表
+#   use 锚定订阅组的完整写法（类型+订阅来源）
+#   p   锚定 proxy-provider 参数（与其他风格相同）
+
+# 1. pr：所有功能组共享的代理候选列表
+pr: &pr
+  type: select
+  proxies:
+    - 节点选择
+    - 香港
+    - 台湾
+    - 日本
+    - 新加坡
+    - 美国
+    - 其它地区
+    - 全部节点
+    - 自动选择
+    - DIRECT
+
+# 2. use：订阅聚合组的完整写法
+use: &use
+  type: url-test        # 改为 type: select 则变成手动选择
+  use:
+    - 订阅一
+    - 订阅二
+
+# 3. p：provider 参数
+p: &p
+  type: http
+  interval: 3600
+  health-check:
+    enable: true
+    url: https://cp.cloudflare.com
+    interval: 300
+    timeout: 1000
+    tolerance: 100
+
+proxy-providers:
+  订阅一:
+    <<: *p
+    url: "https://airport-a.com/..."
+  订阅二:
+    <<: *p
+    url: "https://airport-b.com/..."
+
+proxy-groups:
+  # 顶层入口
+  - name: 节点选择
+    <<: *use          # 直接用 use 锚点，订阅类型和来源一行搞定
+
+  # 地区自动组（不用锚点，直接写）
+  - name: 香港
+    type: url-test
+    use: [订阅一, 订阅二]
+    filter: "(?i)🇭🇰|香港|HK"
+    url: https://cp.cloudflare.com
+    interval: 300
+
+  # 功能组全部继承 pr 候选列表
+  - name: "🤖 AI 服务"
+    <<: *pr           # 一行继承完整候选列表
+
+  - name: "📹 流媒体"
+    <<: *pr           # 同上，功能组配置极简
+```
+
+| 特点 | 说明 |
+|------|------|
+| `pr` 锚点 | 把所有功能组的候选 proxies 列表统一管理，加减地区只改一处 |
+| `use` 锚点 | 订阅聚合组的写法也锚定，多个聚合组（全部节点、自动选择等）复用 |
+| 与 iyyh 风格的本质区别 | iyyh 锚定"组类型参数"；liuran001 锚定"组的 proxies 候选列表" |
+| 优点 | 功能组极其简洁（两行），新手容易看懂 proxies 来源 |
+| 缺点 | 所有功能组候选列表完全相同，无法给 AI 服务单独配美国优先、流媒体配香港优先；`pr` 锚点一旦修改影响所有功能组 |
+| DNS 模式 | 该配置使用 `redir-host`（不是 `fake-ip`），这是另一个值得对比的设计选择（见下文） |
+
+---
+
+**横向对比三：`fake-ip` vs `redir-host`——两种主流 DNS 模式的真实差异**
+
+这是配置文件中争议最多的选项之一，两种模式在不同场景下各有优劣：
+
+```yaml
+# 模式 A：fake-ip（iyyh / 本教程主推）
+dns:
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  # ✅ 特点：收到 DNS 查询后立即返回假 IP，流量发到假 IP 后才真正建立连接
+  # 域名规则在 DNS 解析完成前就能匹配，速度快，fake-ip 不在本地真正解析代理域名
+
+# 模式 B：redir-host（liuran001 / 路由器常用）
+dns:
+  enhanced-mode: redir-host
+  # ✅ 特点：正常完成 DNS 解析，用真实 IP 匹配规则；DNS 解析结果透传给应用
+  # 路由器兼容性最好；某些不兼容 fake-ip 的 APP（游戏/国内支付）更稳定
+```
+
+| 对比项 | fake-ip | redir-host |
+|--------|---------|------------|
+| 连接速度 | ⭐⭐⭐ 更快（无需等待真实 DNS） | ⭐⭐ 稍慢（需完成真实 DNS 解析） |
+| 规则匹配 | 域名规则优先，无需 DNS 就能匹配 | 先 DNS 再匹配，可能触发 DNS 解析 |
+| 游戏/特殊 APP 兼容 | ⚠️ 部分游戏/支付不兼容，需加白名单 | ✅ 原生兼容，无需白名单 |
+| 路由器场景 | ⚠️ 需额外配置 fake-ip-filter | ✅ 首选，兼容性最好 |
+| DNS 泄露控制 | ✅ 代理流量不在本地解析，最干净 | ⚠️ 代理域名仍在本地 DNS 解析一次 |
+| 推荐场景 | 个人电脑/手机日常使用 | 软路由/OpenWrt/旁路由/路由器 |
+
+> **结论：** 个人设备日常使用推荐 `fake-ip`，路由器/软路由部署推荐 `redir-host`。两种模式的规则写法相同，只需改 `enhanced-mode` 一行，其他规则无需调整。
+
+---
+
+**总结：八种锚点风格横向速查表**
+
+| | 锚定对象 | 代表配置 | 配置长度 | 可读性 | 灵活性 | 推荐 |
+|--|--|--|--|--|--|--|
+| 流派一 | 只锚 provider 参数 | 官方示例 / 入门教程 | 长 | ⭐⭐⭐ | ⭐⭐ | 新手入门 |
+| 流派二 | provider + group 类型参数 | iyyh / 进阶主流 | 中 | ⭐⭐ | ⭐⭐⭐ | ✅ 日常主力 |
+| 流派三 | proxies 候选列表 | 早期教程 | 中 | ⭐⭐⭐ | ⭐ | 不推荐 |
+| 流派四 | provider + group（单行极简） | HenryChiao / YYDS | 最短 | ⭐ | ⭐⭐⭐ | ✅ 大型配置 |
+| 流派五 | 三层嵌套（含地区 filter+icon） | 社区理想（issue #2274） | 最短（理论） | ⭐ | ⭐⭐⭐⭐ | 等特性支持 |
+| 流派六 | proxies 候选列表 + 订阅聚合组 | liuran001 懒人配置 | 中 | ⭐⭐⭐ | ⭐⭐ | 懒人/入门 |
+| **流派七（a）** | provider + `pr` 功能组模板（官方极简） | 官方 geox 快捷配置 | 极短 | ⭐⭐⭐ | ⭐ | 临时过渡 |
+| **流派七（b）** | `use` 订阅组 + `zl`/`dl` 双功能模板 + 嵌套锚点 | echs-top | 短 | ⭐⭐ | ⭐⭐⭐ | 进阶自用 |
+
+**如何选择：**
+
+- 刚入门、想跑通：流派七(a) 或流派六
+- 个人日常使用、想精准控制：流派二（iyyh 风格）
+- 配置地区多（8+）、追求文件最短：流派四（极简单行）
+- 不在乎延迟最低、只要稳定连接、节点多且稳：流派七(b)（echs-top）
+- 想等未来功能：流派五（多 `<<:` 支持后升级）
