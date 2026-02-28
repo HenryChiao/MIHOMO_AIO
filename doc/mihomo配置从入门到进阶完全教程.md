@@ -2223,7 +2223,7 @@ rules:
 
 # 附录
 
-## 八、常见问题与排查
+## 常见问题与排查
 
 **Q：启动报错 `yaml: line N: did not find expected...`**
 
@@ -2248,25 +2248,6 @@ rules:
 **Q：规则集更新失败 / 下载很慢？**
 
 将 `proxy-providers` 和 `rule-providers` 的更新请求通过代理拉取：在相应 provider 中加入 `proxy: "🎯 节点选择"` 字段，让更新请求走代理出去。
-
----
-
-## 推荐资源
-
-| 类型 | 名称 | 地址 |
-|------|------|------|
-| 规则集（强烈推荐） | SukkA RuleSet | [ruleset.skk.moe](https://ruleset.skk.moe/) |
-| 规则数据库 | MetaCubeX meta-rules-dat | [github.com/MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) |
-| 配置参考 | iyyh 自用配置 | [iyyh.net/posts/mihomo-self-config](https://iyyh.net/posts/mihomo-self-config) |
-| 配置合集 | HenryChiao YAMLS | [github.com/HenryChiao/MIHOMO_YAMLS](https://github.com/HenryChiao/MIHOMO_YAMLS) |
-| 官方文档 | 虚空终端 Docs | [wiki.metacubex.one](https://wiki.metacubex.one/) |
-| DNS 深度解析 | SukkA DNS 文章 | [blog.skk.moe/post/lets-talk-about-dns-cdn-fake-ip](https://blog.skk.moe/post/lets-talk-about-dns-cdn-fake-ip/) |
-| Web 面板 | MetaCubeX Dashboard | [github.com/MetaCubeX/metacubexd](https://github.com/MetaCubeX/metacubexd) |
-| Web 面板 | Zashboard | [github.com/Zephyruso/zashboard](https://github.com/Zephyruso/zashboard) |
-| 客户端（Windows/Linux/macOS） | Clash Verge Rev | [github.com/clash-verge-rev/clash-verge-rev](https://github.com/clash-verge-rev/clash-verge-rev) |
-| 客户端（Windows） | Sparkle | [github.com/xishang0128/sparkle](https://github.com/xishang0128/sparkle) |
-
----
 
 > **一句话总结：** 不要复制你看不懂的配置。从小白的最小示例出发，每解决一个"这里不对劲"就多理解一个概念，配置文件是你对自己网络需求的精确表达，没有"最好的配置"，只有最适合你的配置。
 
@@ -2867,3 +2848,25 @@ dns:
 - 配置地区多（8+）、追求文件最短：流派四（极简单行）
 - 不在乎延迟最低、只要稳定连接、节点多且稳：流派七(b)（echs-top）
 - 想等未来功能：流派五（多 `<<:` 支持后升级）
+
+---
+
+## 推荐资源
+
+### 文中引用资源
+| 类型 | 名称 | 地址 |
+|------|------|------|
+| 规则集（强烈推荐） | SukkA RuleSet | [ruleset.skk.moe](https://ruleset.skk.moe/) |
+| 规则数据库 | MetaCubeX meta-rules-dat | [github.com/MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat) |
+| 配置参考 | iyyh 自用配置 | [iyyh.net/posts/mihomo-self-config](https://iyyh.net/posts/mihomo-self-config) |
+| 配置合集 | HenryChiao YAMLS | [github.com/HenryChiao/MIHOMO_YAMLS](https://github.com/HenryChiao/MIHOMO_YAMLS) |
+| 官方文档 | 虚空终端 Docs | [wiki.metacubex.one](https://wiki.metacubex.one/) |
+| DNS 深度解析 | SukkA DNS 文章 | [blog.skk.moe/post/lets-talk-about-dns-cdn-fake-ip](https://blog.skk.moe/post/lets-talk-about-dns-cdn-fake-ip/) |
+| Web 面板 | MetaCubeX Dashboard | [github.com/MetaCubeX/metacubexd](https://github.com/MetaCubeX/metacubexd) |
+| Web 面板 | Zashboard | [github.com/Zephyruso/zashboard](https://github.com/Zephyruso/zashboard) |
+| 客户端（Windows/Linux/macOS） | Clash Verge Rev | [github.com/clash-verge-rev/clash-verge-rev](https://github.com/clash-verge-rev/clash-verge-rev) |
+| 客户端（Windows） | Sparkle | [github.com/xishang0128/sparkle](https://github.com/xishang0128/sparkle) |
+
+### 其他资源详见
+ [https://github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md](https://github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md)
+---
