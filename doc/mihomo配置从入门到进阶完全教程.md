@@ -2221,9 +2221,313 @@ rules:
 
 ---
 
-# 附录
+# 附录：YAML 语法易错点速查
 
-## 常见问题与排查
+配置写完却总是报错？大多数情况下是 YAML 格式本身的问题，而不是 mihomo 的问题。下面整理了写 mihomo 配置时最高频的语法陷阱。
+
+---
+
+## 1. 单引号 vs 双引号：转义规则完全不同
+
+这是正则表达式踩坑最多的地方。
+
+```yaml
+# 双引号：支持转义序列，\ 是转义符
+# \n 变换行，\" 变双引号，\\ 变反斜杠
+filter: "^(?=.*(港|HK))(?!.*(剩余)).*$"   # ✅ 正则用双引号没问题
+password: "pass\"word"                      # ✅ 双引号内嵌双引号要转义
+
+# 单引号：字面量，\ 不是转义符，只有 '' 能表示单引号本身
+filter: '^(?=.*(港|HK))(?!.*(剩余)).*$'   # ✅ 正则用单引号也没问题
+url: 'https://example.com/path'            # ✅ URL 用单引号最安全
+tricky: 'it''s a trap'                     # ✅ 单引号内嵌单引号：用两个单引号
+
+# 常见错误
+filter: "^(?=.*(\d+G)).*$"   # ⚠️ \d 在双引号里 \ 会被消耗，变成 d，正则失效
+                               #    应改用单引号：'^(?=.*(\d+G)).*$'
+path: "C:\Users\name"         # ❌ \U 和 \n 会被解析为转义，变成乱码
+                               #    应改为 "C:\\Users\\name" 或 'C:\Users\name'
+```
+
+**记忆口诀：正则表达式统一用单引号；含中文、Emoji 或需要 `\"` 的字符串用双引号；URL 单引号最省事。**
+
+---
+
+## 2. 冒号 `:` 和 `#` 后面必须有空格（或换行）
+
+```yaml
+# ✅ 正确
+name: "节点A"
+port: 7890
+
+# ❌ 错误——冒号后没有空格，整行被当作字符串而不是键值对
+name:"节点A"
+port:7890
+
+# 字符串内的冒号不受限制（在引号内）
+url: "https://example.com:8080/path"   # ✅ 引号内的冒号没问题
+
+# ⚠️ 注意：不加引号的字符串若包含冒号，必须加引号
+name: my:value   # ❌ 解析错误
+name: "my:value" # ✅
+```
+
+`#` 开启注释时，前面必须有空格，否则是字符串的一部分：
+
+```yaml
+port: 7890  # 这是注释  ✅
+port: 7890#这不是注释  # ⚠️ 整个 7890#这不是注释 都是值
+```
+
+---
+
+## 3. 数字、布尔值与字符串的类型陷阱
+
+YAML 会自动推断类型，很多"看起来是字符串"的值会被解析成别的类型：
+
+```yaml
+# 布尔值陷阱（YAML 1.1 规范）
+value: yes    # 被解析为 true（布尔）
+value: no     # 被解析为 false（布尔）
+value: on     # 被解析为 true（布尔）
+value: off    # 被解析为 false（布尔）
+# 如果你真的想要字符串 "yes"：
+value: "yes"  # ✅ 加引号
+
+# 数字陷阱
+port: 007     # 被解析为八进制 7（数字 7），不是字符串 "007"
+port: 0x1F    # 被解析为十六进制 31
+# 如果想要字符串：
+id: "007"     # ✅
+
+# null 陷阱
+value: ~      # 被解析为 null
+value: null   # 被解析为 null
+value: Null   # 被解析为 null
+# 如果想要字符串 "null"：
+value: "null" # ✅
+
+# 特殊浮点
+ratio: .inf   # 正无穷
+ratio: -.inf  # 负无穷
+ratio: .nan   # NaN
+```
+
+---
+
+## 4. 缩进：Tab 禁止，层级必须一致
+
+```yaml
+# ❌ 错误：混用 Tab 和空格（肉眼看不出来，但解析器会报错）
+dns:
+	enable: true   # ← 这是 Tab，不是空格
+
+# ❌ 错误：同级的键缩进不一致
+proxy-groups:
+  - name: A
+    type: select
+   proxies:        # ← 少一个空格，不对齐 type
+     - DIRECT
+
+# ✅ 正确：同级键严格对齐
+proxy-groups:
+  - name: A
+    type: select
+    proxies:
+      - DIRECT
+```
+
+**实用技巧：** VS Code 安装 `YAML` 插件（by Red Hat），或者 Neovim/Vim 安装 `yaml-language-server`，会实时高亮缩进问题。
+
+---
+
+## 5. 锚点 `&` / 别名 `*` / 合并 `<<:` 的顺序与位置
+
+```yaml
+# ✅ 锚点必须在使用之前定义
+p: &p { type: http, interval: 86400 }
+
+proxy-providers:
+  机场A: { <<: *p, url: "..." }   # ✅ p 在上面已定义
+
+# ❌ 不能先用再定义
+proxy-providers:
+  机场A: { <<: *p, url: "..." }   # ❌ p 还没定义，报错
+p: &p { type: http, interval: 86400 }
+
+# ⚠️ 合并 <<: 只能合并映射（mapping/对象），不能合并列表
+base: &base
+  - item1      # ← 这是列表
+  - item2
+
+child:
+  <<: *base    # ❌ 报错——列表不能用 <<: 合并，只能用字符串锚点引用
+
+# ✅ 列表锚点必须整体引用，不能合并
+items: &items
+  - item1
+  - item2
+
+child:
+  proxies: *items   # ✅ 整体引用（替换，不是合并）
+```
+
+---
+
+## 6. 多行字符串：`|` 和 `>` 的区别
+
+在 mihomo 配置里极少用到，但偶尔会在 `script` 或 `content` 字段遇到：
+
+```yaml
+# | 字面块：保留换行符
+message: |
+  第一行
+  第二行
+  第三行
+# 解析结果："第一行\n第二行\n第三行\n"
+
+# > 折叠块：换行折叠成空格，段落间空行保留
+message: >
+  第一行
+  第二行
+# 解析结果："第一行 第二行\n"（换行变空格）
+
+# |- 和 >- ：末尾不加换行符
+message: |-
+  第一行
+  第二行
+# 解析结果："第一行\n第二行"（无末尾换行）
+```
+
+---
+
+## 7. 特殊字符必须加引号
+
+以下字符出现在**值**的开头或特定位置时，必须用引号包裹整个值，否则 YAML 解析器会误判：
+
+| 字符 | 原因 | 示例（错）| 示例（对）|
+|------|------|-----------|-----------|
+| `{` `}` | 被当作内联映射 | `name: {a}` | `name: "{a}"` |
+| `[` `]` | 被当作内联序列 | `tag: [tag]` | `tag: "[tag]"` |
+| `:` | 被当作键值分隔 | `url: a:b` | `url: "a:b"` |
+| `#` | 被当作注释开头 | `pass: abc#1` | `pass: "abc#1"` |
+| `*` `&` | 锚点/别名符号 | `id: *ref` | `id: "*ref"` |
+| `>` `|` | 多行字符串标记 | `op: >5` | `op: ">5"` |
+| `!` | 类型标签 | `tag: !custom` | `tag: "!custom"` |
+| `%` | YAML 指令 | `ratio: %50` | `ratio: "%50"` |
+
+---
+
+## 8. 单行花括号 `{}` 里不能有注释
+
+这是 JSON 语法的限制，单行花括号格式不支持 `#` 注释：
+
+```yaml
+# ✅ 多行 YAML 可以加注释
+proxy-groups:
+  - name: "香港"
+    type: url-test    # 自动测速
+    interval: 300     # 每 5 分钟
+
+# ❌ 单行花括号里的 # 会被当作值的一部分或导致解析错误
+- { name: "香港", type: url-test, interval: 300 # 每5分钟 }
+```
+
+如果要在单行写法里留注释，只能在行末加（不在花括号内）：
+
+```yaml
+- { name: "香港", type: url-test, interval: 300 }  # ✅ 花括号外加注释
+```
+
+---
+
+## 9. `proxy-groups` 里的 `proxies` 引用必须先存在
+
+```yaml
+proxy-groups:
+  - name: "节点选择"
+    type: select
+    proxies:
+      - "香港"      # ✅ 引用另一个 proxy-group 的名称——必须存在
+      - "DIRECT"    # ✅ 内置策略，始终可用
+      - "我的SS节点" # ✅ 引用 proxies 段里定义的节点名——必须存在
+
+# ❌ 如果 "香港" 这个 group 没有定义，或名称拼写不一致，启动时报错
+# ⚠️ 名称区分大小写：`香港` 和 `香港 ` （末尾有空格）是不同的名称
+```
+
+---
+
+## 10. `interval` 单位是秒，不是分钟
+
+这是新手最常见的数值误解：
+
+```yaml
+proxy-providers:
+  机场A:
+    interval: 86400    # ✅ 24 小时（86400 秒）
+    interval: 1440     # ❌ 以为是 24 小时（实际是 24 分钟）
+    interval: 24       # ❌❌ 只有 24 秒，会频繁拉取订阅
+
+health-check:
+  interval: 300        # ✅ 5 分钟检查一次（300 秒）
+  interval: 5          # ❌ 5 秒检查一次，消耗大量流量
+```
+
+---
+
+# 附录：工具与参考链接
+
+### 🔧 YAML 调试工具
+
+| 工具 | 用途 | 地址 |
+|------|------|------|
+| **YAML Lint** | 在线 YAML 语法校验，标红错误行 | [yamllint.com](https://www.yamllint.com/) |
+| **YAML Checker** | 校验 + 格式化，支持 YAML 1.1/1.2 | [yamlchecker.com](https://yamlchecker.com/) |
+| **YAML to JSON** | YAML 转 JSON，帮助理解解析结果 | [transform.tools/yaml-to-json](https://transform.tools/yaml-to-json) |
+| **JSON to YAML** | JSON 转 YAML（反向调试用）| [transform.tools/json-to-yaml](https://transform.tools/json-to-yaml) |
+| **YAML Parser Online** | 实时显示 YAML 解析树，直观看类型推断 | [yaml-online-parser.appspot.com](https://yaml-online-parser.appspot.com/) |
+| **Regex101** | 在线正则测试，支持 PCRE / Go / Python 等引擎 | [regex101.com](https://regex101.com/) |
+| **RegExr** | 正则测试 + 可视化解析，带说明 | [regexr.com](https://regexr.com/) |
+
+> **调试正则的正确姿势：** 先在 Regex101 选 `Golang` 引擎（mihomo 用 Go 编译），粘贴几个真实节点名测试，确认匹配/不匹配结果符合预期，再复制到配置文件。
+
+---
+
+## 📝 编辑器推荐
+
+| 编辑器 | 插件/说明 |
+|--------|-----------|
+| **VS Code** | 安装 `YAML`（Red Hat）插件，实时校验 + 自动补全 |
+| **Neovim / Vim** | `yaml-language-server` + `nvim-lspconfig` |
+| **Cursor / Windsurf** | 内置 AI 辅助，可以直接问"这段 YAML 哪里错了" |
+| **记事本 / 系统自带编辑器** | ❌ 不推荐，无法检测 Tab/空格混用 |
+
+---
+
+## 📖 参考规范与文档
+
+| 资源 | 说明 | 地址 |
+|------|------|------|
+| YAML 1.1 规范 | mihomo 使用 Go yaml.v3，基于此规范 | [yaml.org/spec/1.1](https://yaml.org/spec/1.1/) |
+| YAML 1.2 规范 | 修复了 1.1 的布尔值等问题（供参考）| [yaml.org/spec/1.2](https://yaml.org/spec/1.2-old/) |
+| mihomo 官方语法手册 | 配置字段的权威说明 | [wiki.metacubex.one/en/handbook/syntax](https://wiki.metacubex.one/en/handbook/syntax/) |
+| mihomo 配置示例 | 官方 example 配置 | [wiki.metacubex.one/example](https://wiki.metacubex.one/example/) |
+| Go yaml.v3 文档 | 了解 mihomo 实际使用的解析库行为 | [pkg.go.dev/gopkg.in/yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3) |
+
+---
+
+## 💬 社区与问题反馈
+
+| 平台 | 地址 |
+|------|------|
+| mihomo GitHub Issues | [github.com/MetaCubeX/mihomo/issues](https://github.com/MetaCubeX/mihomo/issues) |
+| mihomo GitHub Discussions | [github.com/MetaCubeX/mihomo/discussions](https://github.com/MetaCubeX/mihomo/discussions) |
+| HenryChiao 配置合集 Credits | [github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md](https://github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md) |
+
+---
+
+# 常见问题与排查
 
 **Q：启动报错 `yaml: line N: did not find expected...`**
 
@@ -2253,7 +2557,7 @@ rules:
 
 ---
 
-## YAML 锚点：进阶配置的灵魂
+# YAML 锚点细谈：进阶配置的灵魂
 
 当你有大量结构相同的配置项（比如几十个代理组都要写相同的 `url`、`interval`、`timeout`），就可以用 YAML 锚点来消除重复：
 
@@ -2868,5 +3172,6 @@ dns:
 | 客户端（Windows） | Sparkle | [github.com/xishang0128/sparkle](https://github.com/xishang0128/sparkle) |
 
 ### 其他资源详见
- [https://github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md](https://github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md)
+
+[https://github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md](https://github.com/HenryChiao/MIHOMO_YAMLS/blob/main/THEDOC/CREDITS.md)
 ---
