@@ -12,7 +12,7 @@
 # 地址: https://github.com/666OS/YYDS
 # 版本: v26.1.1
 # 作者: YYDS666
-# 更新: 2026 年 1 月 30 日
+# 更新: 2026 年 3 月 17 日
 # 频道: https://t.me/Pinched666
 # 描述: 基于Mihomo的智能代理配置，提供四层架构智能路由和全场景规则集
 # 集成Smart算法自动选择最优节点，支持故障转移和负载均衡
@@ -21,8 +21,8 @@
 
 # ==================== 锚点配置 ====================
 # 代理提供者模板 - 订阅源基础配置
-BaseProvider: &BaseProvider {type: http, interval: 86400, proxy: 国内直连, health-check: {enable: true, url: 'https://cp.cloudflare.com/generate_204', interval: 300}, header: {User-Agent: ['clash.meta', 'mihomo/1.18.3']}, override: {skip-cert-verify: true, udp: true}}
-filter: '^(?!.*(群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author))'
+BaseProvider: &BaseProvider { type: http, interval: 86400, proxy: 国内直连, health-check: {enable: true, url: 'https://cp.cloudflare.com/generate_204', interval: 300}, header: {User-Agent: ['clash.meta', 'mihomo/1.18.3']}, override: {skip-cert-verify: true, udp: true},
+ exclude-filter: '(?i)(群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|剩余|重置|套餐|距离)' }
 
 # 策略组类型模板 - 定义不同的策略组基础配置
 BaseFB: &BaseFB       {type: fallback, interval: 300, lazy: true, url: 'https://cp.cloudflare.com/generate_204'}
@@ -33,18 +33,18 @@ BaseSmart: &BaseSmart {type: smart, interval: 300, lazy: true, url: 'https://cp.
 # =========================
 # 节点筛选正则（前置模板）
 # --- 常用地区节点 ---
-FilterHK: &FilterHK { filter: '^(?i).*(港|🇭🇰|Hong|HKG|HK\d+|HK[-_ ]?\d*).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png' }
-FilterSG: &FilterSG { filter: '^(?i).*(坡|🇸🇬|Sing|SIN|SG\d+|SG[-_ ]?\d*|XSP).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png' }
-FilterJP: &FilterJP { filter: '^(?i).*(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png' }
-FilterUS: &FilterUS { filter: '^(?i).*(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png' }
-FilterTW: &FilterTW { filter: '^(?i).*(台|🇼🇸|🇹🇼|TW|tai|TPE|TSA|KHH).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png' }
+FilterHK: &FilterHK { filter: '^(?i).*(港|🇭🇰|Hong|HKG|HK\d+|HK[-_ ]?\d*).*$',icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png' }
+FilterSG: &FilterSG { filter: '^(?i).*(坡|🇸🇬|Sing|SIN|SG\d+|SG[-_ ]?\d*|XSP).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png' }
+FilterJP: &FilterJP { filter: '^(?i).*(日|🇯🇵|JP|Japan|NRT|HND|KIX|CTS|FUK).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png' }
+FilterUS: &FilterUS { filter: '^(?i).*(美|🇺🇸|US|USA|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png' }
+FilterTW: &FilterTW { filter: '^(?i).*(台|🇼🇸|🇹🇼|TW|tai|TPE|TSA|KHH).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png' }
 # --- 冷门节点 ---
-FilterEU: &FilterEU { filter: '^(?i)(?!.*(🇭🇰|香港|hong\s?kong|\bHK\b|🇸🇬|新加坡|singapore|\bSG\b|🇯🇵|日本|japan|\bJP\b|🇹🇼|台湾|taiwan|TW\d+|TW[-_ ]?\d*|🇺🇸|美国|united\s?states|usa|\bUS\b)).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png' } # 冷门节点
+FilterEU: &FilterEU { filter: '^(?is)(?!.*(🇭🇰|香港|hong\s?kong|\bHK\b|🇸🇬|新加坡|singapore|\bSG\b|🇯🇵|日本|japan|\bJP\b|🇹🇼|台湾|taiwan|TW\d+|TW[-_ ]?\d*|🇺🇸|美国|united\s?states|usa|\bUS\b|剩余|重置|套餐|距离|直接连接|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入)).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png' } 
 # --- 倍率节点筛选 ---
-FilterLR: &FilterLR { filter: '(?=.*(?i)(0\.01|0\.1|0\.2|0\.3|0\.4|0\.5|0\.6|0\.7|0\.8|下载|实验)).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Round_Robin_1.png' } # 低倍率
-FilterHR: &FilterHR { filter: '^(?=.*(?i)(2x|3x|4x|5x|6x|x2|x3|x4|x5|x6|2\.0x|2\.5x|3\.0x|4\.0x|5\.0x|6\.0x|2\.00x|3\.00x|4\.00x|5\.00x|6\.00x|高级)).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Round_Robin.png' } # 高倍率
+FilterLR: &FilterLR { filter: '(?=.*(?i)(0\.01|0\.1|0\.2|0\.3|0\.4|0\.5|0\.6|0\.7|0\.8|下载|实验)).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/Round_Robin_1.png' } # 低倍率
+FilterHR: &FilterHR { filter: '^(?=.*(?i)(?<![0-9.])(x(1\.[5-9]\d*|([2-9]|[1-9]\d+)(\.\d+)?)|(1\.[5-9]\d*|([2-9]|[1-9]\d+)(\.\d+)?|高级)x)).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/Round_Robin.png' } # 高倍率
 # --- 全部节点 ---
-FilterAL: &FilterAL { filter: '^(?!.*(DIRECT|直接连接|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author)).*$', icon: 'https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png' }
+FilterAL: &FilterAL { filter: '^(?!.*(DIRECT|直接连接|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author)).*$', icon: 'https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png' }
 
 
 # =========================
@@ -217,28 +217,28 @@ dns:
 # ==================== 代理策略组 ====================
 proxy-groups:
   # 应用策略层 - Select手动选择，支持多场景应用优化，使用时默认，也可修改
-  - {name: Proxy,       <<: *SelectAL, icon: https://git.imee.me/https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Proxy.png}
-  - {name: AI,          <<: *SelectAL, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png}
-  - {name: ProxyGame,   <<: *SelectAL, icon: https://git.imee.me/https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Game.png}
-  - {name: Streaming,   <<: *SelectAL, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png}
-  - {name: Google,      <<: *SelectAL, icon: https://git.imee.me/https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Google_Search.png}
-  - {name: Microsoft,   <<: *SelectAL, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Microsoft.png}
-  - {name: TikTok,      <<: *SelectAL, icon: https://git.imee.me/https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/TikTok_1.png}
-  - {name: Crypto,      <<: *SelectAL, icon: https://git.imee.me/https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Cryptocurrency_3.png}
-  - {name: 漏网之鱼,     <<: *SelectAL, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png}
-  - {name: Emby,        <<: *SelectLR, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png}
-  - {name: Tracker,     <<: *SelectLR, icon: https://git.imee.me/https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Download.png}
-  - {name: Apple,       <<: *SelectDC, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png}
-  - {name: 国内直连,     type: select, proxies: [DIRECT], hidden: true, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png}
+  - {name: Proxy,       <<: *SelectAL, icon: https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Proxy.png}
+  - {name: AI,          <<: *SelectAL, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png}
+  - {name: ProxyGame,   <<: *SelectAL, icon: https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Game.png}
+  - {name: Streaming,   <<: *SelectAL, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png}
+  - {name: Google,      <<: *SelectAL, icon: https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Google_Search.png}
+  - {name: Microsoft,   <<: *SelectAL, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Microsoft.png}
+  - {name: TikTok,      <<: *SelectAL, icon: https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/TikTok_1.png}
+  - {name: Crypto,      <<: *SelectAL, icon: https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Cryptocurrency_3.png}
+  - {name: 漏网之鱼,     <<: *SelectAL, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png}
+  - {name: Emby,        <<: *SelectLR, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png}
+  - {name: Tracker,     <<: *SelectLR, icon: https://raw.githubusercontent.com/Koolson/Qure/refs/heads/master/IconSet/Color/Download.png}
+  - {name: Apple,       <<: *SelectDC, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png}
+  - {name: 国内直连,     type: select, proxies: [DIRECT], hidden: true, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png}
 
     # 中转服务层 - LoadBalance负载均衡，提供中转服务提升连通性，选用一个或多个服务商做中转，比如 优质服务商，可通过正则表达式，过滤掉不需要的节点，使用时请修改
   - {name: 中转服务,   <<: *BaseLB, use: [优质服务商], filter: 'HK|TW', hidden: true, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Round_Robin.png}
 
     # 线路特性层 - Fallback故障转移，（适合不想节点总是被切换或者对固定IP有要求，若手动选择节点飘红 会自动切到智能策略组，保证节点可用性）,（不需要该策略可以在组名上添加 # 注释）
-  - {name: 香港-故转,  <<: *BaseFB, proxies: [香港-手选, 香港-智能 ], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
-  - {name: 日本-故转,  <<: *BaseFB, proxies: [日本-手选, 日本-智能 ], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
-  - {name: 狮城-故转,  <<: *BaseFB, proxies: [狮城-手选, 狮城-智能 ], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
-  - {name: 美国-故转,  <<: *BaseFB, proxies: [美国-手选, 美国-智能 ], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
+  - {name: 香港-故转,  <<: *BaseFB, proxies: [香港-手选, 香港-智能 ], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
+  - {name: 日本-故转,  <<: *BaseFB, proxies: [日本-手选, 日本-智能 ], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
+  - {name: 狮城-故转,  <<: *BaseFB, proxies: [狮城-手选, 狮城-智能 ], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
+  - {name: 美国-故转,  <<: *BaseFB, proxies: [美国-手选, 美国-智能 ], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
 
   # 线路特性层 - 手动选择节点，根据自己需求选择节点，建议修改位置顺序发挥线路优势,（不需要该策略可以在组名上添加 # 注释）
   - { name: 香港-手选, type: select, include-all: true, <<: *FilterHK }
@@ -395,18 +395,18 @@ rules:
   - RULE-SET,Apple,Apple                          # Apple 服务 (App Store/iCloud)
   - RULE-SET,Apple-IP,Apple,no-resolve            # Apple 服务 (App Store/iCloud)
   - RULE-SET,AI-CN,国内直连                        # 国内 AI (豆包、千问等)
+  - RULE-SET,Netdisk-CN,国内直连                   # 国内网盘
+  - RULE-SET,Bank-CN,国内直连                      # 银行客户端
+  - RULE-SET,Social-CN,国内直连                    # 国内社交 (知乎/微博)
+  - RULE-SET,Media-CN,国内直连                     # 国内流媒体 (爱优腾)
   - RULE-SET,Xunlei,国内直连                       # 迅雷
   - RULE-SET,Netease,国内直连                      # 网易
   - RULE-SET,Bilibili,国内直连                     # B站
   - RULE-SET,Bilibili2,国内直连                    # B站 (补充)
   - RULE-SET,Baidu,国内直连                        # 百度
   - RULE-SET,JD,国内直连                           # 京东
-  - RULE-SET,Alibaba,国内直连                      # 阿里
-  - RULE-SET,Tencent,国内直连                      # 腾讯
-  - RULE-SET,Netdisk-CN,国内直连                   # 国内网盘
-  - RULE-SET,Bank-CN,国内直连                      # 银行客户端
-  - RULE-SET,Social-CN,国内直连                    # 国内社交 (知乎/微博)
-  - RULE-SET,Media-CN,国内直连                     # 国内流媒体 (爱优腾)
+  - RULE-SET,Alibaba,国内直连                      # 阿里 
+  - RULE-SET,Tencent,国内直连                      # 腾讯 
 
   
   # ==================== 兜底规则 ====================
