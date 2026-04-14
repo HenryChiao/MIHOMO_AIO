@@ -277,8 +277,8 @@ proxy-groups:
   - {name: 代理DNS,    <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Server.png}
   - {name: 网络测试,   <<: *SelectPY, include-all: true, filter: *FilterAL, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Speedtest.png}
   - {name: 抖快书定位, type: select, proxies: [直接连接, 香港策略, 台湾策略, 狮城策略, 日本策略, 韩国策略, 美国策略, 欧盟策略], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png}
-  - {name: 人机验证,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/CloudFlare.png}   # 融合第二份
-  - {name: 下载追踪,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Download_2.png}     # 融合第二份 TRACKER
+  - {name: 人机验证,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Cloudflare.png}   # 融合第二份
+  - {name: 下载追踪,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Download.png}     # 融合第二份 TRACKER
 
   # ==================== 媒体服务 ====================
   - {name: Emby服,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png}
