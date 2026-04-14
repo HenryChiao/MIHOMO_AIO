@@ -158,8 +158,8 @@ hosts:
 # 嗅探
 sniffer:
   enable: true
-  force-dns-mapping: true      # 融合第二份：强制 fakeip 域名映射嗅探
-  parse-pure-ip: true          # 融合第二份：纯 IP 连接也嗅探
+  force-dns-mapping: true      # 强制 fakeip 域名映射嗅探
+  parse-pure-ip: true          # 纯 IP 连接也嗅探
   override-destination: false  # 保持第二份保守值，避免重写目标
   sniff:
     HTTP:
@@ -172,9 +172,9 @@ sniffer:
   skip-domain:
     - "Mijia Cloud"
     - "+.push.apple.com"
-    - "rule-set:Private"       # 融合第二份：跳过私有域名嗅探
+    - "rule-set:Private"       # 跳过私有域名嗅探
   skip-src-address:
-    - "rule-set:PrivateIP"     # 融合第二份：跳过私有IP来源
+    - "rule-set:PrivateIP"     # 跳过私有IP来源
   skip-dst-address:
     - "rule-set:PrivateIP"
 
@@ -197,19 +197,19 @@ dns:
   enable: true
   cache-algorithm: arc
   listen: 0.0.0.0:1053
-  ipv6: true                           # 融合第二份：DNS 解析支持 IPv6
-  prefer-h3: true                      # 融合第二份：优先使用 HTTP/3 加速 DoH
+  ipv6: true                           # DNS 解析支持 IPv6
+  prefer-h3: true                      # 优先使用 HTTP/3 加速 DoH
   use-hosts: true
   use-system-hosts: true
   respect-rules: true
   enhanced-mode: fake-ip
   fake-ip-range: 28.0.0.1/8
-  fake-ip-range6: fd00:bada:55ed::1/64 # 融合第二份：IPv6 FakeIP 范围
+  fake-ip-range6: fd00:bada:55ed::1/64 # IPv6 FakeIP 范围
   default-nameserver:
     - https://223.5.5.5/dns-query
   proxy-server-nameserver: *direct-dns
   direct-nameserver: *direct-dns
-  direct-nameserver-follow-policy: true  # 融合第二份：直连 DNS 也遵循 nameserver-policy
+  direct-nameserver-follow-policy: true  # 直连 DNS 也遵循 nameserver-policy
   nameserver: *proxy-dns
   nameserver-policy:
     "rule-set:Tracking,Advertising":
@@ -235,7 +235,7 @@ dns:
     - RULE-SET,Download,real-ip
     - RULE-SET,AppleCN,real-ip
     - RULE-SET,AI,fake-ip
-    - RULE-SET,Captcha,fake-ip           # 融合第二份：人机验证走 fakeip
+    - RULE-SET,Captcha,fake-ip           # 人机验证走 fakeip
     - DOMAIN-KEYWORD,speedtest,fake-ip
     - RULE-SET,Speedtest,fake-ip
     - RULE-SET,Twitter,fake-ip
@@ -256,7 +256,7 @@ dns:
     - MATCH,real-ip
 
 # ==================== 静态代理节点 ====================
-# 融合第二份：IPv4/IPv6 直连控制节点，方便特殊需求
+# IPv4/IPv6 直连控制节点，方便特殊需求
 proxies:
   - {name: IPV4优先, type: direct, udp: true, ip-version: ipv4-prefer}
   - {name: IPV6优先, type: direct, udp: true, ip-version: ipv6-prefer}
@@ -266,71 +266,71 @@ proxies:
 # ==================== 策略组 ====================
 proxy-groups:
   # ==================== 主要策略组 ====================
-  - {name: 默认代理,   <<: *SelectFB, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Static.png}
-  - {name: 故障转移,   <<: *BaseFB, proxies: [香港策略, 狮城策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 加拿大策略, 德国策略, 全球手动, 冷门自选, 直接连接], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/ULB.png}
-  - {name: 国外流量,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png}
-  - {name: 国内流量,   <<: *SelectDC, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png}
-  - {name: 兜底流量,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png}
-  - {name: 直接连接,   type: select, proxies: [DIRECT, IPV4优先, IPV6优先, 仅IPV4, 仅IPV6], hidden: true, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Direct.png}
+  - {name: 默认代理,   <<: *SelectFB, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Static.png}
+  - {name: 故障转移,   <<: *BaseFB, proxies: [香港策略, 狮城策略, 日本策略, 韩国策略, 美国策略, 台湾策略, 欧盟策略, 加拿大策略, 德国策略, 全球手动, 冷门自选, 直接连接], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/ULB.png}
+  - {name: 国外流量,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Global.png}
+  - {name: 国内流量,   <<: *SelectDC, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/China.png}
+  - {name: 兜底流量,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Final.png}
+  - {name: 直接连接,   type: select, proxies: [DIRECT, IPV4优先, IPV6优先, 仅IPV4, 仅IPV6], hidden: true, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Direct.png}
 
   # ==================== 功能策略组 ====================
-  - {name: 代理DNS,    <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Server.png}
-  - {name: 网络测试,   <<: *SelectPY, include-all: true, filter: *FilterAL, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Speedtest.png}
-  - {name: 抖快书定位, type: select, proxies: [直接连接, 香港策略, 台湾策略, 狮城策略, 日本策略, 韩国策略, 美国策略, 欧盟策略], icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png}
-  - {name: 人机验证,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/CloudFlare.png}   # 融合第二份
-  - {name: 下载追踪,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Download_2.png}     # 融合第二份 TRACKER
+  - {name: 代理DNS,    <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Server.png}
+  - {name: 网络测试,   <<: *SelectPY, include-all: true, filter: *FilterAL, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Speedtest.png}
+  - {name: 抖快书定位, type: select, proxies: [直接连接, 香港策略, 台湾策略, 狮城策略, 日本策略, 韩国策略, 美国策略, 欧盟策略], icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Null_Nation.png}
+  - {name: 人机验证,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/CloudFlare.png}   # 融合第二份
+  - {name: 下载追踪,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Download_2.png}     # 融合第二份 TRACKER
 
   # ==================== 媒体服务 ====================
-  - {name: Emby服,     <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png}
-  - {name: 油管视频,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/YouTube.png}
-  - {name: 奈飞视频,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Netflix.png}
-  - {name: 国际媒体,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png}
-  - {name: 新闻媒体,   <<: *SelectUS, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple_News.png}
+  - {name: Emby服,     <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Emby.png}
+  - {name: 油管视频,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/YouTube.png}
+  - {name: 奈飞视频,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Netflix.png}
+  - {name: 国际媒体,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/DomesticMedia.png}
+  - {name: 新闻媒体,   <<: *SelectUS, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple_News.png}
 
   # ==================== 社交平台 ====================
-  - {name: 电报消息,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Telegram_X.png}
-  - {name: 推特社交,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/X.png}
-  - {name: 社交平台,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/PBS.png}
+  - {name: 电报消息,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Telegram_X.png}
+  - {name: 推特社交,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/X.png}
+  - {name: 社交平台,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/PBS.png}
 
   # ==================== 商业服务 ====================
-  - {name: 人工智能,   <<: *SelectUS, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png}
+  - {name: 人工智能,   <<: *SelectUS, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/AI.png}
   - {name: 货币平台,   <<: *SelectSG, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Alpha/Bitcloud.png}
-  - {name: 游戏平台,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Game.png}
+  - {name: 游戏平台,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Game.png}
   - {name: Github,     <<: *SelectPY, icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/04ProxySoft/github(1).png}
-  - {name: 微软服务,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Microsoft.png}
-  - {name: 谷歌服务,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png}
-  - {name: 苹果服务,   <<: *SelectPY, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png}
+  - {name: 微软服务,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Microsoft.png}
+  - {name: 谷歌服务,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Google_Search.png}
+  - {name: 苹果服务,   <<: *SelectPY, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Apple.png}
 
   # ==================== 地区策略组（手动选择层）====================
-  - {name: 香港策略,   type: select, proxies: [香港智能], include-all: true, filter: *FilterHK, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
-  - {name: 台湾策略,   type: select, proxies: [台湾智能], include-all: true, filter: *FilterTW, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png}
-  - {name: 狮城策略,   type: select, proxies: [狮城智能], include-all: true, filter: *FilterSG, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
-  - {name: 日本策略,   type: select, proxies: [日本智能], include-all: true, filter: *FilterJP, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
-  - {name: 韩国策略,   type: select, proxies: [韩国智能], include-all: true, filter: *FilterKR, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Korea.png}
-  - {name: 美国策略,   type: select, proxies: [美国智能], include-all: true, filter: *FilterUS, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
-  - {name: 欧盟策略,   type: select, proxies: [欧洲智能], include-all: true, filter: *FilterEU, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
+  - {name: 香港策略,   type: select, proxies: [香港智能], include-all: true, filter: *FilterHK, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
+  - {name: 台湾策略,   type: select, proxies: [台湾智能], include-all: true, filter: *FilterTW, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png}
+  - {name: 狮城策略,   type: select, proxies: [狮城智能], include-all: true, filter: *FilterSG, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
+  - {name: 日本策略,   type: select, proxies: [日本智能], include-all: true, filter: *FilterJP, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
+  - {name: 韩国策略,   type: select, proxies: [韩国智能], include-all: true, filter: *FilterKR, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Korea.png}
+  - {name: 美国策略,   type: select, proxies: [美国智能], include-all: true, filter: *FilterUS, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
+  - {name: 欧盟策略,   type: select, proxies: [欧洲智能], include-all: true, filter: *FilterEU, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
   # 融合第二份新增地区
   - {name: 加拿大策略, type: select, proxies: [加拿大智能], include-all: true, filter: *FilterCA, icon: https://mihomo.echs.top/img/flags/ca.svg}
   - {name: 德国策略,   type: select, proxies: [德国智能],   include-all: true, filter: *FilterDE, icon: https://mihomo.echs.top/img/flags/de.svg}
-  - {name: 英国策略,   type: select, proxies: [英国智能],   include-all: true, filter: *FilterUK, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_Kingdom.png}
+  - {name: 英国策略,   type: select, proxies: [英国智能],   include-all: true, filter: *FilterUK, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_Kingdom.png}
   - {name: 法国策略,   type: select, proxies: [法国智能],   include-all: true, filter: *FilterFR, icon: https://mihomo.echs.top/img/flags/fr.svg}
   - {name: 荷兰策略,   type: select, proxies: [荷兰智能],   include-all: true, filter: *FilterNL, icon: https://mihomo.echs.top/img/flags/nl.svg}
 
   # ==================== 其他策略组 ====================
-  - {name: 冷门自选,   type: select, include-all: true, filter: *FilterOT, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Europe_Map.png}
-  - {name: 全球手动,   type: select, include-all: true, filter: *FilterAL, icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Clubhouse.png}
+  - {name: 冷门自选,   type: select, include-all: true, filter: *FilterOT, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Europe_Map.png}
+  - {name: 全球手动,   type: select, include-all: true, filter: *FilterAL, icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Clubhouse.png}
 
   # ==================== Smart 智能选择层 ====================
   # policy-priority: 优>中>备，按订阅前缀加权
   # strategy: sticky-sessions 保证同一目标 IP 始终由同一节点处理，提升体验
-  - {name: 香港智能,   <<: *BaseSmart, filter: *FilterHK, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
-  - {name: 台湾智能,   <<: *BaseSmart, filter: *FilterTW, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png}
-  - {name: 日本智能,   <<: *BaseSmart, filter: *FilterJP, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
-  - {name: 狮城智能,   <<: *BaseSmart, filter: *FilterSG, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
-  - {name: 韩国智能,   <<: *BaseSmart, filter: *FilterKR, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/Korea.png}
-  - {name: 美国智能,   <<: *BaseSmart, filter: *FilterUS, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
-  - {name: 英国智能,   <<: *BaseSmart, filter: *FilterUK, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_Kingdom.png}
-  - {name: 欧洲智能,   <<: *BaseSmart, filter: *FilterEU, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://git.imee.me/https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
+  - {name: 香港智能,   <<: *BaseSmart, filter: *FilterHK, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Hong_Kong.png}
+  - {name: 台湾智能,   <<: *BaseSmart, filter: *FilterTW, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Taiwan.png}
+  - {name: 日本智能,   <<: *BaseSmart, filter: *FilterJP, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Japan.png}
+  - {name: 狮城智能,   <<: *BaseSmart, filter: *FilterSG, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Singapore.png}
+  - {name: 韩国智能,   <<: *BaseSmart, filter: *FilterKR, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/Korea.png}
+  - {name: 美国智能,   <<: *BaseSmart, filter: *FilterUS, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_States.png}
+  - {name: 英国智能,   <<: *BaseSmart, filter: *FilterUK, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/United_Kingdom.png}
+  - {name: 欧洲智能,   <<: *BaseSmart, filter: *FilterEU, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://github.com/Koolson/Qure/raw/master/IconSet/Color/European_Union.png}
   - {name: 加拿大智能, <<: *BaseSmart, filter: *FilterCA, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://mihomo.echs.top/img/flags/ca.svg}
   - {name: 德国智能,   <<: *BaseSmart, filter: *FilterDE, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://mihomo.echs.top/img/flags/de.svg}
   - {name: 法国智能,   <<: *BaseSmart, filter: *FilterFR, include-all: true, policy-priority: '优:2;中:1;备:0.2', icon: https://mihomo.echs.top/img/flags/fr.svg}
@@ -362,16 +362,16 @@ rules:
   # ======== 直连优先 ========
   - RULE-SET,LocationDKS,抖快书定位
   - RULE-SET,Private,直接连接
-  - RULE-SET,FCM,直接连接               # 融合第二份：FCM 推送直连
+  - RULE-SET,FCM,直接连接               # FCM 推送直连
   - RULE-SET,Direct,直接连接
   - RULE-SET,XPTV,直接连接
   - RULE-SET,Download,直接连接
   - RULE-SET,AppleCN,直接连接
-  - RULE-SET,MicrosoftCN,直接连接       # 融合第二份：微软中国直连
-  - RULE-SET,GamesCN,直接连接           # 融合第二份：国内游戏直连
+  - RULE-SET,MicrosoftCN,直接连接       # 微软中国直连
+  - RULE-SET,GamesCN,直接连接           # 国内游戏直连
 
   # ======== 代理服务 ========
-  - RULE-SET,Captcha,人机验证           # 融合第二份：人机验证走代理
+  - RULE-SET,Captcha,人机验证           # 人机验证走代理
   - RULE-SET,AI,人工智能
   - DOMAIN-KEYWORD,speedtest,网络测试
   - RULE-SET,Speedtest,网络测试
