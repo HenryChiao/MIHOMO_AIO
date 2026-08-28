@@ -1,4 +1,12 @@
-name: 构建 OpenClash 运行文件
+#=================================================
+# OpenWrt 插件合集 - 自动构建 Workflow
+# 说明: 合并 OpenClash 与 Nikki 的自解压安装文件(.run)构建流程，
+#       统一打包并发布到同一个 GitHub Release。
+# 参考: https://github.com/wukongdaily/RunFilesBuilder
+# 许可: MIT
+#=================================================
+
+name: 构建 OpenWrt 插件合集 (OpenClash & Nikki)
 
 # 必须添加权限声明，否则无法创建 Release
 permissions:
@@ -12,13 +20,24 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+      # ========== 初始化 ==========
       - name: 准备工作目录
         run: |
           mkdir -p workspace/openclash-x86
           mkdir -p workspace/openclash-a53
+          mkdir -p workspace/nikki-x86_64
+          mkdir -p workspace/nikki-aarch64_cortex-a53
           mkdir -p output
           echo "✅ 工作目录创建完成"
 
+      - name: 安装 Makeself 打包工具
+        run: |
+          echo "📥 正在下载 Makeself 工具..."
+          git clone --depth 1 https://github.com/megastep/makeself.git makeself-tool
+          chmod +x makeself-tool/makeself.sh
+          echo "✅ Makeself 工具安装完成"
+
+      # ========== OpenClash ==========
       - name: 拉取 OpenClash 软件包分支
         uses: actions/checkout@v4
         with:
@@ -29,7 +48,7 @@ jobs:
 
       - name: 复制最新的 OpenClash IPK 安装包
         run: |
-          if [ ! -f OpenClash/master/*.ipk ]; then
+          if ! ls OpenClash/master/*.ipk >/dev/null 2>&1; then
             echo "❌ 错误: 未找到 IPK 文件"
             exit 1
           fi
@@ -37,8 +56,8 @@ jobs:
           cp -v OpenClash/master/*.ipk workspace/openclash-a53/
           echo "✅ IPK 文件复制完成"
 
-      - name: 提取版本信息
-        id: extract_version
+      - name: 提取 OpenClash 版本信息
+        id: extract_openclash_version
         run: |
           if [ ! -f OpenClash/master/version ]; then
             echo "❌ 错误: 版本文件不存在"
@@ -49,8 +68,8 @@ jobs:
             echo "❌ 错误: 无法提取版本号"
             exit 1
           fi
-          echo "version=$ver" >> $GITHUB_ENV
-          echo "✅ 检测到版本: $ver"
+          echo "OPENCLASH_VERSION=$ver" >> $GITHUB_ENV
+          echo "✅ OpenClash 版本: $ver"
 
       - name: 拉取 OpenClash 内核分支
         uses: actions/checkout@v4
@@ -60,201 +79,240 @@ jobs:
           ref: core
           fetch-depth: 1
 
-      - name: 解压内核文件
+      - name: 解压 OpenClash 内核文件
         run: |
-          # 检查压缩包是否存在
-          if [ ! -f Meta/master/meta/clash-linux-amd64-v1.tar.gz ]; then
-            echo "❌ 错误: x86 内核文件不存在"
+          if [ ! -f Meta/master/meta/clash-linux-amd64-v1.tar.gz ] || [ ! -f Meta/master/meta/clash-linux-arm64.tar.gz ]; then
+            echo "❌ 错误: 内核文件不存在"
             exit 1
           fi
-          if [ ! -f Meta/master/meta/clash-linux-arm64.tar.gz ]; then
-            echo "❌ 错误: ARM64 内核文件不存在"
-            exit 1
-          fi
-          
-          # 解压 x86_64 内核
           echo "📦 解压 x86_64 内核..."
           tar -xzf Meta/master/meta/clash-linux-amd64-v1.tar.gz -C workspace/openclash-x86
           mv workspace/openclash-x86/clash workspace/openclash-x86/clash_meta
-          
-          # 解压 ARM64 内核
+
           echo "📦 解压 ARM64 内核..."
           tar -xzf Meta/master/meta/clash-linux-arm64.tar.gz -C workspace/openclash-a53
           mv workspace/openclash-a53/clash workspace/openclash-a53/clash_meta
-          
-          # 验证文件
-          if [ ! -f workspace/openclash-x86/clash_meta ]; then
-            echo "❌ 错误: x86 内核解压失败"
-            exit 1
-          fi
-          if [ ! -f workspace/openclash-a53/clash_meta ]; then
-            echo "❌ 错误: ARM64 内核解压失败"
-            exit 1
-          fi
-          
-          echo "✅ 内核文件解压完成"
-          echo "=== 文件检查 ==="
-          ls -lh workspace/openclash-x86/
-          ls -lh workspace/openclash-a53/
 
-      - name: 创建安装脚本
+          if [ ! -f workspace/openclash-x86/clash_meta ] || [ ! -f workspace/openclash-a53/clash_meta ]; then
+            echo "❌ 错误: 内核文件解压失败"
+            exit 1
+          fi
+          echo "✅ OpenClash 内核文件解压完成"
+
+      - name: 创建 OpenClash 安装脚本
         run: |
           cat << 'EOF' > workspace/openclash-x86/install.sh
           #!/bin/sh
-          
           echo "================================"
           echo "  OpenClash 自动安装脚本"
           echo "================================"
-          
-          # 更新软件包列表
+
           echo "📦 正在更新软件包列表..."
           opkg update
           if [ $? -ne 0 ]; then
               echo "❌ 错误: 软件包列表更新失败"
               exit 1
           fi
-          
-          # 安装 IPK 包
+
           echo "📦 正在安装 OpenClash..."
           opkg install *.ipk
           if [ $? -ne 0 ]; then
               echo "❌ 错误: OpenClash 安装失败"
               exit 1
           fi
-          
-          # 创建内核目录
+
           echo "📁 正在配置内核文件..."
-          if [ ! -d "/etc/openclash/core/" ]; then
-              mkdir -p /etc/openclash/core/
-          fi
-          
-          # 移动内核文件
+          mkdir -p /etc/openclash/core/
+
           if [ ! -f "clash_meta" ]; then
               echo "❌ 错误: 内核文件不存在"
               exit 1
           fi
-          
           mv clash_meta /etc/openclash/core/
           chmod +x /etc/openclash/core/clash_meta
-          
+
           echo "⏳ 等待系统稳定..."
           sleep 10
-          
-          # 检查网络接口
+
           echo "🔍 检查网络接口..."
           ifconfig br-lan > /dev/null 2>&1
           if [ $? -ne 0 ]; then
-              echo "⚠️  警告: 网络接口异常,正在重启网络服务..."
+              echo "⚠️  警告: 网络接口异常，正在重启网络服务..."
               /etc/init.d/network restart
               sleep 5
               echo "✅ 网络服务重启完成"
           fi
-          
+
           echo "================================"
           echo "  ✅ OpenClash 安装成功!"
           echo "================================"
           exit 0
           EOF
-          
-          # 设置执行权限
           chmod +x workspace/openclash-x86/install.sh
-          
-          # 复制到 ARM64 目录
           cp workspace/openclash-x86/install.sh workspace/openclash-a53/install.sh
           chmod +x workspace/openclash-a53/install.sh
-          
-          echo "✅ 安装脚本创建完成"
+          echo "✅ OpenClash 安装脚本创建完成"
 
-      - name: 安装 Makeself 打包工具
-        run: | 
-          echo "📥 正在下载 Makeself 工具..."
-          git clone --depth 1 https://github.com/megastep/makeself.git makeself-tool
-          chmod +x makeself-tool/makeself.sh
-          echo "✅ Makeself 工具安装完成"
+      # ========== Nikki ==========
+      - name: 获取 Nikki 最新版本号
+        id: fetch_nikki_version
+        run: |
+          latest_tag=$(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | jq -r '.tag_name')
+          if [ -z "$latest_tag" ] || [ "$latest_tag" = "null" ]; then
+            echo "❌ 错误: 无法获取 Nikki 最新版本号"
+            exit 1
+          fi
+          echo "NIKKI_VERSION=$latest_tag" >> $GITHUB_ENV
+          echo "✅ Nikki 版本: $latest_tag"
 
+      - name: 下载 Nikki 最新文件
+        run: |
+          curl -LO $(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | grep -oP '"browser_download_url":\s*".*nikki_aarch64_cortex-a53-openwrt-24.10.tar.gz"' | cut -d '"' -f 4)
+          curl -LO $(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | grep -oP '"browser_download_url":\s*".*nikki_x86_64-openwrt-24.10.tar.gz"' | cut -d '"' -f 4)
+          tar -xzf nikki_aarch64_cortex-a53-openwrt-24.10.tar.gz -C workspace/nikki-aarch64_cortex-a53
+          tar -xzf nikki_x86_64-openwrt-24.10.tar.gz -C workspace/nikki-x86_64
+          echo "✅ Nikki 文件下载并解压完成"
+
+      - name: 整理 Nikki 文件名（去除波浪号）
+        run: |
+          for dir in workspace/nikki-x86_64 workspace/nikki-aarch64_cortex-a53; do
+            pushd "$dir" >/dev/null || exit 1
+            for file in *~*.ipk; do
+              [ -e "$file" ] || continue
+              new_file="$(echo "$file" | tr -d '~')"
+              if [ -e "$new_file" ]; then
+                echo "目标文件已存在，跳过: $new_file"
+                continue
+              fi
+              mv "$file" "$new_file"
+              echo "已重命名: $file -> $new_file"
+            done
+            popd >/dev/null
+          done
+
+      - name: 创建 Nikki 安装脚本
+        run: |
+          cat << 'EOF' > workspace/nikki-x86_64/install.sh
+          #!/bin/sh
+          echo "================================"
+          echo "  Nikki 自动安装脚本"
+          echo "================================"
+          opkg update
+          if [ $? -ne 0 ]; then
+              echo "❌ 错误: 软件包列表更新失败"
+              exit 1
+          fi
+          opkg install *.ipk
+          if [ $? -ne 0 ]; then
+              echo "❌ 错误: Nikki 安装失败"
+              exit 1
+          fi
+          echo "✅ Nikki 安装成功!"
+          exit 0
+          EOF
+          chmod +x workspace/nikki-x86_64/install.sh
+          cp workspace/nikki-x86_64/install.sh workspace/nikki-aarch64_cortex-a53/install.sh
+          chmod +x workspace/nikki-aarch64_cortex-a53/install.sh
+          echo "✅ Nikki 安装脚本创建完成"
+
+      # ========== 打包与发布 ==========
       - name: 构建自解压运行文件
         run: |
           echo "🔨 开始构建运行文件..."
-          
-          # 构建 x86_64 版本
-          echo "📦 构建 x86_64 版本..."
-          ./makeself-tool/makeself.sh \
-            workspace/openclash-x86/ \
-            output/openclash-x86-64-${{ env.version }}.run \
-            "OpenClash x86_64 自动安装包 - 由 GitHub Actions 自动构建" \
-            ./install.sh
-          
-          # 构建 ARM64 版本
-          echo "📦 构建 ARM64 版本..."
-          ./makeself-tool/makeself.sh \
-            workspace/openclash-a53/ \
-            output/openclash-aarch64_cortex-a53-${{ env.version }}.run \
-            "OpenClash ARM64 自动安装包 - 由 GitHub Actions 自动构建" \
-            ./install.sh
-          
-          # 验证构建结果
-          if [ ! -f output/openclash-x86-64-${{ env.version }}.run ] || \
-             [ ! -f output/openclash-aarch64_cortex-a53-${{ env.version }}.run ]; then
+          ./makeself-tool/makeself.sh workspace/openclash-x86/ output/openclash-x86-64-${{ env.OPENCLASH_VERSION }}.run "OpenClash x86_64 自动安装包 - 由 GitHub Actions 自动构建" ./install.sh
+          ./makeself-tool/makeself.sh workspace/openclash-a53/ output/openclash-aarch64_cortex-a53-${{ env.OPENCLASH_VERSION }}.run "OpenClash ARM64 自动安装包 - 由 GitHub Actions 自动构建" ./install.sh
+          ./makeself-tool/makeself.sh workspace/nikki-x86_64/ output/nikki-${{ env.NIKKI_VERSION }}_x86_64.run "Nikki x86_64 自动安装包 - 由 GitHub Actions 自动构建" ./install.sh
+          ./makeself-tool/makeself.sh workspace/nikki-aarch64_cortex-a53/ output/nikki-${{ env.NIKKI_VERSION }}_aarch64_cortex-a53.run "Nikki ARM64 自动安装包 - 由 GitHub Actions 自动构建" ./install.sh
+
+          if [ ! -f output/openclash-x86-64-${{ env.OPENCLASH_VERSION }}.run ] || \
+             [ ! -f output/openclash-aarch64_cortex-a53-${{ env.OPENCLASH_VERSION }}.run ] || \
+             [ ! -f output/nikki-${{ env.NIKKI_VERSION }}_x86_64.run ] || \
+             [ ! -f output/nikki-${{ env.NIKKI_VERSION }}_aarch64_cortex-a53.run ]; then
             echo "❌ 错误: 构建文件生成失败"
             exit 1
           fi
-          
+
           echo "✅ 运行文件构建完成"
           echo "=== 构建产物 ==="
           ls -lh output/
-          
-          # 计算文件哈希值
+
           echo "=== 文件校验和 ==="
           cd output
           sha256sum *.run | tee sha256sums.txt
-          cd ..
+
+      - name: 生成 Release 标签
+        run: |
+          tag="openwrt-plugins-$(date +'%Y%m%d%H%M')"
+          echo "RELEASE_TAG=$tag" >> $GITHUB_ENV
+          echo "✅ Release 标签: $tag"
 
       - name: 发布版本并上传文件
         uses: softprops/action-gh-release@v2
-        if: env.version != ''
         with:
-          tag_name: ${{ env.version }}
-          name: "OpenClash v${{ env.version }}"
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: "OpenWrt 插件合集 ${{ env.RELEASE_TAG }}"
           files: |
             output/*.run
             output/sha256sums.txt
           body: |
-            ## 📦 OpenClash v${{ env.version }} 自动构建版本
-            
-            ![GitHub](https://img.shields.io/badge/OpenClash.run-自动构建-blue?logo=github&logoColor=fff&labelColor=red&style=for-the-badge)
+            ## 📦 OpenWrt 插件合集自动构建版本
+
+            ![GitHub](https://img.shields.io/badge/OpenWrt.run-自动构建-blue?logo=github&logoColor=fff&labelColor=red&style=for-the-badge)
             [![国内加速下载](https://img.shields.io/badge/国内加速站下载-FC7C0D?logo=github&logoColor=fff&labelColor=000&style=for-the-badge)](https://wkdaily.cpolar.cn/archives/1)
-            ![下载统计](https://img.shields.io/github/downloads/wukongdaily/RunFilesBuilder/${{ env.version }}/total?style=for-the-badge&labelColor=black&color=%2325c2a0)
-            
+            ![下载统计](https://img.shields.io/github/downloads/wukongdaily/RunFilesBuilder/${{ env.RELEASE_TAG }}/total?style=for-the-badge&labelColor=black&color=%2325c2a0)
+
+            本次发布包含 **OpenClash** 与 **Nikki** 两款代理插件的最新自解压安装文件（`.run`），适用于 x86_64 与 ARM64 (Cortex-A53) 架构的 OpenWrt / ImmortalWrt 路由器设备，安装脚本已内置错误检测与网络接口自愈逻辑。
+
             ### 📋 版本信息
-            - **版本号**: ${{ env.version }}
-            - **构建时间**: ${{ github.event.repository.updated_at }}
-            - **构建方式**: GitHub Actions 自动化构建
-            
-            ### 📥 下载说明
-            
-            | 架构 | 文件名 | 适用设备 |
+
+            | 插件 | 版本号 | 上游仓库 |
             |------|--------|----------|
-            | x86_64 | `openclash-x86-64-${{ env.version }}.run` | x86_64 软路由、虚拟机 |
-            | ARM64 | `openclash-aarch64_cortex-a53-${{ env.version }}.run` | ARM64 设备 (如树莓派、NanoPi 等) |
-            
+            | OpenClash | `${{ env.OPENCLASH_VERSION }}` | vernesong/OpenClash |
+            | Nikki | `${{ env.NIKKI_VERSION }}` | nikkinikki-org/OpenWrt-nikki |
+
+            - **构建时间**: ${{ github.event.repository.updated_at }}
+            - **构建方式**: GitHub Actions 自动化构建 (workflow_dispatch 手动触发)
+
+            ### 📥 文件列表
+
+            | 文件名 | 说明 | 适用架构 |
+            |--------|------|----------|
+            | `openclash-x86-64-${{ env.OPENCLASH_VERSION }}.run` | OpenClash 安装包 | x86_64 软路由 / 虚拟机 |
+            | `openclash-aarch64_cortex-a53-${{ env.OPENCLASH_VERSION }}.run` | OpenClash 安装包 | ARM64 设备（树莓派、NanoPi 等） |
+            | `nikki-${{ env.NIKKI_VERSION }}_x86_64.run` | Nikki 安装包 | x86_64 软路由 / 虚拟机 |
+            | `nikki-${{ env.NIKKI_VERSION }}_aarch64_cortex-a53.run` | Nikki 安装包 | ARM64 设备（树莓派、NanoPi 等） |
+            | `sha256sums.txt` | 全部安装包的 SHA256 校验和 | - |
+
             ### 🚀 安装方法
-            
-            1. 上传 `.run` 文件到路由器
-            2. 添加执行权限: `chmod +x openclash-*.run`
-            3. 运行安装: `./openclash-*.run`
-            
+
+            1. 根据路由器 CPU 架构，下载对应插件的 `.run` 文件，并上传到路由器（如通过 SCP / WinSCP / LuCI 文件管理）
+            2. 添加执行权限：
+               ```sh
+               chmod +x 文件名.run
+               ```
+            3. 运行安装：
+               ```sh
+               ./文件名.run
+               ```
+            4. 根据终端提示等待安装完成；OpenClash 安装脚本会自动检测 `br-lan` 网络接口，异常时自动重启网络服务
+
             ### 🔐 文件校验
-            
-            请下载 `sha256sums.txt` 文件验证完整性。
-            
+
+            下载 `sha256sums.txt` 后，在同目录下执行：
+            ```sh
+            sha256sum -c sha256sums.txt
+            ```
+            用以验证安装包完整性。
+
             ### ⚠️ 注意事项
-            
-            - 安装前请备份重要配置
-            - 确保网络连接正常
-            - 安装过程中可能会重启网络服务
-            
+
+            - 安装前请务必备份路由器现有配置
+            - 确保设备有足够存储空间与稳定的网络连接
+            - 安装/更新过程中路由器网络服务可能会短暂重启，请留意断线
+            - 同一架构下 OpenClash 与 Nikki 可按需选择性安装，二者互不冲突但建议仅保留一个作为主力代理内核以避免资源占用冲突
+
             ---
-            
+
             *由 GitHub Actions 自动构建和发布*
           draft: false
           prerelease: false
@@ -267,7 +325,8 @@ jobs:
           echo "================================"
           echo "  🎉 构建流程全部完成!"
           echo "================================"
-          echo "版本: ${{ env.version }}"
+          echo "OpenClash 版本: ${{ env.OPENCLASH_VERSION }}"
+          echo "Nikki 版本: ${{ env.NIKKI_VERSION }}"
           echo "构建时间: $(date '+%Y-%m-%d %H:%M:%S')"
-          echo "Release 地址: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ env.version }}"
+          echo "Release 地址: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ env.RELEASE_TAG }}"
           echo "================================"
