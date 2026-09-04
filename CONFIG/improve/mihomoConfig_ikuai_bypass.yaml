@@ -26,7 +26,7 @@ proxy_providers_common:
     interval: 86400,
     proxy: DIRECT,
     exclude-type: 'direct|reject|rematch',
-    health-check: { enable: true, url: https://g.cn/generate_204, interval: 600, lazy: true },
+    health-check: { enable: true, url: https://www.apple.com/library/test/success.html, interval: 600, lazy: true },
   }
 
 # 全局过滤节点
@@ -143,7 +143,7 @@ dns:
     - RULE-SET,geolocation-!cn,fake-ip
     - MATCH,fake-ip # 兜底：未命中以上规则集的域名默认给 fake-ip，交由"漏网之鱼"策略组处理
   proxy-server-nameserver: *chinaDohDNS
-  default-nameserver: *chinaDNS
+  default-nameserver: *chinaDohDNS
   nameserver: *foreignDNS
   nameserver-policy:
     'rule-set:cn': *chinaDNS
