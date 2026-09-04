@@ -15,7 +15,7 @@ proxy_providers_common:
     interval: 86400,
     proxy: DIRECT,
     exclude-type: 'direct|reject|rematch',
-    health-check: { enable: true, url: https://g.cn/generate_204, interval: 600, lazy: true },
+    health-check: { enable: true, url: https://www.apple.com/library/test/success.html, interval: 600, lazy: true },
   }
 
 # 全局过滤节点
@@ -93,7 +93,7 @@ dns:
   fake-ip-filter-mode: blacklist # 参考配置三：显式声明过滤模式，语义与原 fake-ip-filter 列表保持一致
   fake-ip-filter: ['rule-set:private', 'rule-set:fakeip_filter', 'rule-set:geolocation-cn']
   proxy-server-nameserver: *chinaDohDNS
-  default-nameserver: *chinaDNS
+  default-nameserver: *chinaDohDNS
   nameserver: *foreignDNS
   nameserver-policy:
     'rule-set:cn': *chinaDNS
