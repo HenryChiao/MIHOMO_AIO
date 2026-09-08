@@ -1,5 +1,5 @@
 #  ---------说明---------
-#  mihomo配置（全量版·融合优化）
+#  mihomo配置（全量版·融合优化·ikuai_bypass）
 #  基础模板作者：AIsouler
 #  原仓库：https://github.com/AIsouler/MyClash
 #  配置链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
@@ -29,10 +29,10 @@ proxy_providers_common:
     health-check: { enable: true, url: https://www.apple.com/library/test/success.html, interval: 600, lazy: true },
   }
 
-# 全局过滤节点
+# 全局过滤节点（同步原版最新正则）
 global_exclude_filter:
   &global_exclude_filter {
-    exclude-filter: '(?i)(群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|电报|频道|无法|说明|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b)',
+    exclude-filter: '(?i)(群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|电报|频道|无法|说明|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|优惠|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|过滤|⚠️|@|t\.me\/\+|\bexpire\b|\bhttps?:\/\/|\.com|\btraffic\b)',
   }
 
 # 订阅提供者，如果你想要添加多个订阅提供者，可以复制 provider1 的配置块，并修改 url 、 path 和 additional-prefix 字段。
@@ -87,25 +87,24 @@ chinaDNS: &chinaDNS ['223.5.5.5', '119.29.29.29']
 chinaDohDNS: &chinaDohDNS ['https://223.5.5.5/dns-query#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
 foreignDNS: &foreignDNS ['https://cloudflare-dns.com/dns-query#默认代理', 'https://dns.google/dns-query#默认代理']
 
-# --- DNS 配置（旁路由场景：监听 LAN，fake-ip 判定方式参考"echs"配置） ---
+# --- DNS 配置（保留旁路由场景配置：监听 LAN，fake-ip 判定方式参考"echs"配置） ---
 dns:
   enable: true
   listen: '0.0.0.0:53' # 供 iKuai 客户端直接查询：DHCP/DNS 转发中把域名解析指向本机即可拿到 fake-ip
   ipv6: true
-  ipv6-timeout: 300 # 参考配置二/三：IPv6 解析超时时间，避免弱 IPv6 环境下拖慢解析
+  ipv6-timeout: 300 # IPv6 解析超时时间，避免弱 IPv6 环境下拖慢解析
   use-hosts: true
   cache-algorithm: arc
   use-system-hosts: true
-  prefer-h3: true # 参考配置二：DoH 优先尝试 HTTP/3，握手更快
-  respect-rules: false # 参考配置二/三：DNS 解析不经过分流规则，避免死循环
+  prefer-h3: true # DoH 优先尝试 HTTP/3，握手更快
+  respect-rules: false # DNS 解析不经过分流规则，避免死循环
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/15
   fake-ip-range6: 2001:2::1/48
-  fake-ip-ttl: 1 # 参考配置二/三：缩短 fake-ip 缓存时间，网络切换更灵敏
-  # 参考"echs"(第二份)配置的 fake-ip-filter-mode: rule 写法：
+  fake-ip-ttl: 1 # 缩短 fake-ip 缓存时间，网络切换更灵敏
+  # 参考"echs"配置的 fake-ip-filter-mode: rule 写法：
   # 走"直连"策略组的规则集判定为 real-ip（不进入 fake-ip 网段，不会被 iKuai 转发到本机）；
   # 走各代理策略组的规则集判定为 fake-ip（落入 fake-ip 网段，会被 iKuai 静态路由转发到本机代理）。
-  # 全部为本文件已有的 rule-providers，未新增任何规则集。
   fake-ip-filter-mode: rule
   fake-ip-filter:
     # --- 以下判定为 real-ip：对应原 rules 中走"直连"的规则集 ---
@@ -147,14 +146,14 @@ dns:
   nameserver: *foreignDNS
   nameserver-policy:
     'rule-set:cn': *chinaDNS
-    'rule-set:adblockmihomolite': ['rcode://name_error'] # 参考配置二：广告域名直接在 DNS 层拒绝解析，比走到策略组 REJECT 更早拦截
+    'rule-set:adblockmihomolite': ['rcode://name_error'] # 广告域名直接在 DNS 层拒绝解析
   direct-nameserver: ['system', '223.5.5.5', '119.29.29.29']
-  direct-nameserver-follow-policy: true # 参考配置二/三：直连域名的 DNS 请求遵循上面的 nameserver-policy
+  direct-nameserver-follow-policy: true # 直连域名的 DNS 请求遵循 nameserver-policy
 
-# --- hosts（融合参考第二、三份配置，补充双栈地址与常用连通性域名） ---
+# --- hosts（保留针对旁路由及双栈优化的自定义域名记录） ---
 hosts:
-  'cloudflare-dns.com': ['1.1.1.1', '1.0.0.1', '2606:4700:4700::1111', '2606:4700:4700::1001'] # 补充 IPv6 地址，参考配置二/三
-  'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844'] # 补充 IPv6 地址，参考配置二/三
+  'cloudflare-dns.com': ['1.1.1.1', '1.0.0.1', '2606:4700:4700::1111', '2606:4700:4700::1001']
+  'dns.google': ['8.8.8.8', '8.8.4.4', '2001:4860:4860::8888', '2001:4860:4860::8844']
 
   # 解决谷歌商店无法下载的问题
   'services.googleapis.cn': 'services.googleapis.com'
@@ -165,9 +164,9 @@ hosts:
   '+.edge.mountaintoys.cn': ['0.0.0.0']
   '+.h2.smtcdns.net': ['0.0.0.0']
 
-  # 参考配置三：Google 消息推送直连，避免代理导致推送延迟/断连
+  # Google 消息推送直连，避免代理导致推送延迟/断连
   'mtalk.google.com': ['142.250.107.188', '108.177.125.188']
-  # 参考配置三：Windows 网络连通性检测走直连，避免误判"无网络访问权限"
+  # Windows 网络连通性检测走直连，避免误判"无网络访问权限"
   'dns.msftncsi.com': ['131.107.255.255', 'fd3e:4f5a:5b81::1']
   
   google.cn: google.com
@@ -191,15 +190,16 @@ ntp:
   port: 123
   interval: 60
 
+# --- TUN 配置（保留旁路由场景模式） ---
 tun:
   enable: true
   device: Meta # 固定设备名，便于在系统里手动添加 198.18.0.1/15 -> 本设备 的路由
   stack: system
-  auto-route: false # 旁路由场景：本机默认路由不需要 mihomo 接管，由 iKuai 静态路由把 fake-ip 网段转发过来即可
-  strict-route: false # 同上：不强制接管本机出口路由，避免影响本机自身其他直连流量
-  auto-redirect: false # 转发进来的流量走"系统路由 -> tun 设备"，不需要 mihomo 自动配置 iptables/nftables 重定向
+  auto-route: false # 旁路由场景：本机默认路由由 iKuai 静态路由转发过来
+  strict-route: false # 不强制接管本机出口路由
+  auto-redirect: false # 流量走系统路由到 tun 设备，无需自动配置 iptables/nftables
   auto-detect-interface: true
-  dns-hijack: ['any:53', 'tcp://any:53'] # 保留：万一有客户端未把 DNS 指向本机，落入 fake-ip 网段的流量仍可在此兜底劫持 DNS
+  dns-hijack: ['any:53', 'tcp://any:53']
 
 # --- 规则集 ---
 
@@ -315,6 +315,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/steam.mrs'
     path: './ruleset/steam.mrs'
     path-in-bundle: 'geo/geosite/steam.mrs'
+  steam_ip: # 新增原版 steam_ip 规则集
+    <<: *rule_providers_ip
+    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/steam.mrs'
+    path: './ruleset/steam_ip.mrs'
+    path-in-bundle: 'geo/geoip/steam.mrs'
   steam_asn:
     <<: *rule_providers_ip
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/asn/AS32590.mrs'
@@ -325,6 +330,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/tiktok.mrs'
     path: './ruleset/tiktok.mrs'
     path-in-bundle: 'geo/geosite/tiktok.mrs'
+  tiktok_ip: # 新增原版 tiktok_ip 规则集
+    <<: *rule_providers_ip
+    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/tiktok.mrs'
+    path: './ruleset/tiktok_ip.mrs'
+    path-in-bundle: 'geo/geoip/tiktok.mrs'
   twitter:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/twitter.mrs'
@@ -370,6 +380,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/spotify.mrs'
     path: './ruleset/spotify.mrs'
     path-in-bundle: 'geo/geosite/spotify.mrs'
+  spotify_ip: # 新增原版 spotify_ip 规则集
+    <<: *rule_providers_ip
+    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/spotify.mrs'
+    path: './ruleset/spotify_ip.mrs'
+    path-in-bundle: 'geo/geoip/spotify.mrs'
   cryptocurrency:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/category-cryptocurrency.mrs'
@@ -393,11 +408,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/217heidai/adblockfilters@main/rules/adblockmihomolite.mrs'
     path: './ruleset/adblockmihomolite.mrs'
     path-in-bundle: 'geo/geosite/category-ads-all.mrs'
-  fakeip_filter:
+  fakeip_filter: # 同步原版最新资源 URL
     <<: *rule_providers_domain
-    url: 'https://fastly.jsdelivr.net/gh/wwqgtxx/clash-rules@release/fakeip-filter.mrs'
+    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/fakeip-filter.mrs'
     path: './ruleset/fakeip-filter.mrs'
-    path-in-bundle: 'geo/geosite/private.mrs'
+    path-in-bundle: 'geo/geosite/fakeip-filter.mrs'
   cn_additional:
     <<: *rule_providers_domain
     url: 'https://static-file-global.353355.xyz/rules/cn-additional-list.mrs'
@@ -411,7 +426,7 @@ rule-providers:
 
 # --- 策略组 (Proxy Groups) ---
 
-# 策略组通用配置
+# 策略组通用配置（同步原版最新测试链接）
 group_common:
   group_common_select:
     &group_common_select {
@@ -420,7 +435,7 @@ group_common:
       timeout: 3000,
       max-failed-times: 3,
       empty-fallback: REJECT,
-      url: 'https://g.cn/generate_204',
+      url: 'https://www.apple.com/library/test/success.html',
       lazy: true,
     }
 
@@ -431,7 +446,7 @@ group_common:
       timeout: 3000,
       max-failed-times: 3,
       empty-fallback: REJECT,
-      url: 'https://g.cn/generate_204',
+      url: 'https://www.apple.com/library/test/success.html',
       lazy: true,
       tolerance: 50,
       include-all: true,
@@ -447,7 +462,7 @@ group_common:
       timeout: 3000,
       max-failed-times: 3,
       empty-fallback: REJECT,
-      url: 'https://g.cn/generate_204',
+      url: 'https://www.apple.com/library/test/success.html',
       lazy: true,
       strategy: 'sticky-sessions',
       include-all: true,
@@ -499,7 +514,7 @@ proxies_common:
 
   proxies_reject: &proxies_reject { proxies: ['REJECT', 'REJECT-DROP', 'PASS'] }
 
-# 地区过滤器正则表达式定义
+# 地区策略组过滤器定义（同步原版最新倍率节点正则）
 group_filter:
   HK_filter: &HK_filter { filter: '(?i)(🇭🇰|香港|(?<![A-Za-z])HKG?(?![A-Za-z])|hong\s*kong)' }
   JP_filter: &JP_filter { filter: '(?i)(🇯🇵|日本|东京|大阪|京都|(?<![A-Za-z])JPN?(?![A-Za-z])|japan)' }
@@ -509,10 +524,13 @@ group_filter:
     }
   SG_filter: &SG_filter { filter: '(?i)(🇸🇬|新加坡|狮城|(?<![A-Za-z])SGP?(?![A-Za-z])|singapore)' }
   TW_filter: &TW_filter { filter: '(?i)(🇹🇼|台湾|台北|高雄|(?<![A-Za-z])TWN?(?![A-Za-z])|taiwan)' }
-  low_filter: &low_filter { filter: '^(?!.*(?:剩|期|客户端|软件)).*(?:(?<!\d)0\.[0-5]|下载|低倍)' }
+  low_filter:
+    &low_filter {
+      filter: '(?i)(^(?!.*(?:剩|期)).*(?:(?<!\d)0\.[0-5]|(?<=[ |｜丨∣┃\-‐–—−－﹣])0[*×✕✖⨯⨉x倍])|(?:(?<=[ |｜丨∣┃\-‐–—−－﹣])[*×✕✖⨯⨉x]0(?= |倍|$))|^(?!.*(?:客户端|软件)).*下载|低倍|免费|(?<![A-Za-z])free(?![A-Za-z]))',
+    }
   high_filter:
     &high_filter {
-      filter: '(?u)(?:[*×xX✕✖⨉]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?)|(?:(?<![\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|[*×xX✕✖⨉]))',
+      filter: '(?i)(?<=[ |｜丨∣┃\-‐–—−－﹣])((?:[*×✕✖⨯⨉x]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?)|(?:(?<![\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|[*×✕✖⨯⨉x])))',
     }
   exclude_filter:
     &exclude_filter {
@@ -706,7 +724,6 @@ proxy-groups:
     <<: [*group_common_auto, *exclude_filter]
 
 # --- 路由规则 (Rules) ---
-# 与原模板保持完全一致，未新增任何规则
 
 rules:
   # 私有网络直连
@@ -739,8 +756,10 @@ rules:
   - RULE-SET,telegram,Telegram
   - RULE-SET,telegram_ip,Telegram,no-resolve
   - RULE-SET,steam,Steam
+  - RULE-SET,steam_ip,Steam,no-resolve # 同步新增原版 steam_ip 匹配
   - RULE-SET,steam_asn,Steam,no-resolve
   - RULE-SET,tiktok,TikTok
+  - RULE-SET,tiktok_ip,TikTok,no-resolve # 同步新增原版 tiktok_ip 匹配
   - RULE-SET,twitter,Twitter
   - RULE-SET,twitter_ip,Twitter,no-resolve
   - RULE-SET,instagram,Instagram
@@ -760,6 +779,7 @@ rules:
   - PROCESS-NAME,com.feifeiduck.capyplayer,Emby
   - RULE-SET,pikpak,PikPak
   - RULE-SET,spotify,Spotify
+  - RULE-SET,spotify_ip,Spotify,no-resolve # 同步新增原版 spotify_ip 匹配
   - RULE-SET,cryptocurrency,Crypto
   - RULE-SET,ehentai,EHentai
 
