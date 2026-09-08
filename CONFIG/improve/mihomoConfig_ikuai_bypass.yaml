@@ -83,7 +83,7 @@ profile:
   store-fake-ip: true
 
 # 国内外 DNS 定义
-chinaDNS: &chinaDNS ['223.5.5.5', '119.29.29.29']
+chinaDNS: &chinaDNS ['223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
 chinaDohDNS: &chinaDohDNS ['https://223.5.5.5/dns-query#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
 foreignDNS: &foreignDNS ['https://cloudflare-dns.com/dns-query#默认代理', 'https://dns.google/dns-query#默认代理']
 
@@ -147,7 +147,7 @@ dns:
   nameserver-policy:
     'rule-set:cn': *chinaDNS
     'rule-set:adblockmihomolite': ['rcode://name_error'] # 广告域名直接在 DNS 层拒绝解析
-  direct-nameserver: ['system', '223.5.5.5', '119.29.29.29']
+  direct-nameserver: ['system', '223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
   direct-nameserver-follow-policy: true # 直连域名的 DNS 请求遵循 nameserver-policy
 
 # --- hosts（保留针对旁路由及双栈优化的自定义域名记录） ---
@@ -730,6 +730,7 @@ rules:
   - RULE-SET,private,直连
 
   # 国内直连
+  - RULE-SET,geolocation-cn,直连
   - RULE-SET,games_cn,直连 # 已包含 steam 下载域名
   - RULE-SET,epicgames,直连
   - RULE-SET,nvidia_cn,直连
@@ -785,7 +786,6 @@ rules:
 
   # 兜底规则
   - RULE-SET,geolocation-!cn,默认代理
-  - RULE-SET,geolocation-cn,直连
   - RULE-SET,cn_ip,直连
   - RULE-SET,private_ip,直连
   - MATCH,漏网之鱼
