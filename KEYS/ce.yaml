@@ -1,3 +1,4 @@
+#via https://raw.githubusercontent.com/bfzyd/bfzyd/refs/heads/master/ce.yaml
 payload:
   # LAN 保留
   - "*"
