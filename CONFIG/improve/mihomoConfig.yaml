@@ -73,7 +73,7 @@ profile:
 dns_common:
   chinaDNS: &chinaDNS ['180.184.1.1#DIRECT', '180.184.2.2#DIRECT', '223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
   foreignDNS: &foreignDNS ['https://cloudflare-dns.com/dns-query#默认代理', 'https://dns.google/dns-query#默认代理']
-  defaultDNS: &defaultDNS ['180.184.1.1#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://dns.alidns.com/dns-query#DIRECT', 'https://doh.pub/dns-query#DIRECT']
+  defaultDNS: &defaultDNS ['180.184.1.1#DIRECT', '180.184.2.2#DIRECT', '180.76.76.76#DIRECT']
   proxyServerDNS:
     &proxyServerDNS ['180.184.1.1#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://dns.alidns.com/dns-query#DIRECT', 'https://doh.pub/dns-query#DIRECT']
 
