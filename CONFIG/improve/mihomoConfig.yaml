@@ -124,6 +124,7 @@ dns:
     - RULE-SET,pikpak,fake-ip
     - RULE-SET,spotify,fake-ip
     - RULE-SET,cryptocurrency,fake-ip
+    - RULE-SET,paypal,fake-ip
     - RULE-SET,ehentai,fake-ip
     # 兜底规则
     - RULE-SET,geolocation-!cn,fake-ip
