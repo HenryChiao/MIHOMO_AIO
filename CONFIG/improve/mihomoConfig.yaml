@@ -1,8 +1,9 @@
 #  ---------说明---------
-#  mihomo配置（全量版）
-#  作者：AIsouler
+#  基于AIsouler仓库中mihomo配置（全量版）只对ikuai 配合 openclash针对性优化模板 需结合fakeip和二跳网关亦或者旁路使用
+#  更改者：henrychiao
+#  原作者：AIsouler
 #  原仓库：https://github.com/AIsouler/MyClash
-#  配置链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
+#  原配置链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
 #  友情推荐，非常好用、省电且内存占用低的代理软件：https://github.com/appshubcc/Bettbox
 #  ---------------------
 
@@ -69,13 +70,13 @@ profile:
   store-selected: true
   store-fake-ip: true
 
-# 国内外 DNS 定义
+# 国内外 DNS 定义 
 dns_common:
-  chinaDNS: &chinaDNS ['180.184.1.1#DIRECT', '180.184.2.2#DIRECT', '223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
+  chinaDNS: &chinaDNS ['180.76.76.76#DIRECT', '180.184.1.1#DIRECT', '223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
   foreignDNS: &foreignDNS ['https://cloudflare-dns.com/dns-query#默认代理', 'https://dns.google/dns-query#默认代理']
-  defaultDNS: &defaultDNS ['180.184.1.1#DIRECT', '180.184.2.2#DIRECT', '180.76.76.76#DIRECT']
+  defaultDNS: &defaultDNS ['180.184.1.1', '180.184.2.2', '180.76.76.76#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
   proxyServerDNS:
-    &proxyServerDNS ['180.184.1.1#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://dns.alidns.com/dns-query#DIRECT', 'https://doh.pub/dns-query#DIRECT']
+    &proxyServerDNS ['180.184.1.1', '114.114.114.114', 'tls://223.5.5.5', 'https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query']
 
 dns:
   enable: true
@@ -90,6 +91,7 @@ dns:
   fake-ip-filter:
     - RULE-SET,fakeip_filter,real-ip
     - RULE-SET,private,real-ip
+    - RULE-SET,douyin,real-ip
     - RULE-SET,geolocation-cn,real-ip
     - RULE-SET,games_cn,real-ip
     - RULE-SET,epicgames,real-ip
@@ -130,26 +132,27 @@ dns:
   proxy-server-nameserver: *proxyServerDNS
   nameserver: *foreignDNS
   nameserver-policy:
+    'rule-set:private': 'system'
+    'rule-set:douyin': ['system', '180.184.1.1', '180.184.2.2']
     'rule-set:cn': *chinaDNS
   direct-nameserver: *chinaDNS
+  direct-nameserver-follow-policy: true
 
 hosts:
   'doh.pub': ['1.12.12.12', '120.53.53.53']
   'cloudflare-dns.com': ['1.1.1.1', '1.0.0.1']
   'dns.google': ['8.8.8.8', '8.8.4.4']
-
   # 解决谷歌商店无法下载的问题
   'services.googleapis.cn': 'services.googleapis.com'
-
   # 屏蔽哔哩哔哩PCDN，解决访问视频卡顿/直播问题
   '+.mcdn.bilivideo.com': ['0.0.0.0']
   '+.mcdn.bilivideo.cn': ['0.0.0.0']
   '+.edge.mountaintoys.cn': ['0.0.0.0']
   '+.h2.smtcdns.net': ['0.0.0.0']
-  
+  #google cn
   'google.cn': 'google.com'
-
-  'cn.bing.com': 'www4.bing.com'
+  #cnbing
+  '+.bing.com': 'global.bing.com'
 
 ntp:
   enable: true
@@ -371,6 +374,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/category-cryptocurrency.mrs'
     path: './ruleset/cryptocurrency.mrs'
     path-in-bundle: 'geo/geosite/category-cryptocurrency.mrs'
+  paypal:
+    <<: *rule_providers_domain
+    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/paypal.mrs'
+    path: './ruleset/paypal.mrs'
+    path-in-bundle: 'geo/geosite/paypal.mrs'
   ehentai:
     <<: *rule_providers_domain
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/ehentai.mrs'
@@ -404,6 +412,11 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/cn.mrs'
     path: './ruleset/cn.mrs'
     path-in-bundle: 'geo/geosite/cn.mrs'
+  douyin:
+    <<: *rule_providers_domain
+    url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/douyin.mrs'
+    path: './ruleset/douyin.mrs'
+    path-in-bundle: 'geo/geosite/douyin.mrs'
 
 # --- 策略组 (Proxy Groups) ---
 
@@ -432,7 +445,7 @@ group_common:
       tolerance: 50,
       include-all: true,
       exclude-type: 'DIRECT',
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png',
+      icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Auto.svg',
       hidden: true,
     }
 
@@ -448,7 +461,7 @@ group_common:
       strategy: 'sticky-sessions',
       include-all: true,
       exclude-type: 'DIRECT',
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png',
+      icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/RoundRobin.svg',
       hidden: true,
     }
 
@@ -537,13 +550,13 @@ proxy-groups:
         '负载均衡',
         '其他节点',
       ]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Proxy.svg'
 
   - name: '手动选择'
     <<: *group_common_select
     include-all: true
     exclude-type: 'DIRECT'
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Static.svg'
 
   - name: '自动选择'
     <<: *group_common_auto
@@ -554,100 +567,104 @@ proxy-groups:
   - name: 'FCM'
     <<: [*group_common_select, *proxies_direct]
     default-selected: '直连'
-    icon: 'https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Fcm.svg'
 
   - name: 'YouTube'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/YouTube.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/YouTube.svg'
 
   - name: 'Google'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Google.svg'
 
   - name: 'AI'
     <<: [*group_common_select, *proxies_default]
     default-selected: '美国'
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/OpenAI.svg'
 
   - name: 'Microsoft'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Microsoft.svg'
 
   - name: 'Apple'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Apple.svg'
 
   - name: 'Telegram'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Telegram.svg'
 
   - name: 'Steam'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Steam.svg'
 
   - name: 'TikTok'
     default-selected: '日本'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/TikTok.svg'
 
   - name: 'Twitter'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Twitter.svg'
 
   - name: 'Meta'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/04ProxySoft/meta.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Meta.svg'
 
   - name: 'Line'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Line.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Line.svg'
 
   - name: 'Netflix'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/Netflix.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Netflix.svg'
 
   - name: 'Emby'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Emby.svg'
 
   - name: 'PikPak'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/03CNSoft/pikpak.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/PikPak.svg'
 
   - name: 'Spotify'
     <<: [*group_common_select, *proxies_direct]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Spotify.svg'
 
   - name: 'Crypto'
     default-selected: '日本'
     <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/04ProxySoft/Bitcoin.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Bitcoin.svg'
+
+  - name: 'PayPal'
+    <<: [*group_common_select, *proxies_default]
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/PayPal.svg'
 
   - name: 'EHentai'
     default-selected: '美国'
-    <<: [*group_common_select, *proxies_default]
-    icon: 'https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/04ProxySoft/exhentai.png'
+    <<: [*group_common_select, *proxies_direct]
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/EHentai.svg'
 
   - name: 'AdBlock'
     <<: [*group_common_select, *proxies_reject]
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/AdBlock.svg'
 
   - name: '漏网之鱼'
     <<: *group_common_select
     proxies: ['默认代理', '直连']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Stack.svg'
 
   - name: '直连'
     <<: *group_common_select
     proxies: ['🇨🇳 直连 | 双栈', '🇨🇳 直连 | IPv4优先', '🇨🇳 直连 | IPv6优先', '🇨🇳 直连 | 仅IPv4', '🇨🇳 直连 | 仅IPv6']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/China.svg'
 
   # 定义地区策略组
   - name: '香港'
     <<: [*group_common_select, *HK_filter]
     include-all: true
     proxies: ['香港-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/HongKong.svg'
   - name: '香港-自动选择'
     <<: [*group_common_auto, *HK_filter]
 
@@ -655,7 +672,7 @@ proxy-groups:
     <<: [*group_common_select, *JP_filter]
     include-all: true
     proxies: ['日本-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Japan.svg'
   - name: '日本-自动选择'
     <<: [*group_common_auto, *JP_filter]
 
@@ -663,7 +680,7 @@ proxy-groups:
     <<: [*group_common_select, *US_filter]
     include-all: true
     proxies: ['美国-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/America.svg'
   - name: '美国-自动选择'
     <<: [*group_common_auto, *US_filter]
 
@@ -671,7 +688,7 @@ proxy-groups:
     <<: [*group_common_select, *SG_filter]
     include-all: true
     proxies: ['新加坡-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Singapore.svg'
   - name: '新加坡-自动选择'
     <<: [*group_common_auto, *SG_filter]
 
@@ -679,7 +696,7 @@ proxy-groups:
     <<: [*group_common_select, *TW_filter]
     include-all: true
     proxies: ['台湾省-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Taiwan.svg'
   - name: '台湾省-自动选择'
     <<: [*group_common_auto, *TW_filter]
 
@@ -687,7 +704,7 @@ proxy-groups:
     <<: [*group_common_select, *low_filter]
     include-all: true
     proxies: ['低倍率节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available_1.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Available.svg'
   - name: '低倍率节点-自动选择'
     <<: [*group_common_auto, *low_filter]
 
@@ -695,7 +712,7 @@ proxy-groups:
     <<: [*group_common_select, *high_filter]
     include-all: true
     proxies: ['高倍率节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Airport.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/Airport.svg'
   - name: '高倍率节点-自动选择'
     <<: [*group_common_auto, *high_filter]
 
@@ -703,7 +720,7 @@ proxy-groups:
     <<: [*group_common_select, *exclude_filter]
     include-all: true
     proxies: ['其他节点-自动选择']
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png'
+    icon: 'https://fastly.jsdelivr.net/gh/AIsouler/MyClash@main/Icons/svg/WorldMap.svg'
   - name: '其他节点-自动选择'
     <<: [*group_common_auto, *exclude_filter]
 
@@ -769,6 +786,7 @@ rules:
   - RULE-SET,spotify,Spotify
   - RULE-SET,spotify_ip,Spotify,no-resolve
   - RULE-SET,cryptocurrency,Crypto
+  - RULE-SET,paypal,PayPal
   - RULE-SET,ehentai,EHentai
 
   # 兜底规则
