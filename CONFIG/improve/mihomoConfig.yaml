@@ -1,8 +1,9 @@
 #  ---------说明---------
-#  mihomo配置（全量版）
-#  作者：AIsouler
+#  基于AIsouler仓库中mihomo配置（全量版）只对ikuai 配合 openclash针对性优化模板 需结合fakeip和二跳网关亦或者旁路使用
+#  更改者：henrychiao
+#  原作者：AIsouler
 #  原仓库：https://github.com/AIsouler/MyClash
-#  配置链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
+#  原配置链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
 #  友情推荐，非常好用、省电且内存占用低的代理软件：https://github.com/appshubcc/Bettbox
 #  ---------------------
 
