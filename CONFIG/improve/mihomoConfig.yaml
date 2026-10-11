@@ -69,13 +69,13 @@ profile:
   store-selected: true
   store-fake-ip: true
 
-# 国内外 DNS 定义
+# 国内外 DNS 定义 
 dns_common:
-  chinaDNS: &chinaDNS ['223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
+  chinaDNS: &chinaDNS ['180.76.76.76#DIRECT', '180.184.1.1#DIRECT', '223.5.5.5#DIRECT', '119.29.29.29#DIRECT']
   foreignDNS: &foreignDNS ['https://cloudflare-dns.com/dns-query#默认代理', 'https://dns.google/dns-query#默认代理']
-  defaultDNS: &defaultDNS ['114.114.114.114#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
+  defaultDNS: &defaultDNS ['180.184.1.1', '180.184.2.2', '180.76.76.76#DIRECT', 'https://1.12.12.12/dns-query#DIRECT']
   proxyServerDNS:
-    &proxyServerDNS ['114.114.114.114#DIRECT', 'tls://223.5.5.5#DIRECT', 'https://doh.pub/dns-query#DIRECT']
+    &proxyServerDNS ['180.184.1.1', '114.114.114.114', 'tls://223.5.5.5', 'https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query']
 
 dns:
   enable: true
@@ -86,13 +86,55 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/15
   fake-ip-range6: 2001:2::1/48
-  fake-ip-filter: ['rule-set:private', 'rule-set:fakeip_filter', 'rule-set:geolocation-cn', 'rule-set:googlefcm']
+  fake-ip-filter-mode: rule
+  fake-ip-filter:
+    - RULE-SET,fakeip_filter,real-ip
+    - RULE-SET,private,real-ip
+    - RULE-SET,douyin,real-ip
+    - RULE-SET,geolocation-cn,real-ip
+    - RULE-SET,games_cn,real-ip
+    - RULE-SET,epicgames,real-ip
+    - RULE-SET,nvidia_cn,real-ip
+    - RULE-SET,apple_cn,real-ip
+    - RULE-SET,microsoft_cn,real-ip
+    - DOMAIN,fsend.cn,real-ip
+    - DOMAIN,international-gfe.download.nvidia.com,real-ip
+    # 广告拦截
+    - RULE-SET,adblockmihomolite,real-ip
+    # 代理规则
+    - RULE-SET,googlefcm,fake-ip
+    - RULE-SET,youtube,fake-ip
+    - RULE-SET,google,fake-ip
+    - RULE-SET,ai,fake-ip
+    - RULE-SET,github,fake-ip
+    - RULE-SET,microsoft,fake-ip
+    - RULE-SET,apple,fake-ip
+    - RULE-SET,telegram,fake-ip
+    - RULE-SET,steam,fake-ip
+    - RULE-SET,tiktok,fake-ip
+    - RULE-SET,twitter,fake-ip
+    - RULE-SET,meta,fake-ip
+    - RULE-SET,line,fake-ip
+    - RULE-SET,netflix,fake-ip
+    - RULE-SET,emby,fake-ip
+    - RULE-SET,emos,fake-ip
+    - DOMAIN-SUFFIX,mb3admin.com,fake-ip
+    - DOMAIN-SUFFIX,nubebelle.com,fake-ip
+    - RULE-SET,pikpak,fake-ip
+    - RULE-SET,spotify,fake-ip
+    - RULE-SET,cryptocurrency,fake-ip
+    - RULE-SET,paypal,fake-ip
+    - RULE-SET,ehentai,fake-ip
+    - RULE-SET,patreon,fake-ip
+    # 兜底规则
+    - RULE-SET,geolocation-!cn,fake-ip
+    - MATCH,fake-ip
   default-nameserver: *defaultDNS
   proxy-server-nameserver: *proxyServerDNS
   nameserver: *foreignDNS
   nameserver-policy:
-    'rule-set:private': 'system'
-    'rule-set:douyin': ['system', '180.184.1.1', '180.184.2.2']
+    'rule-set:private': *chinaDNS
+    'rule-set:douyin': ['180.184.1.1', '180.184.2.2']
     'rule-set:cn': *chinaDNS
   direct-nameserver: *chinaDNS
   direct-nameserver-follow-policy: true
@@ -101,15 +143,17 @@ hosts:
   'doh.pub': ['1.12.12.12', '120.53.53.53']
   'cloudflare-dns.com': ['1.1.1.1', '1.0.0.1']
   'dns.google': ['8.8.8.8', '8.8.4.4']
-
   # 解决谷歌商店无法下载的问题
   'services.googleapis.cn': 'services.googleapis.com'
-
   # 屏蔽哔哩哔哩PCDN，解决访问视频卡顿/直播问题
   '+.mcdn.bilivideo.com': ['0.0.0.0']
   '+.mcdn.bilivideo.cn': ['0.0.0.0']
   '+.edge.mountaintoys.cn': ['0.0.0.0']
   '+.h2.smtcdns.net': ['0.0.0.0']
+  #google cn
+  'google.cn': 'google.com'
+  #cnbing
+  'cn.bing.com': 'global.bing.com'
 
 ntp:
   enable: true
